@@ -95,6 +95,11 @@
       </div>
 
       <div class="mod">
+        <div class="h"><span class="ic">📋</span>年度工作计划 <span class="ph" style="font-size:11px">（同步自钉钉AI表格）</span></div>
+        <div id="workplan-list" style="max-height:360px;overflow:auto"><div class="ph">加载中…</div></div>
+      </div>
+
+      <div class="mod">
         <div class="h"><span class="ic">📝</span>近期会议记录</div>
         <ul>
           <li><div class="t">（示例）MSO 8.1→9.4 互联方案评审纪要</div><div class="d ph">在此贴纪要要点 / 决议 / 待办</div></li>
@@ -207,12 +212,13 @@
     var plain = await crypto.subtle.decrypt({name:'AES-GCM', iv:iv}, key, ct);
     return new TextDecoder().decode(plain);
   }
-  async function decryptAndShow(pass){
-    var resp = await fetch('meetings.enc', {cache:'no-store'});
+  async function decryptFile(name, pass){
+    var resp = await fetch(name, {cache:'no-store'});
     var b64 = await resp.text();
     var json = await decryptData(b64, pass);
     return JSON.parse(json);
   }
+  function decryptAndShow(pass){ return decryptFile('meetings.enc', pass); }
   async function unlock(){
     var pw = document.getElementById('pw').value;
     var h = await sha256(pw);
@@ -226,6 +232,7 @@
       document.getElementById('gate').style.display = 'none';
       document.getElementById('app').style.display = 'block';
       loadMeetings();
+      loadWorkplan();
     }catch(e){
       document.getElementById('err').textContent = '解密失败，请检查口令';
     }
@@ -241,6 +248,7 @@
       document.getElementById('gate').style.display = 'none';
       document.getElementById('app').style.display = 'block';
       loadMeetings();
+      loadWorkplan();
     }catch(e){}
   }
 
@@ -263,6 +271,29 @@
       var sub = [m.location, m.note].filter(Boolean).join(' · ');
       return '<li><div class="t">' + esc(label) + ' · ' + esc(m.title||'(无标题)') + '</div>'
            + (sub? '<div class="d">' + esc(sub) + '</div>' : '') + '</li>';
+    }).join('');
+  }
+  // ===== 年度工作计划：从密文 workplan.enc 解密渲染（同步自钉钉AI表格）=====
+  function loadWorkplan(){
+    var pw = sessionStorage.getItem('claw_pw');
+    if(!pw){ renderWorkplan({items:[]}); return; }
+    decryptFile('workplan.enc', pw).then(renderWorkplan).catch(function(){ renderWorkplan({items:[]}); });
+  }
+  function renderWorkplan(data){
+    var items = (data && data.items) || [];
+    var box = document.getElementById('workplan-list');
+    if(!box) return;
+    if(!items.length){ box.innerHTML = '<div class="ph">暂无工作计划（同步后自动显示）</div>'; return; }
+    var stColor = {'进行中':'dn','已完成':'do','未开始':'todo','已延期':'watch'};
+    box.innerHTML = items.map(function(m){
+      var tag = m.status ? '<span class="tag '+ (stColor[m.status]||'todo') +'">'+ esc(m.status) +'</span>' : '';
+      var meta = [m.major, m.owner, m.leadDept].filter(Boolean).join(' · ');
+      var time = (m.start||m.end) ? ('🗓 '+ (m.start||'') +' ~ '+ (m.end||'')) : '';
+      var body = [m.content, m.goal].filter(Boolean).map(esc).join('<br>');
+      return '<li><div class="t">'+ esc(m.title||'(无标题)') +' '+ tag +'</div>'
+        + (meta ? '<div class="d">'+ esc(meta) +'</div>' : '')
+        + (time ? '<div class="d">'+ esc(time) +'</div>' : '')
+        + (body ? '<div class="d">'+ body +'</div>' : '');
     }).join('');
   }
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }

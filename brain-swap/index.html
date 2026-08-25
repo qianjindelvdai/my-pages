@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>上海地铁 TETRA 无线通信系统 · 路网级"换脑"工程</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif; color: #e8eefc; }
+.wrap { max-width: 1060px; margin: 0 auto; padding: 16px; }
+.header h1 { font-size: 22px; color: #7fdfff; text-align: center; letter-spacing: 1px; }
+.header p { text-align: center; color: #8aa0c0; font-size: 13px; margin-top: 4px; }
+.stage { text-align: center; margin: 10px 0 2px; font-size: 16px; color: #ffd479; font-weight: bold; min-height: 22px; }
+.stage.done { color: #39ffa0; }
+.event { text-align: center; min-height: 20px; font-size: 14px; color: #ff9a76; font-weight: bold; margin-bottom: 4px; }
+.event.on { color: #37ffd0; }
+#net { width: 100%; height: auto; display: block; background: radial-gradient(circle at 50% 30%, #11203a, #0a0e1a 78%); border-radius: 12px; }
+.controls { display: flex; align-items: center; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+.controls button { background: #16324f; color: #cfe8ff; border: 1px solid #2b557d; border-radius: 6px; padding: 8px 14px; cursor: pointer; font-size: 14px; }
+.controls button:hover { background: #1d456b; }
+#stepBtn { background: #1d6b4f; border-color: #2bbd86; }
+#stepBtn:hover { background: #24855f; }
+#timeline { flex: 1; min-width: 160px; accent-color: #37c0ff; }
+#dateLabel { color: #9fd0ff; font-size: 14px; min-width: 80px; text-align: right; }
+#stepLabel { color: #ffd479; font-size: 13px; min-width: 110px; }
+.legend { display: flex; gap: 18px; justify-content: center; margin-top: 8px; font-size: 12px; color: #9fb3d0; flex-wrap: wrap; }
+.legend i { display: inline-block; width: 22px; height: 3px; vertical-align: middle; margin-right: 5px; border-radius: 2px; }
+.info { margin-top: 10px; min-height: 96px; background: #0e1830; border: 1px solid #1d3252; border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #bcd2f0; line-height: 1.7; white-space: pre-line; }
+.info b { color: #7fdfff; }
+.linkP { transition: stroke .4s, stroke-width .4s, stroke-opacity .4s; }
+.linkS { transition: stroke .4s, stroke-width .4s, stroke-opacity .4s; }
+.node { transition: opacity .4s, stroke .4s; stroke: #ffffff; stroke-width: 1.5; }
+.nlabel { fill: #cfe0f5; font-size: 12px; font-weight: bold; pointer-events: none; }
+.dlabel { fill: #ffd479; font-size: 11px; font-weight: bold; pointer-events: none; }
+.msolabel { fill: #ffffff; font-size: 14px; font-weight: bold; pointer-events: none; }
+.mosub { fill: #bcd2f0; font-size: 11px; pointer-events: none; }
+.grouplabel { fill: #9fd0ff; font-size: 13px; font-weight: bold; pointer-events: none; }
+.brainstatus { fill: #ffd479; font-size: 13px; font-weight: bold; pointer-events: none; }
+.badge { fill: #37ffd0; font-size: 11px; font-weight: bold; pointer-events: none; }
+@keyframes pulse { 0% { transform: scale(1); opacity: .55; } 70% { transform: scale(1.35); opacity: 0; } 100% { opacity: 0; } }
+.pulse { transform-box: fill-box; transform-origin: center; animation: pulse 2.6s infinite; }
+@keyframes ringpulse { 0% { stroke-opacity: 1; } 50% { stroke-opacity: .3; } 100% { stroke-opacity: 1; } }
+  .dring { animation: ringpulse 1s infinite; }
+  @keyframes bridgepulse { 0%, 100% { stroke-width: 3; } 50% { stroke-width: 6; } }
+  .bridgepulse { animation: bridgepulse 1.4s ease-in-out infinite; }
+  .steps { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .chip { background: #0e1830; border: 1px solid #1d3252; border-radius: 14px; padding: 4px 10px; font-size: 12px; color: #9fb3d0; cursor: pointer; white-space: nowrap; transition: background .2s, border-color .2s; }
+  .chip b { color: #7fdfff; }
+  .chip i { color: #ffd479; font-style: normal; }
+  .chip.cur { background: #1d6b4f; border-color: #2bbd86; color: #eafff5; }
+  .chip.cur b, .chip.cur i { color: #eafff5; }
+  .chip.done { opacity: 0.55; border-color: #2bbd86; }
+  .confetti { animation: tw 1.6s ease-in-out infinite; }
+  @keyframes tw { 0%, 100% { opacity: .3; } 50% { opacity: 1; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>上海地铁 TETRA 无线通信系统 · 路网级"换脑"工程</h1>
+    <p>专用无线交换中心（MSO）8.1 → 9.4 系统割接及互联 · 主备双中心 · 给整张路网更换"大脑"</p>
+  </div>
+  <div class="stage" id="stageText">准备阶段</div>
+  <div class="event" id="eventText"></div>
+  <svg id="net" viewBox="0 0 1000 600">
+    <defs>
+      <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur stdDeviation="3.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+  </svg>
+  <div class="legend">
+    <span><i style="background:#46566f"></i>线路接入 8.1 MSO（东宝兴路·西藏北路）</span>
+    <span><i style="background:#37c0ff"></i>线路已割接至 9.4 MSO（东宝兴路·3C大楼）</span>
+    <span><i style="background:#37ffd0"></i>8.1↔9.4 版本 MSO 互联 · 业务不中断</span>
+  </div>
+  <div class="controls">
+    <button id="prevBtn">◀ 上一步</button>
+    <button id="stepBtn">➜ 推进一步</button>
+    <button id="resetBtn">⟲ 重置</button>
+    <input type="range" id="timeline" min="0" max="1000" value="0">
+    <span id="stepLabel">第 1 / 14 步</span>
+    <span id="dateLabel">2026年5月</span>
+  </div>
+  <div class="steps" id="stepList"></div>
+  <div class="info" id="info">点击下方任一步骤，或按「推进一步」逐步查看工程过程。顶部 4 个节点为 8.1 / 9.4 各自的主备 MSO（东宝兴路为同一栋楼、不同机房，9.4 建于新建路网核心机房）。每步均标注计划时间。</div>
+</div>
+<script>
+(function () {
+  var NS = "http://www.w3.org/2000/svg";
+  var svg = document.getElementById("net");
+  var stageText = document.getElementById("stageText");
+  var eventText = document.getElementById("eventText");
+  var dateLabel = document.getElementById("dateLabel");
+  var stepLabel = document.getElementById("stepLabel");
+  var info = document.getElementById("info");
+
+  // 顶部 4 个 MSO 节点：8.1 与 9.4 各自的主备（东宝兴路为双方各自的主用）
+  var S1b = { x: 165, y: 135 };   // 8.1 备 · 西藏北路
+  var S1m = { x: 400, y: 100 };   // 8.1 主 · 东宝兴路
+  var S9m = { x: 600, y: 100 };   // 9.4 主 · 东宝兴路
+  var S9b = { x: 835, y: 135 };   // 9.4 备 · 3C大楼
+
+  var INTER = 3.1; // 2026-08 初 互联生效
+
+  var lines = [
+    { n: "10号线", c: "#C6AED3", cut: 2.0, occ: "吴中路OCC", data: true },   // 7月 先行（官方色 浅紫）
+    { n: "17号线", c: "#BB7294", cut: 3.6, occ: "浦汇塘OCC" },               // 本周（官方色 淡紫）
+    { n: "1号线",  c: "#E3002B", cut: 5,   occ: "新闸路OCC" },
+    { n: "5号线",  c: "#9A0063", cut: 6,   occ: "颛桥OCC" },
+    { n: "6号线",  c: "#D40068", cut: 7,   occ: "民生路OCC" },
+    { n: "8号线",  c: "#0094D8", cut: 8,   occ: "西藏北路OCC" },
+    { n: "9号线",  c: "#57B5E0", cut: 10,  occ: "漕河泾OCC" },
+    { n: "12号线", c: "#00785A", cut: 11,  occ: "西藏北OCC" },
+    { n: "11号线", c: "#A05A2C", cut: 12,  occ: "隆德路OCC" },
+    { n: "16号线", c: "#00A0A8", cut: 13,  occ: "隆德路OCC" },
+    { n: "浦江线", c: "#F4A300", cut: 13,  occ: "浦江OCC" },
+    { n: "轨道公安", c: "#C9A227", cut: 14, occ: "中山公园" }
+  ];
+  lines.sort(function (a, b) { return a.cut - b.cut; });
+  var n = lines.length;
+
+  function el(name, attrs) { var e = document.createElementNS(NS, name); for (var k in attrs) e.setAttribute(k, attrs[k]); return e; }
+  function cutToDate(cut) {
+    var m = 5 + cut; var y = 2026 + Math.floor((m - 1) / 12); var mm = Math.floor((m - 1) % 12) + 1;
+    return y + "年" + mm + "月";
+  }
+
+  // 底部线路节点坐标
+  var bx0 = 95, bx1 = 905, by = 500;
+  lines.forEach(function (L, i) {
+    L.x = bx0 + i * (bx1 - bx0) / (n - 1);
+    L.y = by;
+  });
+
+  // 先画连接线（在节点之下）：主用线(连东宝兴路) + 备用线(连备节点)
+  lines.forEach(function (L) {
+    var lnP = el("line", { x1: L.x, y1: L.y, x2: S1m.x, y2: S1m.y, stroke: "#46566f", "stroke-width": 1.2, "stroke-opacity": 0.4, class: "linkP" });
+    var lnS = el("line", { x1: L.x, y1: L.y, x2: S1b.x, y2: S1b.y, stroke: "#46566f", "stroke-width": 1.2, "stroke-opacity": 0.4, class: "linkS" });
+    L.lnP = lnP; L.lnS = lnS; svg.appendChild(lnP); svg.appendChild(lnS);
+  });
+
+  // 灾备同步线（主↔备，体现各自主备双中心）
+  var drS1 = el("line", { x1: S1m.x, y1: S1m.y, x2: S1b.x, y2: S1b.y, stroke: "#8b94a6", "stroke-width": 2, "stroke-dasharray": "4 4", opacity: 0.8 });
+  var drS9 = el("line", { x1: S9m.x, y1: S9m.y, x2: S9b.x, y2: S9b.y, stroke: "#37c0ff", "stroke-width": 2, "stroke-dasharray": "4 4", opacity: 0.3 });
+  svg.appendChild(drS1); svg.appendChild(drS9);
+
+  // 东宝兴路互联：8.1 版本 MSO（旧机房）与 9.4 版本 MSO（路网核心机房·新建）之间连一条发光连线
+  // 注意：水平零高度线用 objectBoundingBox 滤镜会被裁成零高，故改用「宽半透明光晕 + 亮细线」叠层表现发光
+  var bridgeHalo = el("line", { x1: S1m.x, y1: S1m.y, x2: S9m.x, y2: S9m.y, stroke: "#37ffd0", "stroke-width": 14, opacity: 0, "stroke-linecap": "round" });
+  var bridgeGlow = el("line", { x1: S1m.x, y1: S1m.y, x2: S9m.x, y2: S9m.y, stroke: "#37ffd0", "stroke-width": 7, opacity: 0, "stroke-linecap": "round" });
+  var bridge = el("line", { x1: S1m.x, y1: S1m.y, x2: S9m.x, y2: S9m.y, stroke: "#d6fff4", "stroke-width": 3, opacity: 0, "stroke-linecap": "round", class: "bridgepulse" });
+  svg.appendChild(bridgeHalo); svg.appendChild(bridgeGlow); svg.appendChild(bridge);
+
+  var S1b_node = el("circle", { cx: S1b.x, cy: S1b.y, r: 18, fill: "#8b94a6", stroke: "#cfe8ff", "stroke-width": 1.5 });
+  var S1m_node = el("circle", { cx: S1m.x, cy: S1m.y, r: 26, fill: "#6f8bb0", stroke: "#cfe8ff", "stroke-width": 2, filter: "url(#glow)" });
+  var S9m_node = el("circle", { cx: S9m.x, cy: S9m.y, r: 26, fill: "#37c0ff", stroke: "#cfe8ff", "stroke-width": 2, opacity: 0.3, filter: "url(#glow)" });
+  var S9b_node = el("circle", { cx: S9b.x, cy: S9b.y, r: 18, fill: "#37c0ff", stroke: "#cfe8ff", "stroke-width": 1.5, opacity: 0.3 });
+  svg.appendChild(S1b_node); svg.appendChild(S1m_node); svg.appendChild(S9m_node); svg.appendChild(S9b_node);
+
+  function tnode(x, y, txt, cls, size) {
+    var t = el("text", { x: x, y: y, "text-anchor": "middle", class: cls || "msolabel", "font-size": size || 12 });
+    t.textContent = txt; svg.appendChild(t); return t;
+  }
+  // 分组标签
+  var g8 = tnode(282, 60, "8.1 MSO 主备双中心", "grouplabel", 14);
+  tnode(718, 60, "9.4 MSO 主备双中心", "grouplabel", 14);
+  // 节点标签（8.1 组，拆除时一并淡出）
+  var S1b_l1 = tnode(S1b.x, S1b.y - 30, "8.1 备", "msolabel", 13);
+  var S1b_l2 = tnode(S1b.x, S1b.y + 38, "西藏北路", "mosub", 12);
+  var S1m_l1 = tnode(S1m.x, S1m.y - 34, "8.1 主", "msolabel", 13);
+  var S1m_l2 = tnode(S1m.x, S1m.y + 42, "东宝兴路", "msolabel", 13);
+  var S1m_l3 = tnode(S1m.x, S1m.y + 58, "旧机房", "mosub", 11);
+  tnode(S9m.x, S9m.y - 34, "9.4 主", "msolabel", 13);
+  tnode(S9m.x, S9m.y + 42, "东宝兴路", "msolabel", 13);
+  tnode(S9m.x, S9m.y + 58, "路网核心机房(新建)", "mosub", 11);
+  tnode(S9b.x, S9b.y - 30, "9.4 备", "msolabel", 13);
+  tnode(S9b.x, S9b.y + 38, "3C大楼", "mosub", 12);
+  // 东宝兴路整体标注（同一栋楼、不同机房）
+  var bldgLbl = el("text", { x: 500, y: 50, "text-anchor": "middle", class: "mosub", fill: "#9fd0ff" });
+  bldgLbl.textContent = "东宝兴路控制中心（同一栋楼 · 不同机房）"; svg.appendChild(bldgLbl);
+  // 互联标签
+  var interLbl = el("text", { x: 500, y: 80, "text-anchor": "middle", class: "mosub", fill: "#37ffd0", opacity: 0 });
+  interLbl.textContent = "8.1 版本 MSO ↔ 9.4 版本 MSO 互联（同楼不同机房）· 业务不中断"; svg.appendChild(interLbl);
+  // 9.4 建成待命标签
+  var buildLbl = el("text", { x: 718, y: 80, "text-anchor": "middle", class: "mosub", fill: "#37ffd0", opacity: 0 });
+  buildLbl.textContent = "✓ 9.4 主备 MSO 已建成 · 待命"; svg.appendChild(buildLbl);
+
+  // 中心状态条
+  var statusBg = el("rect", { x: 300, y: 218, width: 400, height: 24, rx: 6, fill: "#0a1224", opacity: 0.72, stroke: "#1d3252", "stroke-width": 1 });
+  var status = el("text", { x: 500, y: 234, "text-anchor": "middle", class: "brainstatus" });
+  svg.appendChild(statusBg); svg.appendChild(status);
+
+  // 底部线路节点
+  lines.forEach(function (L) {
+    var g = el("g", {}); g.style.cursor = "pointer";
+    var circle = el("circle", { r: 18, cx: L.x, cy: L.y, fill: L.c, class: "node", opacity: 0.55 });
+    L.circle = circle;
+    var t = el("text", { x: L.x, y: L.y + 34, "text-anchor": "middle", class: "nlabel" });
+    t.textContent = L.n;
+    var badge = el("text", { x: L.x, y: L.y - 28, "text-anchor": "middle", class: "badge", opacity: 0 });
+    badge.textContent = "9.4";
+    L.badge = badge;
+    if (L.data) {
+      var ring = el("circle", { cx: L.x, cy: L.y, r: 25, fill: "none", stroke: "#ffd479", "stroke-width": 3, opacity: 0 });
+      L.ring = ring; svg.appendChild(ring);
+    }
+    g.appendChild(circle); g.appendChild(t); g.appendChild(badge);
+    g.addEventListener("click", function () { showInfo(L); });
+    svg.appendChild(g);
+  });
+
+  // 庆祝画面（8.1 MSO 拆除退役后显示）
+  var celeb = el("g", { opacity: 0 });
+  var celebBg = el("rect", { x: 230, y: 248, width: 540, height: 112, rx: 14, fill: "#06140d", opacity: 0.001, stroke: "#39ffa0", "stroke-width": 2, filter: "url(#glow)" });
+  var celebT1 = el("text", { x: 500, y: 296, "text-anchor": "middle", fill: "#39ffa0", "font-size": 30, "font-weight": "bold", filter: "url(#glow)" });
+  celebT1.textContent = "🎉 换脑工程圆满完成";
+  var celebT2 = el("text", { x: 500, y: 332, "text-anchor": "middle", fill: "#cfe8ff", "font-size": 15 });
+  celebT2.textContent = "路网级无线通信大脑已全面更新为 9.4 系统 · 8.1 MSO 已拆除退役";
+  celeb.appendChild(celebBg); celeb.appendChild(celebT1); celeb.appendChild(celebT2);
+  var confettiColors = ["#39ffa0", "#ffd479", "#37c0ff", "#ff9a76"];
+  for (var k = 0; k < 30; k++) {
+    var cf = el("circle", { cx: 300 + Math.random() * 400, cy: 130 + Math.random() * 330, r: 2 + Math.random() * 3, fill: confettiColors[k % 4], class: "confetti", opacity: 0 });
+    celeb.appendChild(cf);
+  }
+  svg.appendChild(celeb);
+
+  function showInfo(L) {
+    var done = curIdx >= L.cut, interOn = curIdx >= INTER;
+    info.innerHTML = "<b>" + L.n + "</b>" + (L.data ? "（含数据业务）" : "") +
+      "\n控制中心：" + L.occ + "\n计划割接：" + cutToDate(L.cut) +
+      "\nMSO 主备双中心架构：" +
+      "\n  8.1：东宝兴路(主) + 西藏北路(备)" +
+      "\n  9.4：东宝兴路(主) + 3C大楼(备)" +
+      "\n影响：调度台手动重登录、跨线路呼叫中断；基站中断至割接完成" +
+      (L.data ? "\n注：数据业务不能跨 MSO，须先于新老 MSO 互联完成割接" : "") +
+      "\n应急：异常即退回 8.1 系统，800 兆手持台联系" +
+      (done ? "\n状态：✅ 已接入 9.4 新脑（东宝兴路·3C大楼）" : "\n状态：⏳ 仍接入 8.1 旧脑（东宝兴路·西藏北路）");
+  }
+
+  var curIdx = 0;
+  var built = false;   // 9.4 主备 MSO 是否已建成
+  var isBuild = false; // 当前是否处于"建成"这一步
+  var demolish = false;// 当前是否处于"8.1 拆除 + 庆祝"这一步
+  function update(val) {
+    curIdx = val / 1000 * 15;
+    var interOn = curIdx >= INTER, doneCount = 0;
+    lines.forEach(function (L) {
+      var done = curIdx >= L.cut; if (done) doneCount++;
+      var mainN = done ? S9m : S1m;
+      var backN = done ? S9b : S1b;
+      L.lnP.setAttribute("x2", mainN.x); L.lnP.setAttribute("y2", mainN.y);
+      L.lnP.setAttribute("stroke", done ? L.c : "#46566f");
+      L.lnP.setAttribute("stroke-width", done ? 2 : 1.2);
+      L.lnP.setAttribute("stroke-opacity", done ? 0.9 : 0.4);
+      L.lnS.setAttribute("x2", backN.x); L.lnS.setAttribute("y2", backN.y);
+      L.lnS.setAttribute("stroke", done ? L.c : "#46566f");
+      L.lnS.setAttribute("stroke-width", done ? 2 : 1.2);
+      L.lnS.setAttribute("stroke-opacity", done ? 0.9 : 0.4);
+      L.circle.setAttribute("opacity", done ? 1 : 0.55);
+      L.circle.setAttribute("stroke", done ? "#9fe9ff" : "#ffffff");
+      L.badge.setAttribute("opacity", done ? 1 : 0);
+      if (L.ring) {
+        var hi = L.data && done && !interOn;
+        L.ring.setAttribute("opacity", hi ? 1 : 0);
+        L.ring.setAttribute("class", hi ? "dring" : "");
+      }
+    });
+
+    var act = doneCount / n;
+    var f1 = demolish ? 0 : (1 - act * 0.8).toFixed(2);
+    var f9 = (built ? (act > 0 ? (0.3 + act * 0.7) : 0.85) : 0.3).toFixed(2);
+    S1m_node.setAttribute("opacity", f1);
+    S1b_node.setAttribute("opacity", f1);
+    drS1.setAttribute("opacity", f1);
+    S1b_l1.setAttribute("opacity", f1); S1b_l2.setAttribute("opacity", f1);
+    S1m_l1.setAttribute("opacity", f1); S1m_l2.setAttribute("opacity", f1); S1m_l3.setAttribute("opacity", f1);
+    g8.setAttribute("opacity", f1);
+    S9m_node.setAttribute("opacity", f9);
+    S9b_node.setAttribute("opacity", f9);
+    drS9.setAttribute("opacity", f9);
+
+    bridge.setAttribute("opacity", (interOn && !demolish) ? 1 : 0);
+    bridgeGlow.setAttribute("opacity", (interOn && !demolish) ? 0.85 : 0);
+    bridgeHalo.setAttribute("opacity", (interOn && !demolish) ? 0.4 : 0);
+    interLbl.setAttribute("opacity", (interOn && !demolish) ? 1 : 0);
+    buildLbl.setAttribute("opacity", (built && act === 0 && !interOn) ? 1 : 0);
+    celeb.setAttribute("opacity", demolish ? 1 : 0);
+
+    var total = 2026 * 12 + 5 + curIdx, y = Math.floor(total / 12), m = Math.floor((total % 12));
+    dateLabel.textContent = y + "年" + (m + 1) + "月";
+
+    var stage, ev = "", evOn = false;
+    if (isBuild) {
+      stage = "准备阶段：9.4 主备 MSO 建成（东宝兴路·3C大楼），新脑待命、尚未接管";
+      ev = "🏗 9.4 专用无线交换中心主备双中心已建成，等待割接接入路网"; evOn = true;
+    }
+    else if (curIdx < 2) { stage = "初始状态：全网 12 线运行于 8.1 MSO（东宝兴路·西藏北路）"; }
+    else if (curIdx < INTER) {
+      stage = "10 号线先行割接（数据业务不能跨 MSO，须先于互联）";
+      ev = "⚠ 10号线已割接至 9.4（东宝兴路·3C大楼），独立于互联之外"; evOn = true;
+    }
+    else if (curIdx < 3.6) {
+      stage = "8.1 版本 MSO ↔ 9.4 版本 MSO 在东宝兴路互联（同楼不同机房）— 割接期间业务不中断";
+      ev = "🔗 8.1 版本 MSO 与 9.4 版本 MSO 连通：已割接/未割接线仍可通信，业务不中断"; evOn = true;
+    }
+    else if (act < 1) {
+      stage = "逐线割接推进中 — 已割接 " + doneCount + " / " + n + "（已互联，业务不中断）";
+      ev = (curIdx >= 3.6 && curIdx < 3.9) ? "🚧 本周：17 号线割接至 9.4" : ""; evOn = !!ev;
+    }
+    else if (demolish) {
+      stage = "✦ 8.1 MSO 已拆除退役 · 换脑工程圆满完成";
+      ev = "🎉 路网级无线通信大脑全面更新为 9.4 系统，恭喜！"; evOn = true;
+    }
+    else { stage = "✦ 换脑完成：路网级无线通信大脑已更新为 9.4 系统"; }
+    if (act >= 1 && !demolish) { ev = "✦ 换脑完成：全网接入 9.4 新脑（东宝兴路·3C大楼）"; evOn = true; }
+
+    stageText.textContent = stage;
+    stageText.className = act >= 1 ? "done" : "";
+    eventText.textContent = ev;
+    eventText.className = evOn ? "on" : "";
+    status.textContent = isBuild ? "9.4 新脑已建成（东宝兴路·3C大楼）· 待命" : (demolish ? "9.4 新脑全面接管（东宝兴路·3C大楼）· 8.1 已退役" : (act >= 1 ? "9.4 新脑已接管（东宝兴路·3C大楼）" : (interOn ? "8.1 版本 MSO ↔ 9.4 版本 MSO 互联中（同楼不同机房）" : "8.1 旧脑运行中（东宝兴路·西藏北路）")));
+  }
+
+  // 步进控制：每个里程碑一步（含计划时间）
+  var STEPS = [
+    { idx: 0,    name: "全网运行于 8.1",       time: "现状" },
+    { idx: 0,    build: true, name: "9.4 主备 MSO 建成", time: "2026年6月" },
+    { idx: 2.0,  name: "10 号线先行割接",       time: "2026年7月" },
+    { idx: 3.1,  name: "8.1↔9.4 MSO 互联",       time: "2026年8月初" },
+    { idx: 3.6,  name: "17 号线割接",           time: "本周（8月）" },
+    { idx: 5,    name: "1 号线割接",            time: "2026年10月" },
+    { idx: 6,    name: "5 号线割接",            time: "2026年11月" },
+    { idx: 7,    name: "6 号线割接",            time: "2026年12月" },
+    { idx: 8,    name: "8 号线割接",            time: "2027年1月" },
+    { idx: 10,   name: "9 号线割接",            time: "2027年3月" },
+    { idx: 11,   name: "12 号线割接",           time: "2027年3-4月" },
+    { idx: 12,   name: "11 号线割接",           time: "2027年4-5月" },
+    { idx: 13,   name: "16 号线 / 浦江线",       time: "2027年5-6月" },
+    { idx: 14,   name: "轨道公安割接",           time: "2027年7月" },
+    { idx: 15,   name: "换脑完成",              time: "2027年7月后" },
+    { idx: 15,   demolish: true, name: "8.1 MSO 拆除 · 庆祝", time: "2027年后" }
+  ];
+  var timeline = document.getElementById("timeline");
+  var stepBtn = document.getElementById("stepBtn");
+  var prevBtn = document.getElementById("prevBtn");
+  var resetBtn = document.getElementById("resetBtn");
+  var stepList = document.getElementById("stepList");
+  var stepIdx = 0;
+  var chipEls = [];
+  STEPS.forEach(function (s, i) {
+    var c = document.createElement("span");
+    c.className = "chip";
+    c.innerHTML = "<b>" + (i + 1) + "</b> " + s.name + " · <i>" + s.time + "</i>";
+    c.addEventListener("click", function () { stepIdx = i; applyStep(); });
+    stepList.appendChild(c); chipEls.push(c);
+  });
+  function applyStep() {
+    var s = STEPS[stepIdx];
+    built = !!s.build; isBuild = !!s.build; demolish = !!s.demolish;
+    var v = s.idx / 15 * 1000;
+    timeline.value = v; update(v);
+    stepLabel.textContent = "第 " + (stepIdx + 1) + " / " + STEPS.length + " 步 · 计划 " + s.time;
+    chipEls.forEach(function (c, i) { c.className = "chip" + (i === stepIdx ? " cur" : (i < stepIdx ? " done" : "")); });
+  }
+  stepBtn.onclick = function () { if (stepIdx < STEPS.length - 1) { stepIdx++; applyStep(); } };
+  prevBtn.onclick = function () { if (stepIdx > 0) { stepIdx--; applyStep(); } };
+  resetBtn.onclick = function () {
+    stepIdx = 0; applyStep();
+    info.textContent = "点击下方任一步骤，或按「推进一步」逐步查看工程过程。顶部 4 个节点为 8.1 / 9.4 各自的主备 MSO（东宝兴路为同一栋楼、不同机房，9.4 建于新建路网核心机房）。每步均标注计划时间。";
+  };
+  timeline.addEventListener("input", function () {
+    built = true; isBuild = false; demolish = false;
+    update(+timeline.value);
+    stepLabel.textContent = "手动拖动（" + dateLabel.textContent + "）";
+    chipEls.forEach(function (c) { c.className = "chip"; });
+  });
+  applyStep();
+})();
+</script>
+</body>
+</html>

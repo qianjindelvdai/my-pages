@@ -48,9 +48,34 @@
   .tag.watch{background:#bb800922;color:#e3b341;border:1px solid #bb800955}
   .hint{color:var(--sub);font-size:12px;text-align:center;margin-top:24px}
   .ph{color:#6e7681;font-style:italic;font-size:12px}
+
+  /* 访问口令遮罩（方案 A） */
+  #gate{position:fixed;inset:0;background:#0d1117;display:flex;align-items:center;justify-content:center;z-index:9999}
+  #gate .box{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:30px 26px;width:300px;text-align:center;box-shadow:0 8px 30px #0008}
+  #gate h3{margin:0 0 6px;font-size:18px}
+  #gate p{color:var(--sub);font-size:13px;margin:0 0 16px}
+  #gate input{width:100%;padding:10px;background:#0d1117;border:1px solid #30363d;border-radius:8px;color:var(--txt);font-size:14px;box-sizing:border-box;outline:none}
+  #gate input:focus{border-color:#1f6feb}
+  #gate button{margin-top:12px;width:100%;padding:10px;background:#238636;border:none;border-radius:8px;color:#fff;font-size:14px;cursor:pointer}
+  #gate button:hover{background:#2ea043}
+  #gate .err{color:#f85149;font-size:12px;margin-top:10px;min-height:14px}
+  #app{display:none}
 </style>
 </head>
 <body>
+
+<!-- 访问口令遮罩 -->
+<div id="gate">
+  <div class="box">
+    <h3>🔒 工作台已加密</h3>
+    <p>请输入访问口令</p>
+    <input id="pw" type="password" placeholder="口令" autocomplete="off" onkeydown="if(event.key==='Enter')unlock()">
+    <button onclick="unlock()">进入</button>
+    <div class="err" id="err"></div>
+  </div>
+</div>
+
+<div id="app">
 <header>
   <h1>袁志骞 · 工作台</h1>
   <div class="role">上海地铁维护保障有限公司通号分公司 · 见习副总经理</div>
@@ -65,12 +90,8 @@
       <h2><span class="dot"></span>工作</h2>
 
       <div class="mod">
-        <div class="h"><span class="ic">📅</span>会议日程</div>
-        <ul>
-          <li><div class="t">本周 · 17号线割接协调会<span class="tag do">本周</span></div><div class="d">无线系统 · 东宝兴路控制中心</div></li>
-          <li><div class="t">（示例）月度分管例会</div><div class="d ph">在此填时间 / 议题 / 参会</div></li>
-          <li><div class="t">（示例）技防改造阶段评审</div><div class="d ph">在此填时间 / 地点</div></li>
-        </ul>
+        <div class="h"><span class="ic">📅</span>会议日程 <span class="ph" style="font-size:11px">（自动同步自钉钉）</span></div>
+        <ul id="meeting-list"><li class="ph">加载中…</li></ul>
       </div>
 
       <div class="mod">
@@ -156,13 +177,98 @@
     </section>
 
   </div>
-  <div class="hint">本页为可编辑模板 · 直接改 index.html 里的文字即可 · 改完告诉我重新部署</div>
+  <div class="hint">本页为可编辑模板 · 会议日程自动同步自钉钉 · 改完告诉我重新部署</div>
+</div>
 </div>
 
 <script>
-  var d=new Date();
-  var w="日一二三四五六"[d.getDay()];
-  document.getElementById("now").textContent=d.getFullYear()+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日 星期"+w;
+  // ===== 方案 A：访问口令（SHA-256 校验，源码不含明文口令）=====
+  // 默认口令：claw2026 —— 修改口令请运行：
+  //   python3 -c "import hashlib;print(hashlib.sha256('新口令'.encode()).hexdigest())"
+  // 并将下方 HASH 替换为输出值。
+  var HASH = "53f83cbc03dab9ff38f9a474d1be07ad5ea901dca04233aa7aa9dd0aa2bd49f2";
+
+  function sha256(s){
+    return crypto.subtle.digest('SHA-256', new TextEncoder().encode(s))
+      .then(function(b){ return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0');}).join(''); });
+  }
+  // ===== 解密：PBKDF2-SHA256(100000) + AES-GCM(256)，需与 sync 脚本参数完全一致 =====
+  function b64ToBytes(b64){
+    var bin = atob(b64.trim()), arr = new Uint8Array(bin.length);
+    for(var i=0;i<bin.length;i++) arr[i] = bin.charCodeAt(i);
+    return arr;
+  }
+  async function decryptData(b64, pass){
+    var bin = b64ToBytes(b64), salt = bin.slice(0,16), iv = bin.slice(16,28), ct = bin.slice(28);
+    var keyMat = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+    var key = await crypto.subtle.deriveKey(
+      {name:'PBKDF2', salt:salt, iterations:100000, hash:'SHA-256'},
+      keyMat, {name:'AES-GCM', length:256}, false, ['decrypt']);
+    var plain = await crypto.subtle.decrypt({name:'AES-GCM', iv:iv}, key, ct);
+    return new TextDecoder().decode(plain);
+  }
+  async function decryptAndShow(pass){
+    var resp = await fetch('meetings.enc', {cache:'no-store'});
+    var b64 = await resp.text();
+    var json = await decryptData(b64, pass);
+    return JSON.parse(json);
+  }
+  async function unlock(){
+    var pw = document.getElementById('pw').value;
+    var h = await sha256(pw);
+    if(h !== HASH){
+      document.getElementById('err').textContent = '口令错误，请重试';
+      return;
+    }
+    try{
+      await decryptAndShow(pw);
+      try{ sessionStorage.setItem('claw_pw', pw); }catch(e){}
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+    }catch(e){
+      document.getElementById('err').textContent = '解密失败，请检查口令';
+    }
+  }
+  // 会话内已解锁则免输口令直接进入
+  try{
+    var spw = sessionStorage.getItem('claw_pw');
+    if(spw){ unlockSilent(spw); }
+  }catch(e){}
+  async function unlockSilent(pw){
+    try{
+      await decryptAndShow(pw);
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+    }catch(e){}
+  }
+
+  // ===== 会议日程：从密文 meetings.enc 解密渲染（自动同步自钉钉）=====
+  function loadMeetings(){
+    var pw = sessionStorage.getItem('claw_pw');
+    if(!pw){ renderMeetings({meetings:[]}); return; }
+    decryptAndShow(pw).then(renderMeetings).catch(function(){ renderMeetings({meetings:[]}); });
+  }
+  function renderMeetings(data){
+    var list = (data && data.meetings) || [];
+    var ul = document.getElementById('meeting-list');
+    if(!list.length){
+      ul.innerHTML = '<li class="ph">暂无会议日程（同步后自动显示）</li>';
+      return;
+    }
+    var wk = '日一二三四五六';
+    ul.innerHTML = list.map(function(m){
+      var label = (m.date||'') + (m.time? ' ' + m.time : '');
+      var sub = [m.location, m.note].filter(Boolean).join(' · ');
+      return '<li><div class="t">' + esc(label) + ' · ' + esc(m.title||'(无标题)') + '</div>'
+           + (sub? '<div class="d">' + esc(sub) + '</div>' : '') + '</li>';
+    }).join('');
+  }
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+  // ===== 头部日期 =====
+  var d = new Date();
+  var w = "日一二三四五六"[d.getDay()];
+  document.getElementById("now").textContent = d.getFullYear()+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日 星期"+w;
 </script>
 </body>
 </html>

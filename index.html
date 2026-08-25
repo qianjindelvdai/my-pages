@@ -48,6 +48,15 @@
   .tag.watch{background:#bb800922;color:#e3b341;border:1px solid #bb800955}
   .hint{color:var(--sub);font-size:12px;text-align:center;margin-top:24px}
   .ph{color:#6e7681;font-style:italic;font-size:12px}
+  /* 年度工作计划：分组折叠 */
+  .wp-group{border:1px solid #232a33;border-radius:8px;margin:6px 0;overflow:hidden;background:#0f141b}
+  .wp-group .gh{background:#131a22;padding:8px 10px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:space-between}
+  .wp-group .gh:hover{background:#1a2430}
+  .wp-group .gh .cnt{color:var(--sub);font-weight:400;margin-left:4px}
+  .wp-group .arrow{color:var(--sub);font-size:11px;transition:transform .15s}
+  .wp-group.collapsed .arrow{transform:rotate(-90deg)}
+  .wp-group.collapsed .body{display:none}
+  .wp-group .body{padding:4px 8px 6px}
 
   /* 访问口令遮罩（方案 A） */
   #gate{position:fixed;inset:0;background:#0d1117;display:flex;align-items:center;justify-content:center;z-index:9999}
@@ -285,17 +294,39 @@
     if(!box) return;
     if(!items.length){ box.innerHTML = '<div class="ph">暂无工作计划（同步后自动显示）</div>'; return; }
     var stColor = {'进行中':'dn','已完成':'do','未开始':'todo','已延期':'watch'};
-    box.innerHTML = items.map(function(m){
-      var tag = m.status ? '<span class="tag '+ (stColor[m.status]||'todo') +'">'+ esc(m.status) +'</span>' : '';
-      var meta = [m.major, m.owner, m.leadDept].filter(Boolean).join(' · ');
-      var time = (m.start||m.end) ? ('🗓 '+ (m.start||'') +' ~ '+ (m.end||'')) : '';
-      var body = [m.content, m.goal].filter(Boolean).map(esc).join('<br>');
-      return '<li><div class="t">'+ esc(m.title||'(无标题)') +' '+ tag +'</div>'
-        + (meta ? '<div class="d">'+ esc(meta) +'</div>' : '')
-        + (time ? '<div class="d">'+ esc(time) +'</div>' : '')
-        + (body ? '<div class="d">'+ body +'</div>' : '');
-    }).join('');
+    // 按状态分组
+    var groups = {};
+    items.forEach(function(m){ var s = m.status || '未开始'; (groups[s] = groups[s] || []).push(m); });
+    // 状态排序：进行中优先，其余次之
+    var order = ['进行中','未开始','已延期','已完成'];
+    var sts = order.concat(Object.keys(groups).filter(function(s){ return order.indexOf(s) < 0; }));
+    var html = '';
+    sts.forEach(function(s){
+      if(!groups[s]) return;
+      var arr = groups[s];
+      var collapsed = (s === '进行中') ? '' : ' collapsed';
+      html += '<div class="wp-group' + collapsed + '">'
+        + '<div class="gh" onclick="toggleGroup(this)">'
+        +   '<span><span class="tag ' + (stColor[s] || 'todo') + '">' + esc(s) + '</span><span class="cnt">' + arr.length + ' 项</span></span>'
+        +   '<span class="arrow">▼</span>'
+        + '</div>'
+        + '<div class="body">' + arr.map(wpCard).join('') + '</div>'
+        + '</div>';
+    });
+    box.innerHTML = html;
   }
+  function wpCard(m){
+    var stColor = {'进行中':'dn','已完成':'do','未开始':'todo','已延期':'watch'};
+    var tag = m.status ? '<span class="tag '+ (stColor[m.status]||'todo') +'">'+ esc(m.status) +'</span>' : '';
+    var meta = [m.major, m.owner, m.leadDept].filter(Boolean).join(' · ');
+    var time = (m.start||m.end) ? ('🗓 '+ (m.start||'') +' ~ '+ (m.end||'')) : '';
+    var body = [m.content, m.goal].filter(Boolean).map(esc).join('<br>');
+    return '<li><div class="t">'+ esc(m.title||'(无标题)') +' '+ tag +'</div>'
+      + (meta ? '<div class="d">'+ esc(meta) +'</div>' : '')
+      + (time ? '<div class="d">'+ esc(time) +'</div>' : '')
+      + (body ? '<div class="d">'+ body +'</div>' : '');
+  }
+  function toggleGroup(el){ el.parentNode.classList.toggle('collapsed'); }
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 
   // ===== 头部日期 =====

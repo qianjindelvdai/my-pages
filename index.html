@@ -225,6 +225,7 @@
       try{ sessionStorage.setItem('claw_pw', pw); }catch(e){}
       document.getElementById('gate').style.display = 'none';
       document.getElementById('app').style.display = 'block';
+      loadMeetings();
     }catch(e){
       document.getElementById('err').textContent = '解密失败，请检查口令';
     }
@@ -239,6 +240,7 @@
       await decryptAndShow(pw);
       document.getElementById('gate').style.display = 'none';
       document.getElementById('app').style.display = 'block';
+      loadMeetings();
     }catch(e){}
   }
 

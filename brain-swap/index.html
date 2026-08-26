@@ -129,7 +129,7 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
     { n: "11号线", c: "#A05A2C", cut: 12,  occ: "隆德路OCC", t: "2027年4-5月" },
     { n: "16号线", c: "#00A0A8", cut: 13,  occ: "隆德路OCC", t: "2027年5-6月" },
     { n: "浦江线", c: "#F4A300", cut: 13,  occ: "浦江OCC", t: "2027年5-6月" },
-    { n: "轨道公安", c: "#C9A227", cut: 14, occ: "中山公园", t: "2027年7月" }
+    { n: "轨交公安", c: "#C9A227", cut: 14, occ: "中山公园", t: "2027年7月", nodbs: true }
   ];
   lines.sort(function (a, b) { return a.cut - b.cut; });
   var n = lines.length;
@@ -212,9 +212,12 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
     L.circle = circle;
     var t = el("text", { x: L.x, y: L.y + 32, "text-anchor": "middle", class: "nlabel" });
     t.textContent = L.n;
-    var sub1 = el("text", { x: L.x, y: L.y + 46, "text-anchor": "middle", class: "llabel" });
-    sub1.textContent = "TETRA基站";
-    var sub2 = el("text", { x: L.x, y: L.y + 59, "text-anchor": "middle", class: "llabel" });
+    var sub1 = null;
+    if (!L.nodbs) {
+      sub1 = el("text", { x: L.x, y: L.y + 46, "text-anchor": "middle", class: "llabel" });
+      sub1.textContent = "TETRA基站";
+    }
+    var sub2 = el("text", { x: L.x, y: L.y + (L.nodbs ? 46 : 59), "text-anchor": "middle", class: "llabel" });
     sub2.textContent = "调度台";
     var badge = el("text", { x: L.x, y: L.y - 28, "text-anchor": "middle", class: "badge", opacity: 0 });
     badge.textContent = "9.4";
@@ -223,12 +226,12 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
       var ring = el("circle", { cx: L.x, cy: L.y, r: 25, fill: "none", stroke: "#ffd479", "stroke-width": 3, opacity: 0 });
       L.ring = ring; svg.appendChild(ring);
     }
-    g.appendChild(circle); g.appendChild(t); g.appendChild(sub1); g.appendChild(sub2); g.appendChild(badge);
+    g.appendChild(circle); g.appendChild(t); if (sub1) g.appendChild(sub1); g.appendChild(sub2); g.appendChild(badge);
     g.addEventListener("click", function () { showInfo(L); });
     svg.appendChild(g);
   });
 
-  // 庆祝画面（"轨道公安割接 · 换脑完成"这一步即全部线路割接完毕后显示）—— 强化视觉冲击力
+  // 庆祝画面（"轨交公安割接 · 换脑完成"这一步即全部线路割接完毕后显示）—— 强化视觉冲击力
   var celeb = el("g", { opacity: 0 });
   // 放射光芒（绕中心旋转）
   var rays = el("g", { class: "rayspin" });
@@ -395,7 +398,7 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
       ev = "🎉 路网级无线通信大脑全面更新为 9.4版 系统，恭喜！"; evOn = true;
     }
     else { stage = "✦ 换脑完成：路网级无线通信大脑已更新为 9.4版 系统"; }
-    if (act >= 1 && !demolish) { ev = "🎉 2027年7月：轨道公安割接至 9.4版，基站链路由E1升级为以太网 — 换脑工程圆满完成"; evOn = true; }
+    if (act >= 1 && !demolish) { ev = "🎉 2027年7月：轨交公安调度台割接至 9.4版 — 换脑工程圆满完成"; evOn = true; }
 
     stageText.textContent = stage;
     stageText.className = act >= 1 ? "done" : "";
@@ -419,7 +422,7 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
     { idx: 11,   sch: 11,   name: "12 号线割接",           time: "2027年3-4月" },
     { idx: 12,   sch: 11.5, name: "11 号线割接",           time: "2027年4-5月" },
     { idx: 13,   sch: 13,   name: "16 号线 / 浦江线",       time: "2027年5-6月" },
-    { idx: 15,   sch: 14,   name: "轨道公安割接 · 换脑完成", time: "2027年7月" },
+    { idx: 15,   sch: 14,   name: "轨交公安割接 · 换脑完成", time: "2027年7月" },
     { idx: 15,   sch: 16,   demolish: true, name: "8.1版 MSO 拆除", time: "2027年后" }
   ];
   var timeline = document.getElementById("timeline");

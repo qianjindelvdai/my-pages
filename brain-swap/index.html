@@ -133,7 +133,6 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
   ];
   lines.sort(function (a, b) { return a.cut - b.cut; });
   var n = lines.length;
-  lines.forEach(function (L) { L.sub = "TETRA基站+调度台"; });
 
   function el(name, attrs) { var e = document.createElementNS(NS, name); for (var k in attrs) e.setAttribute(k, attrs[k]); return e; }
   function cutToDate(cut) {
@@ -213,8 +212,10 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
     L.circle = circle;
     var t = el("text", { x: L.x, y: L.y + 32, "text-anchor": "middle", class: "nlabel" });
     t.textContent = L.n;
-    var sub = el("text", { x: L.x, y: L.y + 46, "text-anchor": "middle", class: "llabel" });
-    sub.textContent = L.sub;
+    var sub1 = el("text", { x: L.x, y: L.y + 46, "text-anchor": "middle", class: "llabel" });
+    sub1.textContent = "TETRA基站";
+    var sub2 = el("text", { x: L.x, y: L.y + 59, "text-anchor": "middle", class: "llabel" });
+    sub2.textContent = "调度台";
     var badge = el("text", { x: L.x, y: L.y - 28, "text-anchor": "middle", class: "badge", opacity: 0 });
     badge.textContent = "9.4";
     L.badge = badge;
@@ -222,7 +223,7 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
       var ring = el("circle", { cx: L.x, cy: L.y, r: 25, fill: "none", stroke: "#ffd479", "stroke-width": 3, opacity: 0 });
       L.ring = ring; svg.appendChild(ring);
     }
-    g.appendChild(circle); g.appendChild(t); g.appendChild(sub); g.appendChild(badge);
+    g.appendChild(circle); g.appendChild(t); g.appendChild(sub1); g.appendChild(sub2); g.appendChild(badge);
     g.addEventListener("click", function () { showInfo(L); });
     svg.appendChild(g);
   });

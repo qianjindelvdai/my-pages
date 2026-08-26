@@ -77,6 +77,24 @@
   .wp-group.collapsed .body{display:none}
   .wp-group .body{padding:4px 8px 6px}
 
+  /* 新闻：全宽分类标签页 */
+  .newsfull{margin-top:16px}
+  .news-tabs{display:flex;flex-wrap:wrap;gap:8px;padding:12px 14px;border-bottom:1px solid #21262d}
+  .ntab{background:#0f141b;border:1px solid #30363d;color:var(--sub);border-radius:999px;padding:6px 14px;font-size:13px;cursor:pointer;transition:.12s}
+  .ntab:hover{color:var(--txt);border-color:#1f6feb}
+  .ntab.active{background:#1f6feb;color:#fff;border-color:#1f6feb}
+  .ntab.hot.active{background:#bb8009;border-color:#bb8009}
+  .news-body{padding:10px 14px;max-height:none}
+  .news-body li{display:flex;gap:10px;align-items:flex-start;background:#0f141b;border:1px solid #232a33;border-left:3px solid #30363d;border-radius:8px;padding:11px 13px;margin:9px 0;font-size:14px;line-height:1.7}
+  .news-body li:hover{border-color:#30363d;background:#121922}
+  .news-body li.r-rail{border-left-color:#3b82f6}
+  .news-body li.r-ai{border-left-color:#a371f7}
+  .news-body li.r-cn{border-left-color:#22c55e}
+  .news-body li.r-intl{border-left-color:#58a6ff}
+  .news-body li.r-hot{border-left-color:#e3b341}
+  .news-body li .idx{color:var(--sub);font-variant-numeric:tabular-nums;min-width:24px;font-weight:700;flex:none;line-height:1.7}
+  .news-body li.r-hot .idx{color:#e3b341}
+
   /* 访问口令遮罩（方案 A） */
   #gate{position:fixed;inset:0;background:#0d1117;display:flex;align-items:center;justify-content:center;z-index:9999}
   #gate .box{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:30px 26px;width:300px;text-align:center;box-shadow:0 8px 30px #0008}
@@ -195,20 +213,24 @@
           <li><div class="t">近期往来</div><div class="d ph">在此填聚会 / 联系人 / 待回</div></li>
         </ul>
       </div>
-
-      <div class="mod">
-        <div class="h"><span class="ic">📰</span>新闻 <span class="nav"><span id="news-upd" class="wk" style="min-width:auto"></span><button class="mini" id="news-refresh" title="刷新">⟳</button></span></div>
-        <div class="subs news-subs">
-          <div class="sub"><div class="sh">🚇 轨道交通</div><ul id="news-rail"></ul></div>
-          <div class="sub"><div class="sh">🤖 AI</div><ul id="news-ai"></ul></div>
-          <div class="sub"><div class="sh">🇨🇳 国内</div><ul id="news-cn"></ul></div>
-          <div class="sub"><div class="sh">🌐 国际</div><ul id="news-intl"></ul></div>
-          <div class="sub hot"><div class="sh">🔥 热搜前三</div><ul id="news-hot"></ul></div>
-        </div>
-      </div>
     </section>
 
   </div>
+  <!-- 新闻：全宽分类标签页 -->
+  <section class="col newsfull">
+    <h2><span class="dot" style="background:#e3b341"></span>新闻 · 每日要闻
+      <span class="nav"><span id="news-upd" class="wk" style="min-width:auto"></span><button class="mini" id="news-refresh" title="刷新">⟳</button></span>
+    </h2>
+    <div class="news-tabs" id="news-tabs">
+      <button class="ntab active" data-k="rail">🚇 轨道交通</button>
+      <button class="ntab" data-k="ai">🤖 AI</button>
+      <button class="ntab" data-k="cn">🇨🇳 国内</button>
+      <button class="ntab" data-k="intl">🌐 国际</button>
+      <button class="ntab hot" data-k="hot">🔥 热搜前三</button>
+    </div>
+    <ul id="news-body" class="news-body"><li class="ph">加载中…</li></ul>
+  </section>
+
   <div class="hint">本页为可编辑模板 · 会议日程自动同步自钉钉 · 改完告诉我重新部署</div>
 </div>
 </div>
@@ -457,20 +479,42 @@
   }
   function delFitness(i){ var arr=loadFitness(); arr.splice(arr.length-1-i,1); saveFitness(arr); renderFitness(); }
 
-  // ===== 新闻：从同域 news.json 渲染（每日自动更新）=====
+  // ===== 新闻：从同域 news.json 渲染（每日自动更新，分类标签页）=====
+  var NEWS_ORDER = ['rail','ai','cn','intl','hot'];
+  var newsTab = 'rail';
+  var newsCache = null;
+  function renderNewsBody(){
+    var u = document.getElementById('news-body'); if(!u) return;
+    if(!newsCache){ u.innerHTML = '<li class="ph">加载中…</li>'; return; }
+    var arr = newsCache[newsTab] || [];
+    if(!arr.length){ u.innerHTML = '<li class="ph">今日该分类暂无要闻</li>'; return; }
+    var isHot = (newsTab === 'hot');
+    u.innerHTML = arr.map(function(t,i){
+      var idx = isHot ? ('🔥 ' + (i+1)) : ((i+1) + '.');
+      return '<li class="r-' + newsTab + '"><span class="idx">' + idx + '</span><span>' + esc(t) + '</span></li>';
+    }).join('');
+  }
   function loadNews(){
-    var upd=document.getElementById('news-upd');
+    var upd = document.getElementById('news-upd');
     fetch('news.json?_='+Date.now()).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(d){
-      ['rail','ai','cn','intl','hot'].forEach(function(k){
-        var u=document.getElementById('news-'+k); if(!u) return;
-        var arr=d[k]||[];
-        if(!arr.length){ u.innerHTML='<li class="ph">今日暂无相关</li>'; return; }
-        u.innerHTML=arr.map(function(t){ return '<li><div class="d">'+esc(t)+'</div></li>'; }).join('');
-      });
-      if(upd) upd.textContent='更新于 '+ (d.updated||'?');
+      newsCache = d;
+      renderNewsBody();
+      if(upd) upd.textContent = '更新于 ' + (d.updated || '?');
     }).catch(function(){
-      if(upd) upd.textContent='获取失败，点 ⟳ 重试';
-      ['rail','ai','cn','intl','hot'].forEach(function(k){ var u=document.getElementById('news-'+k); if(u) u.innerHTML='<li class="ph">暂不可用</li>'; });
+      if(upd) upd.textContent = '获取失败，点 ⟳ 重试';
+      var u = document.getElementById('news-body');
+      if(u) u.innerHTML = '<li class="ph">暂不可用，点右上 ⟳ 重试</li>';
+    });
+  }
+  // 分类标签页切换
+  var newsTabsEl = document.getElementById('news-tabs');
+  if(newsTabsEl){
+    newsTabsEl.addEventListener('click', function(e){
+      var b = e.target.closest('.ntab'); if(!b) return;
+      newsTab = b.dataset.k;
+      Array.prototype.forEach.call(newsTabsEl.children, function(x){ x.classList.remove('active'); });
+      b.classList.add('active');
+      renderNewsBody();
     });
   }
 

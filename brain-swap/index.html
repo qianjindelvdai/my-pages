@@ -64,7 +64,6 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
   .starfall { fill: #ffd479; animation: starflash 1.4s ease-in-out infinite; }
   @keyframes starflash { 0%, 100% { opacity: .4; } 50% { opacity: 1; } }
   .llabel { fill: #b9c9e6; font-size: 10px; pointer-events: none; }
-  .linktype { fill: #ffd479; font-size: 10px; font-weight: bold; pointer-events: none; }
 </style>
 </head>
 <body>
@@ -119,18 +118,18 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
   var INTER = 3.1; // 2026-08 初 互联生效
 
   var lines = [
-    { n: "10号线", c: "#C6AED3", cut: 2.0, occ: "吴中路OCC", data: true },   // 7月 先行（官方色 浅紫）
-    { n: "17号线", c: "#BB7294", cut: 3.6, occ: "浦汇塘OCC" },               // 本周（官方色 淡紫）
-    { n: "1号线",  c: "#E3002B", cut: 5,   occ: "新闸路OCC" },
-    { n: "5号线",  c: "#9A0063", cut: 6,   occ: "颛桥OCC" },
-    { n: "6号线",  c: "#D40068", cut: 7,   occ: "民生路OCC" },
-    { n: "8号线",  c: "#0094D8", cut: 8,   occ: "西藏北路OCC" },
-    { n: "9号线",  c: "#57B5E0", cut: 10,  occ: "漕河泾OCC" },
-    { n: "12号线", c: "#00785A", cut: 11,  occ: "西藏北OCC" },
-    { n: "11号线", c: "#A05A2C", cut: 12,  occ: "隆德路OCC" },
-    { n: "16号线", c: "#00A0A8", cut: 13,  occ: "隆德路OCC" },
-    { n: "浦江线", c: "#F4A300", cut: 13,  occ: "浦江OCC" },
-    { n: "轨道公安", c: "#C9A227", cut: 14, occ: "中山公园" }
+    { n: "10号线", c: "#C6AED3", cut: 2.0, occ: "吴中路OCC", data: true, t: "2026年7月" },   // 先行（官方色 浅紫）
+    { n: "17号线", c: "#BB7294", cut: 3.6, occ: "浦汇塘OCC", t: "8月底" },               // 官方色 淡紫
+    { n: "1号线",  c: "#E3002B", cut: 5,   occ: "新闸路OCC", t: "2026年10月" },
+    { n: "5号线",  c: "#9A0063", cut: 6,   occ: "颛桥OCC", t: "2026年11月" },
+    { n: "6号线",  c: "#D40068", cut: 7,   occ: "民生路OCC", t: "2026年12月" },
+    { n: "8号线",  c: "#0094D8", cut: 8,   occ: "西藏北路OCC", t: "2027年1月" },
+    { n: "9号线",  c: "#57B5E0", cut: 10,  occ: "漕河泾OCC", t: "2027年3月" },
+    { n: "12号线", c: "#00785A", cut: 11,  occ: "西藏北OCC", t: "2027年3-4月" },
+    { n: "11号线", c: "#A05A2C", cut: 12,  occ: "隆德路OCC", t: "2027年4-5月" },
+    { n: "16号线", c: "#00A0A8", cut: 13,  occ: "隆德路OCC", t: "2027年5-6月" },
+    { n: "浦江线", c: "#F4A300", cut: 13,  occ: "浦江OCC", t: "2027年5-6月" },
+    { n: "轨道公安", c: "#C9A227", cut: 14, occ: "中山公园", t: "2027年7月" }
   ];
   lines.sort(function (a, b) { return a.cut - b.cut; });
   var n = lines.length;
@@ -223,14 +222,12 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
       var ring = el("circle", { cx: L.x, cy: L.y, r: 25, fill: "none", stroke: "#ffd479", "stroke-width": 3, opacity: 0 });
       L.ring = ring; svg.appendChild(ring);
     }
-    var linkLbl = el("text", { x: L.x, y: L.y, "text-anchor": "middle", class: "linktype", opacity: 0 });
-    L.linkLbl = linkLbl; svg.appendChild(linkLbl);
     g.appendChild(circle); g.appendChild(t); g.appendChild(sub); g.appendChild(badge);
     g.addEventListener("click", function () { showInfo(L); });
     svg.appendChild(g);
   });
 
-  // 庆祝画面（8.1 MSO 拆除退役后显示）—— 强化视觉冲击力
+  // 庆祝画面（第15步"换脑完成"即全部线路割接完毕后显示）—— 强化视觉冲击力
   var celeb = el("g", { opacity: 0 });
   // 放射光芒（绕中心旋转）
   var rays = el("g", { class: "rayspin" });
@@ -253,7 +250,7 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
   var celebT1 = el("text", { x: 500, y: 300, "text-anchor": "middle", fill: "#39ffa0", "font-size": 34, "font-weight": "bold", filter: "url(#glow)", class: "celebtext" });
   celebT1.textContent = "🎉 换脑工程圆满完成";
   var celebT2 = el("text", { x: 500, y: 340, "text-anchor": "middle", fill: "#cfe8ff", "font-size": 16, class: "celebtext" });
-  celebT2.textContent = "路网级无线通信大脑已全面更新为 9.4版 系统 · 8.1版 MSO 已拆除退役";
+  celebT2.textContent = "路网级无线通信大脑已全面更新为 9.4版 系统 · 8.1版 MSO 已退役";
   celeb.appendChild(celebT1); celeb.appendChild(celebT2);
   // 烟花粒子容器
   var fwContainer = el("g", {});
@@ -327,13 +324,6 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
       L.lnS.setAttribute("stroke", done ? L.c : "#46566f");
       L.lnS.setAttribute("stroke-width", done ? 2 : 1.2);
       L.lnS.setAttribute("stroke-opacity", done ? 0.9 : 0.4);
-      // 链路类型标签：8.1版=E1，9.4版=以太网(ETH)，显示在主用链路中点
-      var lmx = (L.x + mainN.x) / 2, lmy = (L.y + mainN.y) / 2;
-      L.linkLbl.setAttribute("x", lmx);
-      L.linkLbl.setAttribute("y", lmy - 5);
-      L.linkLbl.textContent = done ? "ETH" : "E1";
-      L.linkLbl.setAttribute("fill", done ? "#9fe9ff" : "#ffd479");
-      L.linkLbl.setAttribute("opacity", 0.92);
       L.circle.setAttribute("opacity", done ? 1 : 0.55);
       L.circle.setAttribute("stroke", done ? "#9fe9ff" : "#ffffff");
       L.badge.setAttribute("opacity", done ? 1 : 0);
@@ -362,14 +352,14 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
     bridgeHalo.setAttribute("opacity", (interOn && !demolish) ? 0.4 : 0);
     interLbl.setAttribute("opacity", (interOn && !demolish) ? 1 : 0);
     buildLbl.setAttribute("opacity", (built && act === 0 && !interOn) ? 1 : 0);
-    celeb.setAttribute("opacity", demolish ? 1 : 0);
-    if (demolish && !celebFired) {
+    celeb.setAttribute("opacity", act >= 1 ? 1 : 0);
+    if (act >= 1 && !celebFired) {
       celebFired = true;
       launchFireworks();
       setTimeout(launchFireworks, 1800);
       setTimeout(launchFireworks, 3600);
     }
-    if (!demolish) { celebFired = false; }
+    if (act < 1) { celebFired = false; }
 
     var total = 2026 * 12 + 4 + curIdx, y = Math.floor(total / 12), m = Math.floor((total % 12));
     dateLabel.textContent = y + "年" + (m + 1) + "月";
@@ -382,7 +372,7 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
     else if (curIdx < 2) { stage = "初始状态：全网 12 线运行于 8.1版 MSO（东宝兴路·西藏北路）"; }
     else if (curIdx < INTER) {
       stage = "10 号线先行割接（数据业务不能跨 MSO，须先于互联）";
-      ev = "⚠ 10号线已割接至 9.4版（东宝兴路·3C大楼），独立于互联之外"; evOn = true;
+      ev = "⚠ 2026年7月：10号线先行割接至 9.4版，基站链路由E1升级为以太网（数据业务不能跨 MSO，须先于互联）"; evOn = true;
     }
     else if (curIdx < 3.6) {
       stage = "8.1版 ↔ 9.4版 MSO 在东宝兴路互联（同楼不同机房）— 割接期间业务不中断";
@@ -390,10 +380,17 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
     }
     else if (act < 1) {
       stage = "逐线割接推进中 — 已割接 " + doneCount + " / " + n + "（已互联，业务不中断）";
-      ev = (curIdx >= 3.6 && curIdx < 3.9) ? "🚧 8月底：17 号线割接至 9.4版" : ""; evOn = !!ev;
+      // 最近割接的一组线路，用文字表述：时间：X号线割接至 9.4版，基站链路由E1升级为以太网
+      var lc = -1, lnames = "", ltime = "";
+      lines.forEach(function (L) {
+        if (curIdx < L.cut) return;
+        if (L.cut > lc + 1e-9) { lc = L.cut; lnames = L.n; ltime = L.t; }
+        else if (Math.abs(L.cut - lc) < 1e-9) { lnames += "、" + L.n; }
+      });
+      ev = lnames ? ("🚧 " + ltime + "：" + lnames + "割接至 9.4版，基站链路由E1升级为以太网") : ""; evOn = !!ev;
     }
     else if (demolish) {
-      stage = "✦ 8.1版 MSO 已拆除退役 · 换脑工程圆满完成";
+      stage = "✦ 8.1版 MSO 已退役 · 换脑工程圆满完成";
       ev = "🎉 路网级无线通信大脑全面更新为 9.4版 系统，恭喜！"; evOn = true;
     }
     else { stage = "✦ 换脑完成：路网级无线通信大脑已更新为 9.4版 系统"; }
@@ -422,8 +419,8 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
     { idx: 12,   sch: 11.5, name: "11 号线割接",           time: "2027年4-5月" },
     { idx: 13,   sch: 13,   name: "16 号线 / 浦江线",       time: "2027年5-6月" },
     { idx: 14,   sch: 14,   name: "轨道公安割接",           time: "2027年7月" },
-    { idx: 15,   sch: 15,   name: "换脑完成",              time: "2027年7月后" },
-    { idx: 15,   sch: 16,   demolish: true, name: "8.1版 MSO 拆除 · 庆祝", time: "2027年后" }
+    { idx: 15,   sch: 15,   name: "换脑完成 · 庆祝",        time: "2027年7月后" },
+    { idx: 15,   sch: 16,   demolish: true, name: "8.1版 MSO 拆除", time: "2027年后" }
   ];
   var timeline = document.getElementById("timeline");
   var stepBtn = document.getElementById("stepBtn");

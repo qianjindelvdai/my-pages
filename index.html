@@ -109,11 +109,8 @@
       </div>
 
       <div class="mod">
-        <div class="h"><span class="ic">📝</span>近期会议记录</div>
-        <ul>
-          <li><div class="t">（示例）MSO 8.1→9.4 互联方案评审纪要</div><div class="d ph">在此贴纪要要点 / 决议 / 待办</div></li>
-          <li><div class="t">（示例）年度计划分解会</div><div class="d ph">在此贴纪要要点 / 责任人</div></li>
-        </ul>
+        <div class="h"><span class="ic">📝</span>近期会议记录 <span class="ph" style="font-size:11px">（同步自钉钉AI表格）</span></div>
+        <ul id="recent-meeting-list" style="max-height:420px;overflow:auto"><li class="ph">加载中…</li></ul>
       </div>
 
       <div class="mod">
@@ -242,6 +239,7 @@
       document.getElementById('app').style.display = 'block';
       loadMeetings();
       loadWorkplan();
+      loadRecentMeetings();
     }catch(e){
       document.getElementById('err').textContent = '解密失败，请检查口令';
     }
@@ -258,6 +256,7 @@
       document.getElementById('app').style.display = 'block';
       loadMeetings();
       loadWorkplan();
+      loadRecentMeetings();
     }catch(e){}
   }
 
@@ -327,6 +326,30 @@
       + (body ? '<div class="d">'+ body +'</div>' : '');
   }
   function toggleGroup(el){ el.parentNode.classList.toggle('collapsed'); }
+
+  // ===== 近期会议记录：从密文 workrec.enc 解密渲染（同步自钉钉AI表格）=====
+  function loadRecentMeetings(){
+    var pw = sessionStorage.getItem('claw_pw');
+    if(!pw){ renderRecentMeetings({items:[]}); return; }
+    decryptFile('workrec.enc', pw).then(renderRecentMeetings).catch(function(){ renderRecentMeetings({items:[]}); });
+  }
+  function renderRecentMeetings(data){
+    var items = (data && data.items) || [];
+    var box = document.getElementById('recent-meeting-list');
+    if(!box) return;
+    if(!items.length){ box.innerHTML = '<div class="ph">暂无会议记录（同步后自动显示）</div>'; return; }
+    box.innerHTML = items.map(function(m){
+      var meta = [m.leader, m.convener, m.host].filter(Boolean).join(' / ');
+      var who = [m.depts, m.people].filter(Boolean).join('　|　');
+      var note = m.note ? ('<div class="d" style="color:#bb8009">备注：'+ esc(m.note) +'</div>') : '';
+      var body = m.summary ? ('<div class="d">'+ esc(m.summary).replace(/\n/g,'<br>') +'</div>') : '';
+      var dateTag = m.date ? '<span class="tag todo">'+ esc(m.date) +'</span>' : '';
+      return '<li><div class="t">'+ dateTag + esc(m.name||'(无标题)') +'</div>'
+        + (meta ? '<div class="d">'+ esc(meta) +'</div>' : '')
+        + (who ? '<div class="d">'+ esc(who) +'</div>' : '')
+        + body + note;
+    }).join('');
+  }
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 
   // ===== 头部日期 =====

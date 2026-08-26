@@ -54,6 +54,19 @@
   .mini{background:#0f141b;border:1px solid #30363d;color:var(--txt);border-radius:6px;width:26px;height:24px;cursor:pointer;font-size:15px;line-height:1;padding:0}
   .mini:hover{background:#1a2430}
   .fsel{margin-left:auto;font-size:12px;background:#0d1117;color:var(--txt);border:1px solid #30363d;border-radius:6px;padding:3px 6px;max-width:150px}
+  /* 可编辑控件：工作进展 / 健身打卡 */
+  .editor{display:flex;gap:6px;margin-top:7px}
+  .editor input{flex:1;min-width:0;background:#0d1117;border:1px solid #30363d;border-radius:6px;color:var(--txt);padding:5px 7px;font-size:12px;outline:none}
+  .editor input:focus{border-color:#1f6feb}
+  .addbtn{background:#238636;border:1px solid #2ea043;color:#fff;border-radius:6px;padding:5px 11px;font-size:12px;cursor:pointer;white-space:nowrap}
+  .addbtn:hover{background:#2ea043}
+  .sub li{display:flex;align-items:flex-start;gap:6px;justify-content:space-between}
+  .sub li .pt{flex:1;min-width:0;line-height:1.5}
+  .x{background:none;border:none;color:#6e7681;cursor:pointer;font-size:15px;line-height:1;padding:0 2px;flex:none}
+  .x:hover{color:#ff7b72}
+  .news-subs .sub ul{max-height:170px;overflow:auto}
+  .sub .tag.do{margin-right:5px}
+  .hot{border-color:#bb800955}
   /* 年度工作计划：分组折叠 */
   .wp-group{border:1px solid #232a33;border-radius:8px;margin:6px 0;overflow:hidden;background:#0f141b}
   .wp-group .gh{background:#131a22;padding:8px 10px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:space-between}
@@ -123,21 +136,17 @@
       </div>
 
       <div class="mod">
-        <div class="h"><span class="ic">📊</span>工作进展</div>
+        <div class="h"><span class="ic">📊</span>工作进展 <span class="ph" style="font-size:11px">（可逐条填写）</span></div>
         <div class="subs">
           <div class="sub">
             <div class="sh">项目</div>
-            <ul>
-              <li><div class="t">大修</div><div class="d">MSO 8.1→9.4 更新改造<br>技防系统更新改造</div></li>
-              <li><div class="t">整治</div><div class="d">遗留隐患整治<br>无线覆盖补强</div></li>
-            </ul>
+            <ul id="proj-list"></ul>
+            <div class="editor"><input id="proj-inp" placeholder="填写一条项目进展…" /><button id="proj-add" class="addbtn">＋</button></div>
           </div>
           <div class="sub">
             <div class="sh">研究</div>
-            <ul>
-              <li><div class="t">规划</div><div class="d">无线系统专项规划<br>路网核心机房规划</div></li>
-              <li><div class="t">方案</div><div class="d">LTE-M 数通灾备冗余<br>数字孪生智慧视觉</div></li>
-            </ul>
+            <ul id="res-list"></ul>
+            <div class="editor"><input id="res-inp" placeholder="填写一条研究进展…" /><button id="res-add" class="addbtn">＋</button></div>
           </div>
           <div class="sub">
             <div class="sh">年度计划</div>
@@ -175,10 +184,9 @@
       <h2><span class="dot"></span>生活</h2>
 
       <div class="mod">
-        <div class="h"><span class="ic">💪</span>健身情况</div>
-        <ul>
-          <li><div class="t">本周锻炼<span class="tag do">打卡</span></div><div class="d">频率 / 项目：（示例）3次·跑步+力量<br>目标：（示例）体脂 / 配速</div></li>
-        </ul>
+        <div class="h"><span class="ic">💪</span>健身情况 <span class="nav"><span id="fit-today" class="wk" style="min-width:auto"></span></span></div>
+        <div class="editor"><input id="fit-inp" placeholder="今天练了什么？如 跑步5km+力量训练" /><button id="fit-add" class="addbtn">打卡</button></div>
+        <ul id="fitness-list"></ul>
       </div>
 
       <div class="mod">
@@ -189,10 +197,14 @@
       </div>
 
       <div class="mod">
-        <div class="h"><span class="ic">📰</span>新闻</div>
-        <ul>
-          <li><div class="t">关注资讯</div><div class="d">行业 / 城轨 / 科技：（示例）<br>轨道行业动态、AI 进展</div></li>
-        </ul>
+        <div class="h"><span class="ic">📰</span>新闻 <span class="nav"><span id="news-upd" class="wk" style="min-width:auto"></span><button class="mini" id="news-refresh" title="刷新">⟳</button></span></div>
+        <div class="subs news-subs">
+          <div class="sub"><div class="sh">🚇 轨道交通</div><ul id="news-rail"></ul></div>
+          <div class="sub"><div class="sh">🤖 AI</div><ul id="news-ai"></ul></div>
+          <div class="sub"><div class="sh">🇨🇳 国内</div><ul id="news-cn"></ul></div>
+          <div class="sub"><div class="sh">🌐 国际</div><ul id="news-intl"></ul></div>
+          <div class="sub hot"><div class="sh">🔥 热搜前三</div><ul id="news-hot"></ul></div>
+        </div>
       </div>
     </section>
 
@@ -409,6 +421,59 @@
   }
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 
+  // ===== 工作进展：项目/研究 可编辑（localStorage）=====
+  function loadProgress(type){ try{ return JSON.parse(localStorage.getItem('claw_'+type)||'[]'); }catch(e){ return []; } }
+  function saveProgress(type,a){ localStorage.setItem('claw_'+type, JSON.stringify(a)); }
+  function renderProgress(type){
+    var ul=document.getElementById(type+'-list'); if(!ul) return;
+    var arr=loadProgress(type);
+    if(!arr.length){ ul.innerHTML='<li class="ph">暂无内容，下方填写后点 ＋ 添加</li>'; return; }
+    ul.innerHTML=arr.map(function(t,i){ return '<li><div class="pt">'+esc(t)+'</div><button class="x" data-t="'+type+'" data-i="'+i+'">×</button></li>'; }).join('');
+  }
+  function addProgress(type){
+    var inp=document.getElementById(type+'-inp'); if(!inp) return;
+    var v=inp.value.trim(); if(!v) return;
+    var arr=loadProgress(type); arr.push(v); saveProgress(type,arr); inp.value=''; renderProgress(type);
+  }
+  function delProgress(type,i){
+    var arr=loadProgress(type); arr.splice(i,1); saveProgress(type,arr); renderProgress(type);
+  }
+
+  // ===== 健身打卡（localStorage）=====
+  function todayStr(){ var d=new Date(); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
+  function loadFitness(){ try{ return JSON.parse(localStorage.getItem('claw_fitness')||'[]'); }catch(e){ return []; } }
+  function saveFitness(a){ localStorage.setItem('claw_fitness', JSON.stringify(a)); }
+  function renderFitness(){
+    var ul=document.getElementById('fitness-list'); if(!ul) return;
+    var arr=loadFitness();
+    var ft=document.getElementById('fit-today'); if(ft) ft.textContent='今天 '+todayStr();
+    if(!arr.length){ ul.innerHTML='<li class="ph">暂无打卡，写下今天练了什么打个卡吧</li>'; return; }
+    ul.innerHTML=arr.slice().reverse().map(function(r,i){ return '<li><div class="pt"><span class="tag do">'+esc(r.date)+'</span>'+esc(r.content)+'</div><button class="x" data-f="'+i+'">×</button></li>'; }).join('');
+  }
+  function checkinFitness(){
+    var inp=document.getElementById('fit-inp'); if(!inp) return;
+    var v=inp.value.trim(); if(!v) return;
+    var arr=loadFitness(); arr.push({date:todayStr(), content:v}); saveFitness(arr); inp.value=''; renderFitness();
+  }
+  function delFitness(i){ var arr=loadFitness(); arr.splice(arr.length-1-i,1); saveFitness(arr); renderFitness(); }
+
+  // ===== 新闻：从同域 news.json 渲染（每日自动更新）=====
+  function loadNews(){
+    var upd=document.getElementById('news-upd');
+    fetch('news.json?_='+Date.now()).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(d){
+      ['rail','ai','cn','intl','hot'].forEach(function(k){
+        var u=document.getElementById('news-'+k); if(!u) return;
+        var arr=d[k]||[];
+        if(!arr.length){ u.innerHTML='<li class="ph">今日暂无相关</li>'; return; }
+        u.innerHTML=arr.map(function(t){ return '<li><div class="d">'+esc(t)+'</div></li>'; }).join('');
+      });
+      if(upd) upd.textContent='更新于 '+ (d.updated||'?');
+    }).catch(function(){
+      if(upd) upd.textContent='获取失败，点 ⟳ 重试';
+      ['rail','ai','cn','intl','hot'].forEach(function(k){ var u=document.getElementById('news-'+k); if(u) u.innerHTML='<li class="ph">暂不可用</li>'; });
+    });
+  }
+
   // ===== 会议日程周翻页 / 近期会议记录领导筛选 交互 =====
   var mPrev = document.getElementById('mPrev');
   var mNext = document.getElementById('mNext');
@@ -416,6 +481,23 @@
   if(mPrev) mPrev.onclick = function(){ if(mWeekIdx > 0){ mWeekIdx--; renderMeetings(); } };
   if(mNext) mNext.onclick = function(){ if(mWeekIdx < mWeeks.length - 1){ mWeekIdx++; renderMeetings(); } };
   if(leaderSel) leaderSel.onchange = function(){ leaderFilter = this.value; renderRecentMeetings(); };
+
+  // ===== 工作台新增功能初始化（工作进展 / 健身 / 新闻）=====
+  ['proj','res'].forEach(function(t){
+    renderProgress(t);
+    var b=document.getElementById(t+'-add'); if(b) b.onclick=function(){ addProgress(t); };
+    var i=document.getElementById(t+'-inp'); if(i) i.addEventListener('keydown', function(e){ if(e.key==='Enter') addProgress(t); });
+  });
+  renderFitness();
+  var fitAdd=document.getElementById('fit-add'); if(fitAdd) fitAdd.onclick=function(){ checkinFitness(); };
+  var fitInp=document.getElementById('fit-inp'); if(fitInp) fitInp.addEventListener('keydown', function(e){ if(e.key==='Enter') checkinFitness(); });
+  var newsRefresh=document.getElementById('news-refresh'); if(newsRefresh) newsRefresh.onclick=function(){ loadNews(); };
+  loadNews();
+  document.addEventListener('click', function(e){
+    var x=e.target.closest('.x'); if(!x) return;
+    if(x.dataset.t) delProgress(x.dataset.t, +x.dataset.i);
+    else if(x.dataset.f!==undefined) delFitness(+x.dataset.f);
+  });
 
   // ===== 头部日期 =====
   var d = new Date();

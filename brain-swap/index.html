@@ -228,7 +228,7 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
     svg.appendChild(g);
   });
 
-  // 庆祝画面（第15步"换脑完成"即全部线路割接完毕后显示）—— 强化视觉冲击力
+  // 庆祝画面（"轨道公安割接 · 换脑完成"这一步即全部线路割接完毕后显示）—— 强化视觉冲击力
   var celeb = el("g", { opacity: 0 });
   // 放射光芒（绕中心旋转）
   var rays = el("g", { class: "rayspin" });
@@ -395,7 +395,7 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
       ev = "🎉 路网级无线通信大脑全面更新为 9.4版 系统，恭喜！"; evOn = true;
     }
     else { stage = "✦ 换脑完成：路网级无线通信大脑已更新为 9.4版 系统"; }
-    if (act >= 1 && !demolish) { ev = "✦ 换脑完成：全网接入 9.4版 新脑（东宝兴路·3C大楼）"; evOn = true; }
+    if (act >= 1 && !demolish) { ev = "🎉 2027年7月：轨道公安割接至 9.4版，基站链路由E1升级为以太网 — 换脑工程圆满完成"; evOn = true; }
 
     stageText.textContent = stage;
     stageText.className = act >= 1 ? "done" : "";
@@ -419,8 +419,7 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
     { idx: 11,   sch: 11,   name: "12 号线割接",           time: "2027年3-4月" },
     { idx: 12,   sch: 11.5, name: "11 号线割接",           time: "2027年4-5月" },
     { idx: 13,   sch: 13,   name: "16 号线 / 浦江线",       time: "2027年5-6月" },
-    { idx: 14,   sch: 14,   name: "轨道公安割接",           time: "2027年7月" },
-    { idx: 15,   sch: 15,   name: "换脑完成 · 庆祝",        time: "2027年7月后" },
+    { idx: 15,   sch: 14,   name: "轨道公安割接 · 换脑完成", time: "2027年7月" },
     { idx: 15,   sch: 16,   demolish: true, name: "8.1版 MSO 拆除", time: "2027年后" }
   ];
   var timeline = document.getElementById("timeline");

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>袁总的工作台</title>
+<title>工作台</title>
 <style>
   :root{
     --bg:#0d1117; --card:#161b22; --line:#30363d; --txt:#e6edf3; --sub:#8b949e;
@@ -48,6 +48,12 @@
   .tag.watch{background:#bb800922;color:#e3b341;border:1px solid #bb800955}
   .hint{color:var(--sub);font-size:12px;text-align:center;margin-top:24px}
   .ph{color:#6e7681;font-style:italic;font-size:12px}
+  /* 会议日程周翻页 / 会议记录领导筛选 */
+  .mod>.h .nav{margin-left:auto;display:flex;align-items:center;gap:6px}
+  .mod>.h .wk{min-width:128px;text-align:center;font-size:12px;color:var(--sub)}
+  .mini{background:#0f141b;border:1px solid #30363d;color:var(--txt);border-radius:6px;width:26px;height:24px;cursor:pointer;font-size:15px;line-height:1;padding:0}
+  .mini:hover{background:#1a2430}
+  .fsel{margin-left:auto;font-size:12px;background:#0d1117;color:var(--txt);border:1px solid #30363d;border-radius:6px;padding:3px 6px;max-width:150px}
   /* 年度工作计划：分组折叠 */
   .wp-group{border:1px solid #232a33;border-radius:8px;margin:6px 0;overflow:hidden;background:#0f141b}
   .wp-group .gh{background:#131a22;padding:8px 10px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:space-between}
@@ -85,11 +91,10 @@
 </div>
 
 <div id="app">
-<header>
-  <h1>袁志骞 · 工作台</h1>
-  <div class="role">上海地铁维护保障有限公司通号分公司 · 见习副总经理</div>
-  <div class="date" id="now"></div>
-</header>
+  <header>
+    <h1>工作台</h1>
+    <div class="date" id="now"></div>
+  </header>
 
 <div class="wrap">
   <div class="cols">
@@ -99,7 +104,9 @@
       <h2><span class="dot"></span>工作</h2>
 
       <div class="mod">
-        <div class="h"><span class="ic">📅</span>会议日程 <span class="ph" style="font-size:11px">（自动同步自钉钉）</span></div>
+        <div class="h"><span class="ic">📅</span>会议日程 <span class="ph" style="font-size:11px">（按周翻页）</span>
+          <span class="nav"><button class="mini" id="mPrev" title="上一周">‹</button><span id="mWeek" class="wk">—</span><button class="mini" id="mNext" title="下一周">›</button></span>
+        </div>
         <ul id="meeting-list"><li class="ph">加载中…</li></ul>
       </div>
 
@@ -109,7 +116,9 @@
       </div>
 
       <div class="mod">
-        <div class="h"><span class="ic">📝</span>近期会议记录 <span class="ph" style="font-size:11px">（同步自钉钉AI表格）</span></div>
+        <div class="h"><span class="ic">📝</span>近期会议记录 <span class="ph" style="font-size:11px">（按领导筛选）</span>
+          <select id="leaderSel" class="fsel"></select>
+        </div>
         <ul id="recent-meeting-list" style="max-height:420px;overflow:auto"><li class="ph">加载中…</li></ul>
       </div>
 
@@ -261,20 +270,50 @@
   }
 
   // ===== 会议日程：从密文 meetings.enc 解密渲染（自动同步自钉钉）=====
+  var ALL_MEETINGS = [];
+  var mWeekData = {}; var mWeeks = []; var mWeekIdx = 0;
   function loadMeetings(){
     var pw = sessionStorage.getItem('claw_pw');
-    if(!pw){ renderMeetings({meetings:[]}); return; }
-    decryptAndShow(pw).then(renderMeetings).catch(function(){ renderMeetings({meetings:[]}); });
+    if(!pw){ renderMeetings(); return; }
+    decryptAndShow(pw).then(function(d){
+      ALL_MEETINGS = (d && d.meetings) || [];
+      buildWeeks();
+      renderMeetings();
+    }).catch(function(){ renderMeetings(); });
   }
-  function renderMeetings(data){
-    var list = (data && data.meetings) || [];
+  function weekKeyOf(dateStr){
+    if(!dateStr) return '';
+    var p = String(dateStr).split('-'); if(p.length < 3) return '';
+    var dt = new Date(+p[0], +p[1]-1, +p[2]);
+    if(isNaN(dt)) return '';
+    var day = dt.getDay(); var diff = (day === 0 ? -6 : 1 - day); // 周一为一周起点
+    var mon = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate() + diff);
+    return mon.getFullYear()+'-'+String(mon.getMonth()+1).padStart(2,'0')+'-'+String(mon.getDate()).padStart(2,'0');
+  }
+  function todayKey(){
+    var d = new Date();
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  }
+  function buildWeeks(){
+    mWeekData = {};
+    ALL_MEETINGS.forEach(function(m){
+      var k = weekKeyOf(m.date); if(!k) return;
+      (mWeekData[k] = mWeekData[k] || []).push(m);
+    });
+    mWeeks = Object.keys(mWeekData).sort();
+    var tw = weekKeyOf(todayKey());
+    var idx = mWeeks.indexOf(tw);
+    mWeekIdx = idx >= 0 ? idx : (mWeeks.length - 1);
+  }
+  function renderMeetings(){
     var ul = document.getElementById('meeting-list');
-    if(!list.length){
-      ul.innerHTML = '<li class="ph">暂无会议日程（同步后自动显示）</li>';
-      return;
-    }
-    var wk = '日一二三四五六';
-    ul.innerHTML = list.map(function(m){
+    var wkEl = document.getElementById('mWeek');
+    if(!ALL_MEETINGS.length){ ul.innerHTML = '<li class="ph">暂无会议日程（同步后自动显示）</li>'; if(wkEl) wkEl.textContent = '—'; return; }
+    if(!mWeeks.length){ ul.innerHTML = '<li class="ph">暂无带日期的会议</li>'; if(wkEl) wkEl.textContent = '—'; return; }
+    if(mWeekIdx < 0) mWeekIdx = 0; if(mWeekIdx > mWeeks.length - 1) mWeekIdx = mWeeks.length - 1;
+    var k = mWeeks[mWeekIdx];
+    if(wkEl) wkEl.textContent = k + ' 周 (' + (mWeekData[k]||[]).length + ' 场)';
+    ul.innerHTML = (mWeekData[k]||[]).map(function(m){
       var label = (m.date||'') + (m.time? ' ' + m.time : '');
       var sub = [m.location, m.note].filter(Boolean).join(' · ');
       return '<li><div class="t">' + esc(label) + ' · ' + esc(m.title||'(无标题)') + '</div>'
@@ -328,16 +367,34 @@
   function toggleGroup(el){ el.parentNode.classList.toggle('collapsed'); }
 
   // ===== 近期会议记录：从密文 workrec.enc 解密渲染（同步自钉钉AI表格）=====
+  var ALL_RECENT = []; var leaderFilter = '袁总';
   function loadRecentMeetings(){
     var pw = sessionStorage.getItem('claw_pw');
-    if(!pw){ renderRecentMeetings({items:[]}); return; }
-    decryptFile('workrec.enc', pw).then(renderRecentMeetings).catch(function(){ renderRecentMeetings({items:[]}); });
+    if(!pw){ renderRecentMeetings(); return; }
+    decryptFile('workrec.enc', pw).then(function(d){
+      ALL_RECENT = (d && d.items) || [];
+      buildLeaderOptions();
+      renderRecentMeetings();
+    }).catch(function(){ renderRecentMeetings(); });
   }
-  function renderRecentMeetings(data){
-    var items = (data && data.items) || [];
+  function buildLeaderOptions(){
+    var sel = document.getElementById('leaderSel');
+    if(!sel) return;
+    var leaders = [];
+    ALL_RECENT.forEach(function(m){ if(m.leader && leaders.indexOf(m.leader) < 0) leaders.push(m.leader); });
+    leaders.sort(function(a,b){ return a === '袁总' ? -1 : (b === '袁总' ? 1 : (a < b ? -1 : 1)); });
+    var html = '<option value="__all">全部领导</option>';
+    leaders.forEach(function(l){ html += '<option value="'+esc(l)+'">'+esc(l)+'</option>'; });
+    sel.innerHTML = html;
+    sel.value = (leaders.indexOf('袁总') >= 0) ? '袁总' : '__all';
+    leaderFilter = sel.value;
+  }
+  function renderRecentMeetings(){
     var box = document.getElementById('recent-meeting-list');
     if(!box) return;
-    if(!items.length){ box.innerHTML = '<div class="ph">暂无会议记录（同步后自动显示）</div>'; return; }
+    if(!ALL_RECENT.length){ box.innerHTML = '<div class="ph">暂无会议记录（同步后自动显示）</div>'; return; }
+    var items = ALL_RECENT.filter(function(m){ return leaderFilter === '__all' || m.leader === leaderFilter; });
+    if(!items.length){ box.innerHTML = '<div class="ph">该领导暂无会议记录</div>'; return; }
     box.innerHTML = items.map(function(m){
       var meta = [m.leader, m.convener, m.host].filter(Boolean).join(' / ');
       var who = [m.depts, m.people].filter(Boolean).join('　|　');
@@ -351,6 +408,14 @@
     }).join('');
   }
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+  // ===== 会议日程周翻页 / 近期会议记录领导筛选 交互 =====
+  var mPrev = document.getElementById('mPrev');
+  var mNext = document.getElementById('mNext');
+  var leaderSel = document.getElementById('leaderSel');
+  if(mPrev) mPrev.onclick = function(){ if(mWeekIdx > 0){ mWeekIdx--; renderMeetings(); } };
+  if(mNext) mNext.onclick = function(){ if(mWeekIdx < mWeeks.length - 1){ mWeekIdx++; renderMeetings(); } };
+  if(leaderSel) leaderSel.onchange = function(){ leaderFilter = this.value; renderRecentMeetings(); };
 
   // ===== 头部日期 =====
   var d = new Date();

@@ -20,6 +20,8 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
 .controls button:hover { background: #1d456b; }
 #stepBtn { background: #1d6b4f; border-color: #2bbd86; }
 #stepBtn:hover { background: #24855f; }
+#curBtn { background: #5a4a1d; border-color: #caa83a; }
+#curBtn:hover { background: #6f5c25; }
 #timeline { flex: 1; min-width: 160px; accent-color: #37c0ff; }
 #dateLabel { color: #9fd0ff; font-size: 14px; min-width: 80px; text-align: right; }
 #stepLabel { color: #ffd479; font-size: 13px; min-width: 110px; }
@@ -58,7 +60,7 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
 <div class="wrap">
   <div class="header">
     <h1>上海地铁 TETRA 无线通信系统 · 路网级"换脑"工程</h1>
-    <p>专用无线交换中心（MSO）8.1 → 9.4 系统割接及互联 · 主备双中心 · 给整张路网更换"大脑"</p>
+    <p>专用无线交换中心（MSO）8.1版 → 9.4版 系统割接及互联 · 主备双中心 · 给整张路网更换"大脑"</p>
   </div>
   <div class="stage" id="stageText">准备阶段</div>
   <div class="event" id="eventText"></div>
@@ -70,12 +72,13 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
     </defs>
   </svg>
   <div class="legend">
-    <span><i style="background:#46566f"></i>线路接入 8.1 MSO（东宝兴路·西藏北路）</span>
-    <span><i style="background:#37c0ff"></i>线路已割接至 9.4 MSO（东宝兴路·3C大楼）</span>
-    <span><i style="background:#37ffd0"></i>8.1↔9.4 版本 MSO 互联 · 业务不中断</span>
+    <span><i style="background:#46566f"></i>线路接入 8.1版 MSO（东宝兴路·西藏北路）</span>
+    <span><i style="background:#37c0ff"></i>线路已割接至 9.4版 MSO（东宝兴路·3C大楼）</span>
+    <span><i style="background:#37ffd0"></i>8.1版↔9.4版 MSO 互联 · 业务不中断</span>
   </div>
   <div class="controls">
     <button id="prevBtn">◀ 上一步</button>
+    <button id="curBtn">● 当前进度</button>
     <button id="stepBtn">➜ 推进一步</button>
     <button id="resetBtn">⟲ 重置</button>
     <input type="range" id="timeline" min="0" max="1000" value="0">
@@ -83,7 +86,7 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
     <span id="dateLabel">2026年5月</span>
   </div>
   <div class="steps" id="stepList"></div>
-  <div class="info" id="info">点击下方任一步骤，或按「推进一步」逐步查看工程过程。顶部 4 个节点为 8.1 / 9.4 各自的主备 MSO（东宝兴路为同一栋楼、不同机房，9.4 建于新建路网核心机房）。每步均标注计划时间。</div>
+  <div class="info" id="info">点击下方任一步骤，或按「推进一步」逐步查看工程过程。顶部 4 个节点为 8.1版 / 9.4版 各自的主备 MSO（东宝兴路为同一栋楼、不同机房，9.4版 建于新建路网核心机房）。每步均标注计划时间。</div>
 </div>
 <script>
 (function () {
@@ -163,28 +166,28 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
     t.textContent = txt; svg.appendChild(t); return t;
   }
   // 分组标签
-  var g8 = tnode(282, 60, "8.1 MSO 主备双中心", "grouplabel", 14);
-  tnode(718, 60, "9.4 MSO 主备双中心", "grouplabel", 14);
+  var g8 = tnode(282, 60, "8.1版 MSO 主备双中心", "grouplabel", 14);
+  tnode(718, 60, "9.4版 MSO 主备双中心", "grouplabel", 14);
   // 节点标签（8.1 组，拆除时一并淡出）
-  var S1b_l1 = tnode(S1b.x, S1b.y - 30, "8.1 备", "msolabel", 13);
+  var S1b_l1 = tnode(S1b.x, S1b.y - 30, "8.1版 备", "msolabel", 13);
   var S1b_l2 = tnode(S1b.x, S1b.y + 38, "西藏北路", "mosub", 12);
-  var S1m_l1 = tnode(S1m.x, S1m.y - 34, "8.1 主", "msolabel", 13);
+  var S1m_l1 = tnode(S1m.x, S1m.y - 34, "8.1版 主", "msolabel", 13);
   var S1m_l2 = tnode(S1m.x, S1m.y + 42, "东宝兴路", "msolabel", 13);
   var S1m_l3 = tnode(S1m.x, S1m.y + 58, "旧机房", "mosub", 11);
-  tnode(S9m.x, S9m.y - 34, "9.4 主", "msolabel", 13);
+  tnode(S9m.x, S9m.y - 34, "9.4版 主", "msolabel", 13);
   tnode(S9m.x, S9m.y + 42, "东宝兴路", "msolabel", 13);
   tnode(S9m.x, S9m.y + 58, "路网核心机房(新建)", "mosub", 11);
-  tnode(S9b.x, S9b.y - 30, "9.4 备", "msolabel", 13);
+  tnode(S9b.x, S9b.y - 30, "9.4版 备", "msolabel", 13);
   tnode(S9b.x, S9b.y + 38, "3C大楼", "mosub", 12);
   // 东宝兴路整体标注（同一栋楼、不同机房）
   var bldgLbl = el("text", { x: 500, y: 50, "text-anchor": "middle", class: "mosub", fill: "#9fd0ff" });
   bldgLbl.textContent = "东宝兴路控制中心（同一栋楼 · 不同机房）"; svg.appendChild(bldgLbl);
   // 互联标签
   var interLbl = el("text", { x: 500, y: 80, "text-anchor": "middle", class: "mosub", fill: "#37ffd0", opacity: 0 });
-  interLbl.textContent = "8.1 版本 MSO ↔ 9.4 版本 MSO 互联（同楼不同机房）· 业务不中断"; svg.appendChild(interLbl);
+  interLbl.textContent = "8.1版 ↔ 9.4版 MSO 互联（同楼不同机房）· 业务不中断"; svg.appendChild(interLbl);
   // 9.4 建成待命标签
   var buildLbl = el("text", { x: 718, y: 80, "text-anchor": "middle", class: "mosub", fill: "#37ffd0", opacity: 0 });
-  buildLbl.textContent = "✓ 9.4 主备 MSO 已建成 · 待命"; svg.appendChild(buildLbl);
+  buildLbl.textContent = "✓ 9.4版 主备 MSO 已建成 · 待命"; svg.appendChild(buildLbl);
 
   // 中心状态条
   var statusBg = el("rect", { x: 300, y: 218, width: 400, height: 24, rx: 6, fill: "#0a1224", opacity: 0.72, stroke: "#1d3252", "stroke-width": 1 });
@@ -216,7 +219,7 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
   var celebT1 = el("text", { x: 500, y: 296, "text-anchor": "middle", fill: "#39ffa0", "font-size": 30, "font-weight": "bold", filter: "url(#glow)" });
   celebT1.textContent = "🎉 换脑工程圆满完成";
   var celebT2 = el("text", { x: 500, y: 332, "text-anchor": "middle", fill: "#cfe8ff", "font-size": 15 });
-  celebT2.textContent = "路网级无线通信大脑已全面更新为 9.4 系统 · 8.1 MSO 已拆除退役";
+  celebT2.textContent = "路网级无线通信大脑已全面更新为 9.4版 系统 · 8.1版 MSO 已拆除退役";
   celeb.appendChild(celebBg); celeb.appendChild(celebT1); celeb.appendChild(celebT2);
   var confettiColors = ["#39ffa0", "#ffd479", "#37c0ff", "#ff9a76"];
   for (var k = 0; k < 30; k++) {
@@ -230,12 +233,12 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
     info.innerHTML = "<b>" + L.n + "</b>" + (L.data ? "（含数据业务）" : "") +
       "\n控制中心：" + L.occ + "\n计划割接：" + cutToDate(L.cut) +
       "\nMSO 主备双中心架构：" +
-      "\n  8.1：东宝兴路(主) + 西藏北路(备)" +
-      "\n  9.4：东宝兴路(主) + 3C大楼(备)" +
+      "\n  8.1版：东宝兴路(主) + 西藏北路(备)" +
+      "\n  9.4版：东宝兴路(主) + 3C大楼(备)" +
       "\n影响：调度台手动重登录、跨线路呼叫中断；基站中断至割接完成" +
       (L.data ? "\n注：数据业务不能跨 MSO，须先于新老 MSO 互联完成割接" : "") +
-      "\n应急：异常即退回 8.1 系统，800 兆手持台联系" +
-      (done ? "\n状态：✅ 已接入 9.4 新脑（东宝兴路·3C大楼）" : "\n状态：⏳ 仍接入 8.1 旧脑（东宝兴路·西藏北路）");
+      "\n应急：异常即退回 8.1版 系统，800 兆手持台联系" +
+      (done ? "\n状态：✅ 已接入 9.4版 新脑（东宝兴路·3C大楼）" : "\n状态：⏳ 仍接入 8.1版 旧脑（东宝兴路·西藏北路）");
   }
 
   var curIdx = 0;
@@ -287,63 +290,64 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
     buildLbl.setAttribute("opacity", (built && act === 0 && !interOn) ? 1 : 0);
     celeb.setAttribute("opacity", demolish ? 1 : 0);
 
-    var total = 2026 * 12 + 5 + curIdx, y = Math.floor(total / 12), m = Math.floor((total % 12));
+    var total = 2026 * 12 + 4 + curIdx, y = Math.floor(total / 12), m = Math.floor((total % 12));
     dateLabel.textContent = y + "年" + (m + 1) + "月";
 
     var stage, ev = "", evOn = false;
     if (isBuild) {
-      stage = "准备阶段：9.4 主备 MSO 建成（东宝兴路·3C大楼），新脑待命、尚未接管";
-      ev = "🏗 9.4 专用无线交换中心主备双中心已建成，等待割接接入路网"; evOn = true;
+      stage = "准备阶段：9.4版 主备 MSO 建成（东宝兴路·3C大楼），新脑待命、尚未接管";
+      ev = "🏗 9.4版 专用无线交换中心主备双中心已建成，等待割接接入路网"; evOn = true;
     }
-    else if (curIdx < 2) { stage = "初始状态：全网 12 线运行于 8.1 MSO（东宝兴路·西藏北路）"; }
+    else if (curIdx < 2) { stage = "初始状态：全网 12 线运行于 8.1版 MSO（东宝兴路·西藏北路）"; }
     else if (curIdx < INTER) {
       stage = "10 号线先行割接（数据业务不能跨 MSO，须先于互联）";
-      ev = "⚠ 10号线已割接至 9.4（东宝兴路·3C大楼），独立于互联之外"; evOn = true;
+      ev = "⚠ 10号线已割接至 9.4版（东宝兴路·3C大楼），独立于互联之外"; evOn = true;
     }
     else if (curIdx < 3.6) {
-      stage = "8.1 版本 MSO ↔ 9.4 版本 MSO 在东宝兴路互联（同楼不同机房）— 割接期间业务不中断";
-      ev = "🔗 8.1 版本 MSO 与 9.4 版本 MSO 连通：已割接/未割接线仍可通信，业务不中断"; evOn = true;
+      stage = "8.1版 ↔ 9.4版 MSO 在东宝兴路互联（同楼不同机房）— 割接期间业务不中断";
+      ev = "🔗 8.1版 与 9.4版 MSO 连通：已割接/未割接线仍可通信，业务不中断"; evOn = true;
     }
     else if (act < 1) {
       stage = "逐线割接推进中 — 已割接 " + doneCount + " / " + n + "（已互联，业务不中断）";
-      ev = (curIdx >= 3.6 && curIdx < 3.9) ? "🚧 本周：17 号线割接至 9.4" : ""; evOn = !!ev;
+      ev = (curIdx >= 3.6 && curIdx < 3.9) ? "🚧 本周：17 号线割接至 9.4版" : ""; evOn = !!ev;
     }
     else if (demolish) {
-      stage = "✦ 8.1 MSO 已拆除退役 · 换脑工程圆满完成";
-      ev = "🎉 路网级无线通信大脑全面更新为 9.4 系统，恭喜！"; evOn = true;
+      stage = "✦ 8.1版 MSO 已拆除退役 · 换脑工程圆满完成";
+      ev = "🎉 路网级无线通信大脑全面更新为 9.4版 系统，恭喜！"; evOn = true;
     }
-    else { stage = "✦ 换脑完成：路网级无线通信大脑已更新为 9.4 系统"; }
-    if (act >= 1 && !demolish) { ev = "✦ 换脑完成：全网接入 9.4 新脑（东宝兴路·3C大楼）"; evOn = true; }
+    else { stage = "✦ 换脑完成：路网级无线通信大脑已更新为 9.4版 系统"; }
+    if (act >= 1 && !demolish) { ev = "✦ 换脑完成：全网接入 9.4版 新脑（东宝兴路·3C大楼）"; evOn = true; }
 
     stageText.textContent = stage;
     stageText.className = act >= 1 ? "done" : "";
     eventText.textContent = ev;
     eventText.className = evOn ? "on" : "";
-    status.textContent = isBuild ? "9.4 新脑已建成（东宝兴路·3C大楼）· 待命" : (demolish ? "9.4 新脑全面接管（东宝兴路·3C大楼）· 8.1 已退役" : (act >= 1 ? "9.4 新脑已接管（东宝兴路·3C大楼）" : (interOn ? "8.1 版本 MSO ↔ 9.4 版本 MSO 互联中（同楼不同机房）" : "8.1 旧脑运行中（东宝兴路·西藏北路）")));
+    status.textContent = isBuild ? "9.4版 新脑已建成（东宝兴路·3C大楼）· 待命" : (demolish ? "9.4版 新脑全面接管（东宝兴路·3C大楼）· 8.1版 已退役" : (act >= 1 ? "9.4版 新脑已接管（东宝兴路·3C大楼）" : (interOn ? "8.1版 ↔ 9.4版 MSO 互联中（同楼不同机房）" : "8.1版 旧脑运行中（东宝兴路·西藏北路）")));
   }
 
   // 步进控制：每个里程碑一步（含计划时间）
   var STEPS = [
-    { idx: 0,    name: "全网运行于 8.1",       time: "现状" },
-    { idx: 0,    build: true, name: "9.4 主备 MSO 建成", time: "2026年6月" },
-    { idx: 2.0,  name: "10 号线先行割接",       time: "2026年7月" },
-    { idx: 3.1,  name: "8.1↔9.4 MSO 互联",       time: "2026年8月初" },
-    { idx: 3.6,  name: "17 号线割接",           time: "本周（8月）" },
-    { idx: 5,    name: "1 号线割接",            time: "2026年10月" },
-    { idx: 6,    name: "5 号线割接",            time: "2026年11月" },
-    { idx: 7,    name: "6 号线割接",            time: "2026年12月" },
-    { idx: 8,    name: "8 号线割接",            time: "2027年1月" },
-    { idx: 10,   name: "9 号线割接",            time: "2027年3月" },
-    { idx: 11,   name: "12 号线割接",           time: "2027年3-4月" },
-    { idx: 12,   name: "11 号线割接",           time: "2027年4-5月" },
-    { idx: 13,   name: "16 号线 / 浦江线",       time: "2027年5-6月" },
-    { idx: 14,   name: "轨道公安割接",           time: "2027年7月" },
-    { idx: 15,   name: "换脑完成",              time: "2027年7月后" },
-    { idx: 15,   demolish: true, name: "8.1 MSO 拆除 · 庆祝", time: "2027年后" }
+    { idx: 0,    sch: 0,    name: "全网运行于 8.1版",       time: "现状" },
+    { idx: 0,    sch: 1,    build: true, name: "9.4版 主备 MSO 建成", time: "2026年6月" },
+    { idx: 2.0,  sch: 2,    name: "10 号线先行割接",       time: "2026年7月" },
+    { idx: 3.1,  sch: 3,    name: "8.1版↔9.4版 MSO 互联",  time: "2026年八月二十六" },
+    { idx: 3.6,  sch: 3.6,  name: "17 号线割接",           time: "本周（8月）" },
+    { idx: 5,    sch: 5,    name: "1 号线割接",            time: "2026年10月" },
+    { idx: 6,    sch: 6,    name: "5 号线割接",            time: "2026年11月" },
+    { idx: 7,    sch: 7,    name: "6 号线割接",            time: "2026年12月" },
+    { idx: 8,    sch: 8,    name: "8 号线割接",            time: "2027年1月" },
+    { idx: 10,   sch: 10,   name: "9 号线割接",            time: "2027年3月" },
+    { idx: 11,   sch: 11,   name: "12 号线割接",           time: "2027年3-4月" },
+    { idx: 12,   sch: 11.5, name: "11 号线割接",           time: "2027年4-5月" },
+    { idx: 13,   sch: 13,   name: "16 号线 / 浦江线",       time: "2027年5-6月" },
+    { idx: 14,   sch: 14,   name: "轨道公安割接",           time: "2027年7月" },
+    { idx: 15,   sch: 15,   name: "换脑完成",              time: "2027年7月后" },
+    { idx: 15,   sch: 16,   demolish: true, name: "8.1版 MSO 拆除 · 庆祝", time: "2027年后" }
   ];
   var timeline = document.getElementById("timeline");
   var stepBtn = document.getElementById("stepBtn");
   var prevBtn = document.getElementById("prevBtn");
+  var curBtn = document.getElementById("curBtn");
   var resetBtn = document.getElementById("resetBtn");
   var stepList = document.getElementById("stepList");
   var stepIdx = 0;
@@ -365,9 +369,10 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
   }
   stepBtn.onclick = function () { if (stepIdx < STEPS.length - 1) { stepIdx++; applyStep(); } };
   prevBtn.onclick = function () { if (stepIdx > 0) { stepIdx--; applyStep(); } };
+  curBtn.onclick = function () { stepIdx = currentStepIndex(); applyStep(); };
   resetBtn.onclick = function () {
     stepIdx = 0; applyStep();
-    info.textContent = "点击下方任一步骤，或按「推进一步」逐步查看工程过程。顶部 4 个节点为 8.1 / 9.4 各自的主备 MSO（东宝兴路为同一栋楼、不同机房，9.4 建于新建路网核心机房）。每步均标注计划时间。";
+    info.textContent = "点击下方任一步骤，或按「推进一步」逐步查看工程过程。顶部 4 个节点为 8.1版 / 9.4版 各自的主备 MSO（东宝兴路为同一栋楼、不同机房，9.4版 建于新建路网核心机房）。每步均标注计划时间。";
   };
   timeline.addEventListener("input", function () {
     built = true; isBuild = false; demolish = false;
@@ -375,6 +380,17 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
     stepLabel.textContent = "手动拖动（" + dateLabel.textContent + "）";
     chipEls.forEach(function (c) { c.className = "chip"; });
   });
+  // 按当前真实日期推算应停留的工程进度（2026年5月为起点，每月一个进度单位）
+  function currentStepIndex() {
+    var now = new Date();
+    var nowFloat = (now.getFullYear() - 2026) * 12 + (now.getMonth() + 1 - 5) + (now.getDate() - 1) / 31;
+    var idx = 0;
+    for (var i = 0; i < STEPS.length; i++) {
+      if (STEPS[i].sch <= nowFloat + 1e-9) idx = i; else break;
+    }
+    return idx;
+  }
+  stepIdx = currentStepIndex();
   applyStep();
 })();
 </script>

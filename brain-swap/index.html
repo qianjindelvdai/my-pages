@@ -52,8 +52,19 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
   .chip.cur { background: #1d6b4f; border-color: #2bbd86; color: #eafff5; }
   .chip.cur b, .chip.cur i { color: #eafff5; }
   .chip.done { opacity: 0.55; border-color: #2bbd86; }
-  .confetti { animation: tw 1.6s ease-in-out infinite; }
-  @keyframes tw { 0%, 100% { opacity: .3; } 50% { opacity: 1; } }
+  .confetti { animation-name: fall; animation-timing-function: linear; animation-iteration-count: infinite; }
+  @keyframes fall { 0% { transform: translateY(0) rotate(0); opacity: 0; } 8% { opacity: 1; } 100% { transform: translateY(420px) rotate(720deg); opacity: .15; } }
+  .rayspin { transform-box: view-box; transform-origin: 500px 304px; animation: rayrotate 12s linear infinite; }
+  @keyframes rayrotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .burstring { transform-box: view-box; transform-origin: 500px 304px; animation: burst 2s ease-out infinite; }
+  .burstring2 { transform-box: view-box; transform-origin: 500px 304px; animation: burst 2s ease-out infinite 1s; }
+  @keyframes burst { 0% { transform: scale(.25); opacity: .9; } 100% { transform: scale(3); opacity: 0; } }
+  .celebtext { transform-box: fill-box; transform-origin: center; animation: celebpulse 1.6s ease-in-out infinite; }
+  @keyframes celebpulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+  .starfall { fill: #ffd479; animation: starflash 1.4s ease-in-out infinite; }
+  @keyframes starflash { 0%, 100% { opacity: .4; } 50% { opacity: 1; } }
+  .llabel { fill: #b9c9e6; font-size: 10px; pointer-events: none; }
+  .linktype { fill: #ffd479; font-size: 10px; font-weight: bold; pointer-events: none; }
 </style>
 </head>
 <body>
@@ -75,6 +86,7 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
     <span><i style="background:#46566f"></i>线路接入 8.1版 MSO（东宝兴路·西藏北路）</span>
     <span><i style="background:#37c0ff"></i>线路已割接至 9.4版 MSO（东宝兴路·3C大楼）</span>
     <span><i style="background:#37ffd0"></i>8.1版↔9.4版 MSO 互联 · 业务不中断</span>
+    <span><i style="background:#ffd479"></i>基站→MSO 链路：8.1版=E1，9.4版=以太网(ETH)</span>
   </div>
   <div class="controls">
     <button id="prevBtn">◀ 上一步</button>
@@ -122,6 +134,7 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
   ];
   lines.sort(function (a, b) { return a.cut - b.cut; });
   var n = lines.length;
+  lines.forEach(function (L) { L.sub = "TETRA基站+调度台"; });
 
   function el(name, attrs) { var e = document.createElementNS(NS, name); for (var k in attrs) e.setAttribute(k, attrs[k]); return e; }
   function cutToDate(cut) {
@@ -199,8 +212,10 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
     var g = el("g", {}); g.style.cursor = "pointer";
     var circle = el("circle", { r: 18, cx: L.x, cy: L.y, fill: L.c, class: "node", opacity: 0.55 });
     L.circle = circle;
-    var t = el("text", { x: L.x, y: L.y + 34, "text-anchor": "middle", class: "nlabel" });
+    var t = el("text", { x: L.x, y: L.y + 32, "text-anchor": "middle", class: "nlabel" });
     t.textContent = L.n;
+    var sub = el("text", { x: L.x, y: L.y + 46, "text-anchor": "middle", class: "llabel" });
+    sub.textContent = L.sub;
     var badge = el("text", { x: L.x, y: L.y - 28, "text-anchor": "middle", class: "badge", opacity: 0 });
     badge.textContent = "9.4";
     L.badge = badge;
@@ -208,23 +223,74 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
       var ring = el("circle", { cx: L.x, cy: L.y, r: 25, fill: "none", stroke: "#ffd479", "stroke-width": 3, opacity: 0 });
       L.ring = ring; svg.appendChild(ring);
     }
-    g.appendChild(circle); g.appendChild(t); g.appendChild(badge);
+    var linkLbl = el("text", { x: L.x, y: L.y, "text-anchor": "middle", class: "linktype", opacity: 0 });
+    L.linkLbl = linkLbl; svg.appendChild(linkLbl);
+    g.appendChild(circle); g.appendChild(t); g.appendChild(sub); g.appendChild(badge);
     g.addEventListener("click", function () { showInfo(L); });
     svg.appendChild(g);
   });
 
-  // 庆祝画面（8.1 MSO 拆除退役后显示）
+  // 庆祝画面（8.1 MSO 拆除退役后显示）—— 强化视觉冲击力
   var celeb = el("g", { opacity: 0 });
-  var celebBg = el("rect", { x: 230, y: 248, width: 540, height: 112, rx: 14, fill: "#06140d", opacity: 0.001, stroke: "#39ffa0", "stroke-width": 2, filter: "url(#glow)" });
-  var celebT1 = el("text", { x: 500, y: 296, "text-anchor": "middle", fill: "#39ffa0", "font-size": 30, "font-weight": "bold", filter: "url(#glow)" });
+  // 放射光芒（绕中心旋转）
+  var rays = el("g", { class: "rayspin" });
+  for (var ri = 0; ri < 20; ri++) {
+    var ang = ri / 20 * Math.PI * 2;
+    var rx1 = 500 + Math.cos(ang) * 42, ry1 = 304 + Math.sin(ang) * 42;
+    var rx2 = 500 + Math.cos(ang) * 175, ry2 = 304 + Math.sin(ang) * 175;
+    rays.appendChild(el("line", { x1: rx1, y1: ry1, x2: rx2, y2: ry2, stroke: "#ffd479", "stroke-width": 2, "stroke-linecap": "round", opacity: 0.4 }));
+  }
+  celeb.appendChild(rays);
+  // 爆炸扩散光环
+  celeb.appendChild(el("circle", { cx: 500, cy: 304, r: 60, fill: "none", stroke: "#39ffa0", "stroke-width": 4, class: "burstring" }));
+  celeb.appendChild(el("circle", { cx: 500, cy: 304, r: 60, fill: "none", stroke: "#37c0ff", "stroke-width": 3, class: "burstring2" }));
+  // 背景横幅
+  var celebBg = el("rect", { x: 195, y: 250, width: 610, height: 110, rx: 16, fill: "#06140d", opacity: 0.9, stroke: "#39ffa0", "stroke-width": 2.5, filter: "url(#glow)" });
+  celeb.appendChild(celebBg);
+  var celebStar = el("text", { x: 500, y: 222, "text-anchor": "middle", "font-size": 26, class: "starfall" });
+  celebStar.textContent = "★ ★ ★ ★ ★";
+  celeb.appendChild(celebStar);
+  var celebT1 = el("text", { x: 500, y: 300, "text-anchor": "middle", fill: "#39ffa0", "font-size": 34, "font-weight": "bold", filter: "url(#glow)", class: "celebtext" });
   celebT1.textContent = "🎉 换脑工程圆满完成";
-  var celebT2 = el("text", { x: 500, y: 332, "text-anchor": "middle", fill: "#cfe8ff", "font-size": 15 });
+  var celebT2 = el("text", { x: 500, y: 340, "text-anchor": "middle", fill: "#cfe8ff", "font-size": 16, class: "celebtext" });
   celebT2.textContent = "路网级无线通信大脑已全面更新为 9.4版 系统 · 8.1版 MSO 已拆除退役";
-  celeb.appendChild(celebBg); celeb.appendChild(celebT1); celeb.appendChild(celebT2);
-  var confettiColors = ["#39ffa0", "#ffd479", "#37c0ff", "#ff9a76"];
-  for (var k = 0; k < 30; k++) {
-    var cf = el("circle", { cx: 300 + Math.random() * 400, cy: 130 + Math.random() * 330, r: 2 + Math.random() * 3, fill: confettiColors[k % 4], class: "confetti", opacity: 0 });
+  celeb.appendChild(celebT1); celeb.appendChild(celebT2);
+  // 烟花粒子容器
+  var fwContainer = el("g", {});
+  celeb.appendChild(fwContainer);
+  // 彩纸（飘落 + 旋转）
+  var confettiColors = ["#39ffa0", "#ffd479", "#37c0ff", "#ff9a76", "#ff6ec7"];
+  for (var k = 0; k < 70; k++) {
+    var cf = el("rect", { x: 230 + Math.random() * 540, y: 120 + Math.random() * 360, width: 4 + Math.random() * 5, height: 8 + Math.random() * 7, fill: confettiColors[k % 5], rx: 1, class: "confetti", opacity: 0 });
+    cf.style.transformBox = "fill-box";
+    cf.style.transformOrigin = "center";
+    cf.style.animationDuration = (2.4 + Math.random() * 2.6).toFixed(2) + "s";
+    cf.style.animationDelay = (Math.random() * 3).toFixed(2) + "s";
     celeb.appendChild(cf);
+  }
+  svg.appendChild(celeb);
+
+  var celebFired = false;
+  function launchFireworks() {
+    for (var b = 0; b < 6; b++) {
+      (function (cx, cy, color, delay) {
+        setTimeout(function () {
+          var N = 26;
+          for (var i = 0; i < N; i++) {
+            var a = i / N * Math.PI * 2 + Math.random() * 0.2;
+            var p = el("circle", { cx: cx, cy: cy, r: 3, fill: color, opacity: 1 });
+            fwContainer.appendChild(p);
+            var dist = 50 + Math.random() * 90;
+            var dx = Math.cos(a) * dist, dy = Math.sin(a) * dist;
+            var anim = p.animate([
+              { transform: "translate(0,0) scale(1)", opacity: 1 },
+              { transform: "translate(" + dx + "px," + dy + "px) scale(0.3)", opacity: 0 }
+            ], { duration: 800 + Math.random() * 600, easing: "cubic-bezier(.17,.67,.83,.67)" });
+            anim.onfinish = function () { p.remove(); };
+          }
+        }, delay);
+      })(240 + Math.random() * 520, 150 + Math.random() * 210, confettiColors[Math.floor(Math.random() * 5)], b * 380);
+    }
   }
   svg.appendChild(celeb);
 
@@ -235,6 +301,7 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
       "\nMSO 主备双中心架构：" +
       "\n  8.1版：东宝兴路(主) + 西藏北路(备)" +
       "\n  9.4版：东宝兴路(主) + 3C大楼(备)" +
+      "\n接入链路（基站→MSO）：" + (done ? "以太网 ETH（9.4版 新链路）" : "E1（8.1版 原链路）") +
       "\n影响：调度台手动重登录、跨线路呼叫中断；基站中断至割接完成" +
       (L.data ? "\n注：数据业务不能跨 MSO，须先于新老 MSO 互联完成割接" : "") +
       "\n应急：异常即退回 8.1版 系统，800 兆手持台联系" +
@@ -260,6 +327,13 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
       L.lnS.setAttribute("stroke", done ? L.c : "#46566f");
       L.lnS.setAttribute("stroke-width", done ? 2 : 1.2);
       L.lnS.setAttribute("stroke-opacity", done ? 0.9 : 0.4);
+      // 链路类型标签：8.1版=E1，9.4版=以太网(ETH)，显示在主用链路中点
+      var lmx = (L.x + mainN.x) / 2, lmy = (L.y + mainN.y) / 2;
+      L.linkLbl.setAttribute("x", lmx);
+      L.linkLbl.setAttribute("y", lmy - 5);
+      L.linkLbl.textContent = done ? "ETH" : "E1";
+      L.linkLbl.setAttribute("fill", done ? "#9fe9ff" : "#ffd479");
+      L.linkLbl.setAttribute("opacity", 0.92);
       L.circle.setAttribute("opacity", done ? 1 : 0.55);
       L.circle.setAttribute("stroke", done ? "#9fe9ff" : "#ffffff");
       L.badge.setAttribute("opacity", done ? 1 : 0);
@@ -289,6 +363,13 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
     interLbl.setAttribute("opacity", (interOn && !demolish) ? 1 : 0);
     buildLbl.setAttribute("opacity", (built && act === 0 && !interOn) ? 1 : 0);
     celeb.setAttribute("opacity", demolish ? 1 : 0);
+    if (demolish && !celebFired) {
+      celebFired = true;
+      launchFireworks();
+      setTimeout(launchFireworks, 1800);
+      setTimeout(launchFireworks, 3600);
+    }
+    if (!demolish) { celebFired = false; }
 
     var total = 2026 * 12 + 4 + curIdx, y = Math.floor(total / 12), m = Math.floor((total % 12));
     dateLabel.textContent = y + "年" + (m + 1) + "月";
@@ -309,7 +390,7 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
     }
     else if (act < 1) {
       stage = "逐线割接推进中 — 已割接 " + doneCount + " / " + n + "（已互联，业务不中断）";
-      ev = (curIdx >= 3.6 && curIdx < 3.9) ? "🚧 本周：17 号线割接至 9.4版" : ""; evOn = !!ev;
+      ev = (curIdx >= 3.6 && curIdx < 3.9) ? "🚧 8月底：17 号线割接至 9.4版" : ""; evOn = !!ev;
     }
     else if (demolish) {
       stage = "✦ 8.1版 MSO 已拆除退役 · 换脑工程圆满完成";
@@ -330,8 +411,8 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
     { idx: 0,    sch: 0,    name: "全网运行于 8.1版",       time: "现状" },
     { idx: 0,    sch: 1,    build: true, name: "9.4版 主备 MSO 建成", time: "2026年6月" },
     { idx: 2.0,  sch: 2,    name: "10 号线先行割接",       time: "2026年7月" },
-    { idx: 3.1,  sch: 3,    name: "8.1版↔9.4版 MSO 互联",  time: "2026年八月二十六" },
-    { idx: 3.6,  sch: 3.6,  name: "17 号线割接",           time: "本周（8月）" },
+    { idx: 3.1,  sch: 3,    name: "8.1版↔9.4版 MSO 互联",  time: "2026年8月26日" },
+    { idx: 3.6,  sch: 3.6,  name: "17 号线割接",           time: "8月底" },
     { idx: 5,    sch: 5,    name: "1 号线割接",            time: "2026年10月" },
     { idx: 6,    sch: 6,    name: "5 号线割接",            time: "2026年11月" },
     { idx: 7,    sch: 7,    name: "6 号线割接",            time: "2026年12月" },

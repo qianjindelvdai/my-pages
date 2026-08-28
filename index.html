@@ -8,7 +8,7 @@
   :root{
     --bg1:#eef3fb; --bg2:#f6f1fb; --card:#ffffff; --line:#eaeef5;
     --txt:#27313f; --sub:#7a8699;
-    --study:#16a34a; --life:#f59e0b; --accent:#3b82f6; --news:#eab308;
+    --study:#16a34a; --life:#f59e0b; --accent:#3b82f6;
   }
   *{box-sizing:border-box}
   body{margin:0;background:linear-gradient(160deg,var(--bg1),var(--bg2));color:var(--txt);
@@ -56,28 +56,6 @@
   li .pt{flex:1;min-width:0;line-height:1.5}
   .x{background:none;border:none;color:#b6c0cf;cursor:pointer;font-size:16px;line-height:1;padding:0 2px;flex:none}
   .x:hover{color:#ef4444}
-
-  /* 新闻：全宽分类标签页 */
-  .newsfull{margin-top:18px}
-  .newsfull h2{color:var(--news)}
-  .newsfull h2 .dot{background:var(--news)}
-  .news-tabs{display:flex;flex-wrap:wrap;gap:9px;padding:14px 16px;border-bottom:1px solid var(--line)}
-  .ntab{background:#f2f5fa;border:1px solid #e3e9f2;color:var(--sub);border-radius:999px;
-    padding:7px 15px;font-size:13px;cursor:pointer;transition:.12s;font-weight:600}
-  .ntab:hover{color:var(--txt);border-color:var(--accent)}
-  .ntab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-  .ntab.hot.active{background:#eab308;border-color:#eab308}
-  .news-body{padding:12px 16px;max-height:none}
-  .news-body li{display:flex;gap:11px;align-items:flex-start;background:#f7f9fc;border:1px solid #eef2f7;
-    border-left:3px solid #cbd5e1;border-radius:10px;padding:12px 14px;margin:10px 0;font-size:14px;line-height:1.7}
-  .news-body li:hover{background:#f1f5fb}
-  .news-body li.r-rail{border-left-color:#3b82f6}
-  .news-body li.r-ai{border-left-color:#a855f7}
-  .news-body li.r-cn{border-left-color:#22c55e}
-  .news-body li.r-intl{border-left-color:#0ea5e9}
-  .news-body li.r-hot{border-left-color:#eab308}
-  .news-body li .idx{color:var(--sub);font-variant-numeric:tabular-nums;min-width:26px;font-weight:700;flex:none;line-height:1.7}
-  .news-body li.r-hot .idx{color:#b45309}
 
   /* 访问口令遮罩 */
   #gate{position:fixed;inset:0;background:linear-gradient(160deg,#eef3fb,#f6f1fb);
@@ -158,21 +136,6 @@
     </section>
 
   </div>
-  <!-- 新闻：全宽分类标签页 -->
-  <section class="col newsfull">
-    <h2><span class="dot" style="background:#eab308"></span>新闻 · 每日要闻
-      <span class="nav" style="margin-left:auto;display:flex;align-items:center;gap:8px"><span id="news-upd" style="font-size:12px;color:var(--sub)"></span><button id="news-refresh" style="background:#f2f5fa;border:1px solid #e3e9f2;color:var(--txt);border-radius:8px;width:28px;height:26px;cursor:pointer;font-size:15px;line-height:1;padding:0">⟳</button></span>
-    </h2>
-    <div class="news-tabs" id="news-tabs">
-      <button class="ntab active" data-k="rail">🚇 轨道交通</button>
-      <button class="ntab" data-k="ai">🤖 AI</button>
-      <button class="ntab" data-k="cn">🇨🇳 国内</button>
-      <button class="ntab" data-k="intl">🌐 国际</button>
-      <button class="ntab hot" data-k="hot">🔥 热搜前三</button>
-    </div>
-    <ul id="news-body" class="news-body"><li class="ph">加载中…</li></ul>
-  </section>
-
   <div class="hint">本页为可编辑模板 · 改完告诉我重新部署</div>
 </div>
 </div>
@@ -208,44 +171,6 @@
   }
   function delFitness(i){ var arr=loadFitness(); arr.splice(arr.length-1-i,1); saveFitness(arr); renderFitness(); }
 
-  // ===== 新闻：从同域 news.json 渲染（每日自动更新，分类标签页）=====
-  var newsTab = 'rail';
-  var newsCache = null;
-  function renderNewsBody(){
-    var u = document.getElementById('news-body'); if(!u) return;
-    if(!newsCache){ u.innerHTML = '<li class="ph">加载中…</li>'; return; }
-    var arr = newsCache[newsTab] || [];
-    if(!arr.length){ u.innerHTML = '<li class="ph">今日该分类暂无要闻</li>'; return; }
-    var isHot = (newsTab === 'hot');
-    u.innerHTML = arr.map(function(t,i){
-      var idx = isHot ? ('🔥 ' + (i+1)) : ((i+1) + '.');
-      return '<li class="r-' + newsTab + '"><span class="idx">' + idx + '</span><span>' + esc(t) + '</span></li>';
-    }).join('');
-  }
-  function loadNews(){
-    var upd = document.getElementById('news-upd');
-    fetch('news.json?_='+Date.now()).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(d){
-      newsCache = d;
-      renderNewsBody();
-      if(upd) upd.textContent = '更新于 ' + (d.updated || '?');
-    }).catch(function(){
-      if(upd) upd.textContent = '获取失败，点 ⟳ 重试';
-      var u = document.getElementById('news-body');
-      if(u) u.innerHTML = '<li class="ph">暂不可用，点右上 ⟳ 重试</li>';
-    });
-  }
-  var newsTabsEl = document.getElementById('news-tabs');
-  if(newsTabsEl){
-    newsTabsEl.addEventListener('click', function(e){
-      var b = e.target.closest('.ntab'); if(!b) return;
-      newsTab = b.dataset.k;
-      Array.prototype.forEach.call(newsTabsEl.children, function(x){ x.classList.remove('active'); });
-      b.classList.add('active');
-      renderNewsBody();
-    });
-  }
-  var newsRefresh=document.getElementById('news-refresh'); if(newsRefresh) newsRefresh.onclick=function(){ loadNews(); };
-
   // ===== 解锁：口令校验通过后进入（不再依赖加密数据模块）=====
   async function unlock(){
     var pw = document.getElementById('pw').value;
@@ -264,7 +189,6 @@
   renderFitness();
   var fitAdd=document.getElementById('fit-add'); if(fitAdd) fitAdd.onclick=function(){ checkinFitness(); };
   var fitInp=document.getElementById('fit-inp'); if(fitInp) fitInp.addEventListener('keydown', function(e){ if(e.key==='Enter') checkinFitness(); });
-  loadNews();
   document.addEventListener('click', function(e){
     var x=e.target.closest('.x'); if(!x) return;
     if(x.dataset.f!==undefined) delFitness(+x.dataset.f);

@@ -119,7 +119,7 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
 
   var lines = [
     { n: "10号线", c: "#C6AED3", cut: 2.0, occ: "吴中路OCC", data: true, t: "2026年7月" },   // 先行（官方色 浅紫）
-    { n: "17号线", c: "#BB7294", cut: 3.6, occ: "浦汇塘OCC", t: "8月底" },               // 官方色 淡紫
+    { n: "17号线", c: "#BB7294", cut: 4.0, occ: "浦汇塘OCC", t: "2026年9月" },            // 官方色 淡紫
     { n: "1号线",  c: "#E3002B", cut: 5,   occ: "新闸路OCC", t: "2026年10月" },
     { n: "5号线",  c: "#9A0063", cut: 6,   occ: "颛桥OCC", t: "2026年11月" },
     { n: "6号线",  c: "#D40068", cut: 7,   occ: "民生路OCC", t: "2026年12月" },
@@ -378,7 +378,7 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
       stage = "10 号线先行割接（数据业务不能跨 MSO，须先于互联）";
       ev = "⚠ 2026年7月：10号线先行割接至 9.4版，基站链路由E1升级为以太网（数据业务不能跨 MSO，须先于互联）"; evOn = true;
     }
-    else if (curIdx < 3.6) {
+    else if (curIdx < 4.0) {
       stage = "8.1版 ↔ 9.4版 MSO 在东宝兴路互联（同楼不同机房）— 割接期间业务不中断";
       ev = "🔗 8.1版 与 9.4版 MSO 连通：已割接/未割接线仍可通信，业务不中断"; evOn = true;
     }
@@ -413,7 +413,7 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
     { idx: 0,    sch: 1,    build: true, name: "9.4版 主备 MSO 建成", time: "2026年6月" },
     { idx: 2.0,  sch: 2,    name: "10 号线先行割接",       time: "2026年7月" },
     { idx: 3.1,  sch: 3,    name: "8.1版↔9.4版 MSO 互联",  time: "2026年8月26日" },
-    { idx: 3.6,  sch: 3.6,  name: "17 号线割接",           time: "8月底" },
+    { idx: 4.0,  sch: 4.0,  name: "17 号线割接",           time: "2026年9月" },
     { idx: 5,    sch: 5,    name: "1 号线割接",            time: "2026年10月" },
     { idx: 6,    sch: 6,    name: "5 号线割接",            time: "2026年11月" },
     { idx: 7,    sch: 7,    name: "6 号线割接",            time: "2026年12月" },

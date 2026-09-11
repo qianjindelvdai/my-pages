@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>面向华为的安全交流 · v7 预览</title>
+<style>
+:root{--blue:#2563EB;--cyan:#0EA5E9;--orange:#F97316;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#0B1220;-webkit-font-smoothing:antialiased;}
+.scroll{height:100vh;overflow-y:scroll;scroll-snap-type:y mandatory;scroll-behavior:smooth;}
+.slide{height:100vh;scroll-snap-align:start;display:flex;align-items:center;justify-content:center;padding:24px;}
+.inner{width:100%;max-width:920px;height:calc(100vh - 48px);border-radius:18px;padding:clamp(20px,4vw,46px);position:relative;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.35);}
+.kicker{font-size:clamp(11px,1.6vw,14px);letter-spacing:.16em;font-weight:700;text-transform:uppercase;margin-bottom:10px;}
+.title{font-size:clamp(22px,4.4vw,40px);font-weight:800;line-height:1.22;margin-bottom:18px;}
+.body{flex:1;overflow-y:auto;font-size:clamp(14px,2vw,18px);line-height:1.7;}
+.footer{position:absolute;left:clamp(20px,4vw,46px);right:clamp(20px,4vw,46px);bottom:16px;display:flex;justify-content:space-between;font-size:12px;opacity:.8;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:14px 0;}
+.card{background:#fff;border:1px solid #e2e9f3;border-radius:14px;padding:16px 18px;box-shadow:0 4px 14px rgba(30,60,110,.06);}
+.num{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--blue);color:#fff;font-weight:800;font-size:15px;margin-bottom:8px;}
+.ct{font-weight:700;font-size:clamp(15px,2.1vw,19px);color:#16233a;margin-bottom:6px;}
+.cd{font-size:clamp(13px,1.8vw,15px);line-height:1.6;color:#5c6f88;}
+.cd2{font-size:clamp(14px,2vw,18px);line-height:1.75;margin-bottom:16px;}
+.bignum{display:flex;gap:30px;flex-wrap:wrap;margin:18px 0 8px;}
+.bn{flex:1;min-width:200px;}
+.bv{font-size:clamp(48px,12vw,96px);font-weight:900;line-height:1;display:block;}
+.bl{font-size:clamp(13px,1.9vw,16px);color:#6b7d96;margin-top:8px;}
+.src{font-size:12px;color:#9fb2cc;margin:6px 0 16px;}
+.hl{border-left:4px solid;padding:12px 16px;border-radius:8px;font-size:clamp(13px,1.9vw,16px);line-height:1.7;margin-top:14px;}
+.casebox{background:#fff;border:1px solid #e2e9f3;border-radius:14px;padding:18px;margin:14px 0;box-shadow:0 4px 14px rgba(30,60,110,.06);}
+.cbh{font-weight:800;color:#16233a;margin-bottom:10px;font-size:clamp(15px,2.1vw,18px);}
+.mini{background:#fff7f2;border:1px solid #ffd9c4;border-radius:10px;padding:12px;text-align:center;}
+.mv{font-weight:800;font-size:clamp(14px,2.2vw,18px);}
+.ml{font-size:12px;color:#7a6a5e;margin-top:4px;}
+.impact{margin-top:12px;font-size:clamp(15px,2.2vw,18px);color:#16233a;}
+.pipe{display:flex;align-items:stretch;gap:6px;margin:16px 0;flex-wrap:wrap;}
+.pstep{flex:1;min-width:150px;background:#fff;border:1px solid #e2e9f3;border-radius:14px;padding:14px;text-align:center;box-shadow:0 4px 14px rgba(30,60,110,.06);}
+.psn{width:34px;height:34px;border-radius:50%;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;}
+.psh{font-weight:800;color:#16233a;font-size:clamp(15px,2vw,18px);margin-bottom:6px;}
+.psd{font-size:clamp(12px,1.7vw,14px);color:#5c6f88;line-height:1.55;}
+.arrow{display:flex;align-items:center;color:#2563EB;font-weight:800;font-size:22px;}
+.keycard{background:linear-gradient(135deg,#eef4ff,#f6faff);border:1px solid #cfe0ff;border-radius:14px;padding:16px 18px;margin-top:14px;}
+.kc-h{font-weight:800;color:#1e40af;font-size:clamp(15px,2.1vw,18px);margin-bottom:6px;}
+.kc-d{font-size:clamp(13px,1.9vw,15px);line-height:1.7;color:#33405a;}
+.cap{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #e2e9f3;border-radius:12px;padding:12px 14px;box-shadow:0 4px 14px rgba(30,60,110,.06);}
+.cap-l{width:38px;height:38px;border-radius:10px;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.cap-t{font-weight:700;color:#16233a;font-size:clamp(15px,2vw,18px);}
+.cap-d{font-size:clamp(12px,1.7vw,14px);color:#5c6f88;}
+.warn{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:12px;padding:12px 16px;font-size:clamp(13px,1.9vw,16px);margin:14px 0;line-height:1.6;}
+.cover-sub{font-size:clamp(17px,2.8vw,24px);color:#cfe0ff;margin-top:22px;font-weight:600;}
+.cover-meta{margin-top:34px;color:#9fb2cc;font-size:clamp(14px,2vw,17px);line-height:1.7;}
+.end-line{font-size:clamp(20px,3.4vw,30px);font-weight:800;color:#eaf2ff;margin-top:26px;}
+.end-line2{font-size:clamp(15px,2.3vw,19px);color:#bcd3f2;margin-top:18px;line-height:1.7;}
+.end-meta{margin-top:34px;color:#7e93b3;font-size:clamp(14px,2vw,16px);}
+/* nav dots */
+.nav{position:fixed;right:14px;top:50%;transform:translateY(-50%);z-index:50;display:flex;flex-direction:column;gap:8px;}
+.dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.35);cursor:pointer;transition:.2s;}
+.dot.active{background:#0EA5E9;transform:scale(1.4);}
+@media(max-width:560px){.grid2,.grid3{grid-template-columns:1fr;}.pipe{flex-direction:column;}.arrow{transform:rotate(90deg);}.nav{display:none;}}
+</style>
+</head>
+<body>
+<div class="nav" id="nav"></div>
+<div class="scroll">
+
+<section class="slide" data-no="1">
+  <div class="inner" style="background:linear-gradient(135deg,#0B1220 0%,#13294d 60%,#0A2A4A 100%);color:#e8eef7">
+    <div class="kicker" style="color:#0EA5E9">SHANGHAI METRO × HUAWEI · 安全交流</div>
+    <h1 class="title" style="color:#0EA5E9">面向<span style="color:#0EA5E9">华为</span>的安全交流</h1>
+    <div class="body" style="color:#9fb2cc"><div class="cover-sub">把运营安全，交给能陪跑 15 年的伙伴</div><div class="cover-meta">上海地铁维保通号分公司 · 分管通信专业<br>2026 年 9 月</div></div>
+    <div class="footer" style="color:#7e93b3"><span>上海地铁通号 × 华为 · 安全交流</span><span>01 / 11</span></div>
+  </div>
+</section>
+
+<section class="slide" data-no="2">
+  <div class="inner" style="background:#f4f7fb;color:#1f2a3a">
+    <div class="kicker" style="color:#2563EB">AGENDA · 交流结构</div>
+    <h1 class="title" style="color:#1f2a3a">今天聊什么</h1>
+    <div class="body" style="color:#6b7d96">
+<div class="grid2">
+  <div class="card"><div class="num">1</div><div class="ct">运营安全为什么重</div><div class="cd">千万级客流的城市基础设施，通信信号运行安全直接关系市民出行与城市运行。</div></div>
+  <div class="card"><div class="num">2</div><div class="ct">我们对安全的重视</div><div class="cd">安全评估、安全月、运营安全大概念，安全理念贯穿系统规划到退役全过程。</div></div>
+  <div class="card"><div class="num">3</div><div class="ct">四环节怎么守</div><div class="cd">规划设计、建设执行、运维保障、全生命周期，四个环节环环相扣、缺一不可。</div></div>
+  <div class="card"><div class="num">4</div><div class="ct">15 年长期共建</div><div class="cd">华为作为战略合作伙伴，在每一环节的关键作用与可深化的合作点。</div></div>
+</div></div>
+    <div class="footer" style="color:#8aa0bd"><span>上海地铁通号 × 华为 · 安全交流</span><span>02 / 11</span></div>
+  </div>
+</section>
+
+<section class="slide" data-no="3">
+  <div class="inner" style="background:#f4f7fb;color:#1f2a3a">
+    <div class="kicker" style="color:#2563EB">WHY IT MATTERS · 运营安全的分量</div>
+    <h1 class="title" style="color:#1f2a3a">上海地铁，已是一座城市的民生基础设施</h1>
+    <div class="body" style="color:#6b7d96"><div class="bignum"><div class="bn"><span class="bv" style="color:#2563EB">78%</span><div class="bl">全市公共交通客运量分担率（接近八成）</div></div><div class="bn"><span class="bv" style="color:#2563EB">1016<span style="font-size:.5em">万</span></span><div class="bl">全年日均客运量（单日最高突破 1300 万）</div></div></div><div class="src">来源《2025 上海综合交通发展报告》</div><div class="hl" style="border-color:#F97316;color:#c2410c;background:#fff5ef">城市早高峰秩序、商务区活力、机场火车站接驳都依赖地铁——<b>运营安全是每天千万级的托付，不是口号。</b></div></div>
+    <div class="footer" style="color:#8aa0bd"><span>上海地铁通号 × 华为 · 安全交流</span><span>03 / 11</span></div>
+  </div>
+</section>
+
+<section class="slide" data-no="4">
+  <div class="inner" style="background:#f4f7fb;color:#1f2a3a">
+    <div class="kicker" style="color:#2563EB">REAL CASE · 真实发生过</div>
+    <h1 class="title" style="color:#1f2a3a">真实发生过的：车地无线被干扰</h1>
+    <div class="body" style="color:#6b7d96"><div class="cd2">多条线路先后发生车地无线通信被干扰，列车与地面的实时数据传输中断，被迫降级运行。</div><div class="casebox"><div class="cbh">以 11 号线某次为例</div><div class="grid3"><div class="mini"><div class="mv" style="color:#F97316">3 车站 · 29 区段</div><div class="ml">运营受扰</div></div><div class="mini"><div class="mv" style="color:#F97316">45 列车</div><div class="ml">模式丢失</div></div><div class="mini"><div class="mv" style="color:#F97316">6→13 分钟</div><div class="ml">运能间隔拉大 · 近 7 小时</div></div></div><div class="impact">影响市民出行 <b style="color:#F97316">12.7 万人次</b></div></div><div class="hl" style="border-color:#2563EB;color:#1e40af;background:#eef4ff">运营安全直接关联城市运行，这一环不能出错——也决定了我们对合作伙伴的标准只能更高。</div></div>
+    <div class="footer" style="color:#8aa0bd"><span>上海地铁通号 × 华为 · 安全交流</span><span>04 / 11</span></div>
+  </div>
+</section>
+
+<section class="slide" data-no="5">
+  <div class="inner" style="background:#f4f7fb;color:#1f2a3a">
+    <div class="kicker" style="color:#2563EB">OUR SAFETY CULTURE · 我们对安全的重视</div>
+    <h1 class="title" style="color:#1f2a3a">安全贯穿系统全过程，不是建成那天安全就行</h1>
+    <div class="body" style="color:#6b7d96"><div class="cd2">安全是底线，也是每个人脑子里，每天绷着的那根弦。</div><div class="grid2"><div class="card"><div class="num">1</div><div class="ct">每年安全评估</div><div class="cd">对通信信号系统运行状态、风险隐患、薄弱环节全面体检，形成报告、逐项整改闭环。</div></div><div class="card"><div class="num">2</div><div class="ct">每年 6 月安全月</div><div class="cd">从管理层到一线，强化安全意识、排查隐患、演练应急场景。</div></div><div class="card"><div class="num">3</div><div class="ct">运营安全是大概念</div><div class="cd">涵盖行车、设备、人员、网络、公共安全；通号主责守好通信信号系统运行安全。</div></div><div class="card"><div class="num">4</div><div class="ct">安全贯穿全过程</div><div class="cd">从规划、建设、运维到退役，且关注 15 年自主可控——不是建成那天安全就行。</div></div></div></div>
+    <div class="footer" style="color:#8aa0bd"><span>上海地铁通号 × 华为 · 安全交流</span><span>05 / 11</span></div>
+  </div>
+</section>
+
+<section class="slide" data-no="6">
+  <div class="inner" style="background:#f4f7fb;color:#1f2a3a">
+    <div class="kicker" style="color:#2563EB">FOUR STAGES · 系统安全</div>
+    <h1 class="title" style="color:#1f2a3a">系统安全的四环节：一条不能断的链</h1>
+    <div class="body" style="color:#6b7d96"><div class="cd2">系统安全是一条链：规划设计把安全写进图纸，建设执行把它落地，运维保障长期守住，全生命周期兜住 15 年。</div>
+<div class="pipe">
+  <div class="pstep"><div class="psn" style="background:#2563EB">1</div><div class="psh">规划设计</div><div class="psd">把 RAMS、冗余、接口边界落到设计文件</div></div>
+  <div class="arrow">→</div>
+  <div class="pstep"><div class="psn" style="background:#0EA5E9">2</div><div class="psh">建设执行</div><div class="psd">联合验收，联调从产品级升运营级</div></div>
+  <div class="arrow">→</div>
+  <div class="pstep"><div class="psn" style="background:#2563EB">3</div><div class="psh">运维保障</div><div class="psd">把经验产品化，能力建在我们自己身上</div></div>
+  <div class="arrow">→</div>
+  <div class="pstep"><div class="psn" style="background:#F97316">4</div><div class="psh">全生命周期</div><div class="psd">备件可替代、版本可维护、技术不断档</div></div>
+</div><div class="hl" style="border-color:#2563EB;color:#1e40af;background:#eef4ff">华为在每一环都关键——安全要一起做深、做长。</div></div>
+    <div class="footer" style="color:#8aa0bd"><span>上海地铁通号 × 华为 · 安全交流</span><span>06 / 11</span></div>
+  </div>
+</section>
+
+<section class="slide" data-no="7">
+  <div class="inner" style="background:#f4f7fb;color:#1f2a3a">
+    <div class="kicker" style="color:#2563EB">STAGE 1 · 规划设计</div>
+    <h1 class="title" style="color:#1f2a3a">规划设计：把安全写进第一张图纸</h1>
+    <div class="body" style="color:#6b7d96"><div class="cd2">地铁场景长出的系统，不是通用货架能直接给的：</div><div class="grid2"><div class="card"><div class="ct">高速移动下的连续切换</div></div><div class="card"><div class="ct">隧道环境的 EMC 与抗干扰</div></div><div class="card"><div class="ct">24×365 不间断冗余</div></div><div class="card"><div class="ct">与信号系统的深度耦合</div></div></div><div class="cd2">路网级规划已落地——建核心、做异地灾备，满足系统韧性要求；华为的支持作用，我们认可。</div><div class="keycard"><div class="kc-h">华为关键作用 · 共定方案</div><div class="kc-d">把 RAMS、冗余、接口边界落到设计文件，而非事后整改。</div></div></div>
+    <div class="footer" style="color:#8aa0bd"><span>上海地铁通号 × 华为 · 安全交流</span><span>07 / 11</span></div>
+  </div>
+</section>
+
+<section class="slide" data-no="8">
+  <div class="inner" style="background:#f4f7fb;color:#1f2a3a">
+    <div class="kicker" style="color:#2563EB">STAGE 2 · 建设执行</div>
+    <h1 class="title" style="color:#1f2a3a">建设执行：别让图纸停在 PPT 里</h1>
+    <div class="body" style="color:#6b7d96"><div class="cd2">纸面设计能不能真落地，靠这最后一关。设计走四道关，一道卡了，前面的努力都打折：</div><div class="grid2"><div class="card"><div class="num">1</div><div class="ct">工艺化转化</div><div class="cd">方案 → 施工工艺与实施方案</div></div><div class="card"><div class="num">2</div><div class="ct">施工监理</div><div class="cd">按图施工指导与关键工序把控</div></div><div class="card"><div class="num">3</div><div class="ct">质量把控</div><div class="cd">关键节点联合验收</div></div><div class="card"><div class="num">4</div><div class="ct">联调联试</div><div class="cd">联调从产品级升运营级</div></div></div><div class="hl" style="border-color:#F97316;color:#c2410c;background:#fff5ef">LTE 灾备"设计有、落地不全"——正与华为运维团队一起补全，把设计蓝图不走样落下去。</div></div>
+    <div class="footer" style="color:#8aa0bd"><span>上海地铁通号 × 华为 · 安全交流</span><span>08 / 11</span></div>
+  </div>
+</section>
+
+<section class="slide" data-no="9">
+  <div class="inner" style="background:#f4f7fb;color:#1f2a3a">
+    <div class="kicker" style="color:#2563EB">STAGE 3 · 运维保障</div>
+    <h1 class="title" style="color:#1f2a3a">运维保障：把"经验"变成"能力"</h1>
+    <div class="body" style="color:#6b7d96">
+<div class="grid2 g4">
+  <div class="cap"><div class="cap-l" style="background:#2563EB">感</div><div class="cap-t">感知</div><div class="cap-d">充分理解与掌握系统状态</div></div>
+  <div class="cap"><div class="cap-l" style="background:#0EA5E9">预</div><div class="cap-t">预警</div><div class="cap-d">风险早识别、早提示</div></div>
+  <div class="cap"><div class="cap-l" style="background:#2563EB">定</div><div class="cap-t">定位</div><div class="cap-d">故障精准定位</div></div>
+  <div class="cap"><div class="cap-l" style="background:#F97316">操</div><div class="cap-t">操作</div><div class="cap-d">快速恢复业务</div></div>
+</div><div class="hl" style="border-color:#F97316;color:#c2410c;background:#fff5ef">无线环境智能监测系统：同类事件处置从小时级压至最快 <b>0.5 小时</b>，效率提升一个数量级。</div><div class="keycard"><div class="kc-h">华为关键作用 · 把经验产品化</div><div class="kc-d">联合开发监测工具、培训演练精准——把一次性的经验，沉淀为可复制的能力。我们和华为共同探索的协作运维模式，还可以进一步深化，找最佳平衡点。</div></div></div>
+    <div class="footer" style="color:#8aa0bd"><span>上海地铁通号 × 华为 · 安全交流</span><span>09 / 11</span></div>
+  </div>
+</section>
+
+<section class="slide" data-no="10">
+  <div class="inner" style="background:#f4f7fb;color:#1f2a3a">
+    <div class="kicker" style="color:#2563EB">STAGE 4 · 全生命周期</div>
+    <h1 class="title" style="color:#1f2a3a">全生命周期：15 年的承诺，谁来兜底</h1>
+    <div class="body" style="color:#6b7d96"><div class="hl" style="border-color:#2563EB;color:#1e40af;background:#eef4ff">华为生命周期管理规范（<b>EOM / EOFS / EOS</b> 公开化）获认可——但通用政策约撑到第 10 年，第 10–15 年是空白期。</div><div class="warn">⚠ 前车之鉴：14 / 15 / 18 号线"二次开发各自为政"，后期停产停服即丧失可维护性。</div><div class="cd2">责任刻度是运营周期，不是产品周期。</div><div class="hl" style="border-color:#F97316;color:#c2410c;background:#fff5ef">希望华为在供货选型时充分考虑生命周期，停产后给替代方案——让系统 15 年始终可控。</div></div>
+    <div class="footer" style="color:#8aa0bd"><span>上海地铁通号 × 华为 · 安全交流</span><span>10 / 11</span></div>
+  </div>
+</section>
+
+<section class="slide" data-no="11">
+  <div class="inner" style="background:linear-gradient(135deg,#0B1220 0%,#13294d 60%,#0A2A4A 100%);color:#e8eef7">
+    <div class="kicker" style="color:#0EA5E9">THANK YOU · 安全共建</div>
+    <h1 class="title" style="color:#0EA5E9">把下一个十年，交给能陪跑 15 年的伙伴</h1>
+    <div class="body" style="color:#9fb2cc"><div class="end-line">今天安全，明年安全，15 年后的每一天都安全。</div><div class="end-line2">这既是上海地铁对市民的承诺，也是希望和华为一起守住的底线。</div><div class="end-meta">上海地铁维保通号分公司 · 谢谢</div></div>
+    <div class="footer" style="color:#7e93b3"><span>上海地铁通号 × 华为 · 安全交流</span><span>11 / 11</span></div>
+  </div>
+</section>
+</div>
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+const nav=document.getElementById('nav');
+slides.forEach((s,i)=>{const d=document.createElement('div');d.className='dot';d.onclick=()=>s.scrollIntoView();nav.appendChild(d);});
+const dots=[...nav.children];
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const i=+e.target.dataset.no-1;dots.forEach((d,j)=>d.classList.toggle('active',j===i));}});},{root:document.querySelector('.scroll'),threshold:.6});
+slides.forEach(s=>obs.observe(s));
+</script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>工作台</title>
+<style>
+  :root{
+    --bg1:#eef3fb; --bg2:#f6f1fb; --card:#ffffff; --line:#eaeef5;
+    --txt:#27313f; --sub:#7a8699;
+    --study:#16a34a; --life:#f59e0b; --accent:#3b82f6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(160deg,var(--bg1),var(--bg2));color:var(--txt);
+    font-family:-apple-system,"Microsoft YaHei",sans-serif;line-height:1.6;min-height:100vh}
+  header{padding:26px 22px 16px;border-bottom:1px solid var(--line);
+    background:rgba(255,255,255,.55);backdrop-filter:blur(6px)}
+  header h1{margin:0;font-size:23px;font-weight:800;letter-spacing:.5px}
+  header .role{color:var(--sub);font-size:14px;margin-top:4px}
+  header .date{color:var(--sub);font-size:12px;margin-top:2px}
+  .wrap{max-width:1200px;margin:0 auto;padding:22px 16px 60px}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+  @media(max-width:820px){.cols{grid-template-columns:1fr}}
+  .col{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(31,41,55,.04),0 8px 24px rgba(31,41,55,.05)}
+  .col h2{margin:0;padding:15px 18px;font-size:16px;font-weight:800;display:flex;align-items:center;gap:9px;
+    border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card)}
+  .col h2 .dot{width:11px;height:11px;border-radius:50%}
+  .study h2{color:var(--study)} .study h2 .dot{background:var(--study)}
+  .life h2{color:var(--life)} .life h2 .dot{background:var(--life)}
+  .mod{padding:14px 16px;border-bottom:1px solid #f0f3f8}
+  .mod:last-child{border-bottom:none}
+  .mod>.h{font-size:14px;font-weight:700;color:#374151;display:flex;align-items:center;gap:7px;margin-bottom:9px}
+  .mod>.h .ic{font-size:15px}
+  ul{list-style:none;margin:0;padding:0}
+  li{padding:10px 12px;margin:7px 0;background:#f7f9fc;border:1px solid #eef2f7;border-radius:10px;font-size:13.5px}
+  li .t{font-weight:600;color:var(--txt)}
+  li .d{color:var(--sub);font-size:12.5px;margin-top:3px}
+  li a{color:var(--accent);text-decoration:none}
+  li a:hover{text-decoration:underline}
+  .tag{display:inline-block;font-size:11px;padding:1px 8px;border-radius:10px;margin-left:6px;vertical-align:middle;font-weight:600}
+  .tag.do{background:#dcfce7;color:#15803d}
+  .tag.dn{background:#dbeafe;color:#1d4ed8}
+  .tag.todo{background:#f3e8ff;color:#7e22ce}
+  .tag.watch{background:#fef3c7;color:#b45309}
+  .hint{color:var(--sub);font-size:12px;text-align:center;margin-top:26px}
+  .ph{color:#9aa6b6;font-style:italic;font-size:12px}
+  /* 可编辑控件：健身打卡 */
+  .editor{display:flex;gap:7px;margin-top:8px}
+  .editor input{flex:1;min-width:0;background:#f7f9fc;border:1px solid #e3e9f2;border-radius:8px;
+    color:var(--txt);padding:6px 9px;font-size:12px;outline:none}
+  .editor input:focus{border-color:var(--accent)}
+  .addbtn{background:var(--accent);border:1px solid var(--accent);color:#fff;border-radius:8px;
+    padding:6px 13px;font-size:12px;cursor:pointer;white-space:nowrap;font-weight:600}
+  .addbtn:hover{background:#2563eb}
+  li .pt{flex:1;min-width:0;line-height:1.5}
+  .x{background:none;border:none;color:#b6c0cf;cursor:pointer;font-size:16px;line-height:1;padding:0 2px;flex:none}
+  .x:hover{color:#ef4444}
+
+  /* 访问口令遮罩 */
+  #gate{position:fixed;inset:0;background:linear-gradient(160deg,#eef3fb,#f6f1fb);
+    display:flex;align-items:center;justify-content:center;z-index:9999}
+  #gate .box{background:#ffffff;border:1px solid #e6ebf3;border-radius:16px;padding:32px 28px;width:320px;
+    text-align:center;box-shadow:0 12px 40px rgba(31,41,55,.12)}
+  #gate h3{margin:0 0 6px;font-size:19px;color:var(--txt)}
+  #gate p{color:var(--sub);font-size:13px;margin:0 0 18px}
+  #gate input{width:100%;padding:11px;background:#f7f9fc;border:1px solid #e3e9f2;border-radius:9px;
+    color:var(--txt);font-size:14px;box-sizing:border-box;outline:none}
+  #gate input:focus{border-color:var(--accent)}
+  #gate button{margin-top:14px;width:100%;padding:11px;background:var(--accent);border:none;border-radius:9px;
+    color:#fff;font-size:14px;cursor:pointer;font-weight:600}
+  #gate button:hover{background:#2563eb}
+  #gate .err{color:#ef4444;font-size:12px;margin-top:11px;min-height:14px}
+  #app{display:none}
+</style>
+</head>
+<body>
+
+<!-- 访问口令遮罩 -->
+<div id="gate">
+  <div class="box">
+    <h3>🔒 工作台已加密</h3>
+    <p>请输入访问口令</p>
+    <input id="pw" type="password" placeholder="口令" autocomplete="off" onkeydown="if(event.key==='Enter')unlock()">
+    <button onclick="unlock()">进入</button>
+    <div class="err" id="err"></div>
+  </div>
+</div>
+
+<div id="app">
+  <header>
+    <h1>工作台</h1>
+    <div class="date" id="now"></div>
+  </header>
+
+<div class="wrap">
+  <div class="cols">
+
+    <!-- 学习 -->
+    <section class="col study">
+      <h2><span class="dot"></span>学习</h2>
+
+      <div class="mod">
+        <div class="h"><span class="ic">🎓</span>HCIP</div>
+        <ul>
+          <li><div class="t">华为认证 ICT 高级工程师<span class="tag do">备考中</span></div><div class="d">方向：（示例）Datacom / 无线<br>进度：理论 + 实验</div></li>
+          <li><div class="t">（示例）下一门考试</div><div class="d ph">在此填科目 / 计划日期</div></li>
+        </ul>
+      </div>
+
+      <div class="mod">
+        <div class="h"><span class="ic">📚</span>考研</div>
+        <ul>
+          <li><div class="t">研究生备考<span class="tag todo">进行中</span></div><div class="d">目标院校 / 专业：（示例）<br>科目进度：政治 / 英语 / 数学 / 专业课</div></li>
+          <li><div class="t">（示例）真题 / 网课</div><div class="d ph">在此填资源与进度</div></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 生活 -->
+    <section class="col life">
+      <h2><span class="dot"></span>生活</h2>
+
+      <div class="mod">
+        <div class="h"><span class="ic">💪</span>健身情况</div>
+        <div class="editor"><input id="fit-inp" placeholder="今天练了什么？如 跑步5km+力量训练" /><button id="fit-add" class="addbtn">打卡</button></div>
+        <ul id="fitness-list"></ul>
+      </div>
+
+      <div class="mod">
+        <div class="h"><span class="ic">🤝</span>社交</div>
+        <ul>
+          <li><div class="t">近期往来</div><div class="d ph">在此填聚会 / 联系人 / 待回</div></li>
+        </ul>
+      </div>
+    </section>
+
+  </div>
+  <div class="hint">本页为可编辑模板 · 改完告诉我重新部署</div>
+</div>
+</div>
+
+<script>
+  // ===== 访问口令（SHA-256 校验，源码不含明文口令）=====
+  // 默认口令：claw2026 —— 修改口令请运行：
+  //   python3 -c "import hashlib;print(hashlib.sha256('新口令'.encode()).hexdigest())"
+  // 并将下方 HASH 替换为输出值。
+  var HASH = "53f83cbc03dab9ff38f9a474d1be07ad5ea901dca04233aa7aa9dd0aa2bd49f2";
+
+  function sha256(s){
+    return crypto.subtle.digest('SHA-256', new TextEncoder().encode(s))
+      .then(function(b){ return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0');}).join(''); });
+  }
+
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+  // ===== 健身打卡（localStorage）=====
+  function todayStr(){ var d=new Date(); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
+  function loadFitness(){ try{ return JSON.parse(localStorage.getItem('claw_fitness')||'[]'); }catch(e){ return []; } }
+  function saveFitness(a){ localStorage.setItem('claw_fitness', JSON.stringify(a)); }
+  function renderFitness(){
+    var ul=document.getElementById('fitness-list'); if(!ul) return;
+    var arr=loadFitness();
+    if(!arr.length){ ul.innerHTML='<li class="ph">暂无打卡，写下今天练了什么打个卡吧</li>'; return; }
+    ul.innerHTML=arr.slice().reverse().map(function(r,i){ return '<li><div class="pt"><span class="tag do">'+esc(r.date)+'</span>'+esc(r.content)+'</div><button class="x" data-f="'+i+'">×</button></li>'; }).join('');
+  }
+  function checkinFitness(){
+    var inp=document.getElementById('fit-inp'); if(!inp) return;
+    var v=inp.value.trim(); if(!v) return;
+    var arr=loadFitness(); arr.push({date:todayStr(), content:v}); saveFitness(arr); inp.value=''; renderFitness();
+  }
+  function delFitness(i){ var arr=loadFitness(); arr.splice(arr.length-1-i,1); saveFitness(arr); renderFitness(); }
+
+  // ===== 解锁：口令校验通过后进入（不再依赖加密数据模块）=====
+  async function unlock(){
+    var pw = document.getElementById('pw').value;
+    var h = await sha256(pw);
+    if(h !== HASH){ document.getElementById('err').textContent = '口令错误，请重试'; return; }
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    try{ sessionStorage.setItem('claw_pw', pw); }catch(e){}
+  }
+  try{
+    var spw = sessionStorage.getItem('claw_pw');
+    if(spw){ document.getElementById('gate').style.display='none'; document.getElementById('app').style.display='block'; }
+  }catch(e){}
+
+  // ===== 初始化 =====
+  renderFitness();
+  var fitAdd=document.getElementById('fit-add'); if(fitAdd) fitAdd.onclick=function(){ checkinFitness(); };
+  var fitInp=document.getElementById('fit-inp'); if(fitInp) fitInp.addEventListener('keydown', function(e){ if(e.key==='Enter') checkinFitness(); });
+  document.addEventListener('click', function(e){
+    var x=e.target.closest('.x'); if(!x) return;
+    if(x.dataset.f!==undefined) delFitness(+x.dataset.f);
+  });
+
+  // ===== 头部日期 =====
+  var d = new Date();
+  var w = "日一二三四五六"[d.getDay()];
+  document.getElementById("now").textContent = d.getFullYear()+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日 星期"+w;
+</script>
+</body>
+</html>

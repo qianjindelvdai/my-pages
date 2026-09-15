@@ -33,6 +33,22 @@
   .row .bar{flex:1;height:14px;background:#0c1426;border-radius:8px;overflow:hidden}
   .row .bar i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,var(--blue),var(--cyan))}
   .row .num{width:130px;text-align:right;color:var(--gold);font-weight:700;font-size:15px;flex-shrink:0}
+  /* 表格 */
+  .tbl-scroll{margin-top:18px;max-width:920px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{border-collapse:collapse;font-size:13px;min-width:560px}
+  th,td{border:1px solid var(--line);padding:9px 10px;text-align:center;white-space:nowrap}
+  th{background:#13243f;color:var(--cyan);font-weight:700}
+  td{color:var(--txt)}
+  td.y{color:var(--gold);font-weight:700}
+  .tbl-note{color:var(--dim);font-size:12px;margin-top:8px;max-width:920px;line-height:1.6}
+  /* 计算过程 */
+  .calc{margin-top:18px;max-width:900px;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:16px 18px}
+  .calc-h{color:var(--cyan);font-size:15px;font-weight:700;margin:4px 0 8px}
+  .calc-h:not(:first-child){margin-top:16px}
+  .calc-step{color:var(--sub);font-size:13.5px;line-height:1.7;padding:5px 0;border-bottom:1px dashed #16263f}
+  .calc-step b{color:var(--gold)}
+  .calc-sum{color:var(--txt);font-size:14px;line-height:1.7;padding-top:9px}
+  .calc-sum b{color:var(--green)}
   #nav{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;z-index:50;
        background:rgba(14,24,48,.82);border:1px solid var(--line);border-radius:40px;padding:8px 16px;backdrop-filter:blur(6px)}
   #nav button{background:transparent;border:none;color:var(--cyan);font-size:20px;cursor:pointer;padding:2px 6px}
@@ -57,7 +73,7 @@
       <div class="row"><div class="name">人工成本</div><div class="bar"><i style="width:66%"></i></div><div class="num">116 元</div></div>
       <div class="row" style="border-bottom:none"><div class="name" style="color:var(--gold);font-weight:700">合计</div><div class="bar"><i style="width:100%;background:linear-gradient(90deg,var(--gold),var(--orange))"></i></div><div class="num">291 元</div></div>
     </div>
-    <div class="lead">硬件（175）占约 60%，是降本优化的首要抓手；人工（116 = 维护 113 + 维修 3）次之。以下两页分别展开。</div>
+    <div class="lead">硬件（175）占总成本约 60%，人工（116 = 维护 113 + 维修 3）约占 40%。以下两页分别展开。</div>
   </section>
 
   <!-- 2 硬件成本 -->
@@ -65,9 +81,24 @@
     <div class="kicker">01 · 硬件成本</div>
     <h2>硬件成本：约 175 元 / 台·年</h2>
     <div class="cards">
-      <div class="card"><div class="v">175<span class="u">元</span></div><div class="l">单个摄像机 · 年硬件成本</div></div>
+      <div class="card"><div class="v">175<span class="u">元</span></div><div class="l">单个摄像机 · 年硬件成本（购置 / 折旧口径折算）</div></div>
     </div>
-    <div class="lead">按购置 / 折旧口径折算到单台每年的硬件投入，是总成本中占比最大的部分（约 60%）。</div>
+    <div class="tbl-scroll">
+      <table>
+        <thead>
+          <tr><th>年份</th><th>采购费用</th><th>维修费用</th><th>整治费用</th><th>合计</th><th>摄像机数量</th><th>均摊至摄像机（元）</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>2021</td><td>809 万</td><td>280 万</td><td>—</td><td>1089 万</td><td>34,987</td><td class="y">311</td></tr>
+          <tr><td>2022</td><td>361 万</td><td>280 万</td><td>—</td><td>641 万</td><td>34,987</td><td class="y">183</td></tr>
+          <tr><td>2023</td><td>182 万</td><td>280 万</td><td>—</td><td>462 万</td><td>34,987</td><td class="y">132</td></tr>
+          <tr><td>2024</td><td>294 万</td><td>220 万</td><td>—</td><td>514 万</td><td>34,987</td><td class="y">147</td></tr>
+          <tr><td>2025</td><td>304 万</td><td>100 万</td><td>536 万</td><td>940 万</td><td>48,749</td><td class="y">193</td></tr>
+          <tr><td>2026-至今</td><td>105 万</td><td>75 万</td><td>—</td><td>180 万</td><td>20,458</td><td class="y">88</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tbl-note">数据来源：原《摄像机成本估算》文档 —— 历年采购 / 维修 / 整治费用合计，均摊至在网摄像机单台年成本（含硬件与运维投入），可作为 175 元硬件基准的横向参照。</div>
   </section>
 
   <!-- 3 人工成本 -->
@@ -75,10 +106,19 @@
     <div class="kicker">02 · 人工成本</div>
     <h2>人工成本：约 116 元 / 台·年</h2>
     <div class="cards">
-      <div class="card blue"><div class="v">113<span class="u">元</span></div><div class="l">维护（单台年 47 分钟：巡检28 + 养护17 + 集中2）</div></div>
-      <div class="card cyan"><div class="v">3<span class="u">元</span></div><div class="l">维修（全网 7 万台·MTBF 推算，年故障约 800 台次）</div></div>
+      <div class="card blue"><div class="v">113<span class="u">元</span></div><div class="l">维护（单台年 47 分钟：巡检 28 + 养护 17 + 集中 2）</div></div>
+      <div class="card cyan"><div class="v">3<span class="u">元</span></div><div class="l">维修（全网 7 万台 · MTBF 推算，年故障 ≈ 800 台次）</div></div>
     </div>
-    <div class="lead">维护按 1 人年工时 2,080 小时、年薪 30 万折算 → 单台约 113 元；维修全年约 23 万元，摊到单台仅约 3 元。</div>
+    <div class="calc">
+      <div class="calc-h">维护 · 单台年 ≈ 113 元</div>
+      <div class="calc-step">巡检：单线 30 站 × 130 台 = 3,900 台；单次巡检约 60 分钟 × 5 次/日 × 30 日 × 12 月 = 108,000 分钟 ÷ 3,900 台 ≈ <b>28 分钟/年</b></div>
+      <div class="calc-step">日常养护：每站每月 1 次 × 90 分钟 × 2 人 = 180 分钟，年 2,160 分钟 ÷ 130 台 ≈ <b>17 分钟/年</b></div>
+      <div class="calc-step">集中维护：每站每年 1 次 × 120 分钟 × 2 人 = 240 分钟 ÷ 130 台 ≈ <b>2 分钟/年</b></div>
+      <div class="calc-sum">单台年维护工时合计 47 分钟 → 按 1 人年工时 2,080 小时、年薪 30 万（≈ 2.40 元/分钟）→ <b>47 × 2.40 ≈ 113 元</b></div>
+      <div class="calc-h">维修 · 单台年 ≈ 3 元</div>
+      <div class="calc-step">全网 7 万台，MTBF 20 万小时/次 → 全年硬件故障 ≈ 800 台次；每次平均维修 2 小时，共 1,600 工时</div>
+      <div class="calc-sum">全年维修成本合计约 23 万元 ÷ 7 万台 ≈ <b>3 元/台·年</b></div>
+    </div>
   </section>
 
 </div>

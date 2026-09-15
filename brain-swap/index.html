@@ -64,6 +64,25 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
   .starfall { fill: #ffd479; animation: starflash 1.4s ease-in-out infinite; }
   @keyframes starflash { 0%, 100% { opacity: .4; } 50% { opacity: 1; } }
   .llabel { fill: #b9c9e6; font-size: 10px; pointer-events: none; }
+  /* 进度管理入口 / 编辑面板 */
+  #adminBtn{position:fixed;right:16px;bottom:14px;z-index:60;background:#16324f;color:#9fd0ff;border:1px solid #2b557d;border-radius:8px;padding:7px 12px;font-size:13px;cursor:pointer}
+  #adminBtn:hover{background:#1d456b}
+  #adminMask{position:fixed;inset:0;background:rgba(4,8,18,.8);z-index:80;display:none;align-items:center;justify-content:center}
+  #adminMask.on{display:flex}
+  #adminPanel{width:min(560px,92vw);max-height:86vh;overflow:auto;background:#0e1830;border:1px solid #2b557d;border-radius:14px;padding:18px 20px}
+  #adminPanel h3{color:#7fdfff;font-size:17px;margin-bottom:4px}
+  #adminPanel .sub{color:#8aa0c0;font-size:12px;margin-bottom:14px;line-height:1.6}
+  #adminPanel .row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed #1d3252}
+  #adminPanel .row .ln{width:88px;color:#cfe8ff;font-size:14px;font-weight:bold;flex-shrink:0}
+  #adminPanel select{background:#0a1224;color:#cfe8ff;border:1px solid #2b557d;border-radius:6px;padding:5px 8px;font-size:13px}
+  #adminPanel input[type=date]{background:#0a1224;color:#cfe8ff;border:1px solid #2b557d;border-radius:6px;padding:5px 8px;font-size:13px}
+  #adminPanel .acts{display:flex;gap:10px;margin-top:16px}
+  #adminPanel .acts button{flex:1;padding:9px;border-radius:8px;font-size:14px;cursor:pointer;border:1px solid #2b557d}
+  #saveBtn{background:#1d6b4f;color:#eafff5;border-color:#2bbd86}
+  #closeBtn{background:#16324f;color:#cfe8ff}
+  #pwBox{margin-top:6px}
+  #pwBox input{width:100%;background:#0a1224;color:#cfe8ff;border:1px solid #2b557d;border-radius:6px;padding:8px;font-size:14px;box-sizing:border-box}
+  #pwErr{color:#ff9a76;font-size:12px;min-height:16px;margin-top:6px}
 </style>
 </head>
 <body>
@@ -99,6 +118,19 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
   <div class="steps" id="stepList"></div>
   <div class="info" id="info">点击下方任一步骤，或按「推进一步」逐步查看工程过程。顶部 4 个节点为 8.1版 / 9.4版 各自的主备 MSO（东宝兴路为同一栋楼、不同机房，9.4版 建于新建路网核心机房）。每步均标注计划时间。</div>
 </div>
+<button id="adminBtn">🔒 进度管理</button>
+<div id="adminMask">
+  <div id="adminPanel">
+    <h3>割接进度管理</h3>
+    <div class="sub">输入管理密码后可更新各线路实际完成时间；填写完成时间后该线路不再显示“实施中”。数据保存在本浏览器，刷新即生效。</div>
+    <div id="pwBox">
+      <input id="pwInput" type="password" placeholder="请输入管理密码">
+      <div id="pwErr"></div>
+      <div class="acts"><button id="pwOk">进入</button></div>
+    </div>
+    <div id="editBox" style="display:none"></div>
+  </div>
+</div>
 <script>
 (function () {
   var NS = "http://www.w3.org/2000/svg";
@@ -133,6 +165,20 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
   ];
   lines.sort(function (a, b) { return a.cut - b.cut; });
   var n = lines.length;
+
+  // ===== 线路割接状态（本地存储，密码入口可改） =====
+  function fmtDate(d){ if(!d) return ""; var p=String(d).split("-"); if(p.length<3) return d; return p[0]+"年"+(+p[1])+"月"+(+p[2])+"日"; }
+  function loadStatus(){ try { return JSON.parse(localStorage.getItem("brainswap_status_v1")) || {}; } catch(e){ return {}; } }
+  function saveStatus(s){ try { localStorage.setItem("brainswap_status_v1", JSON.stringify(s)); } catch(e){} }
+  var lineStatus = loadStatus();
+  var DEFAULT_DOING = ["17号线"]; // 未记录完成时间时，默认显示为"实施中"的线路
+  function statusOf(name){
+    var v = lineStatus[name];
+    if (v && String(v).indexOf("done:")===0) return { type:"done", date: v.slice(5) };
+    if (v === "doing") return { type:"doing" };
+    if (DEFAULT_DOING.indexOf(name) >= 0) return { type:"doing" };
+    return { type:"planned" };
+  }
 
   function el(name, attrs) { var e = document.createElementNS(NS, name); for (var k in attrs) e.setAttribute(k, attrs[k]); return e; }
   function cutToDate(cut) {
@@ -306,7 +352,8 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
       "\n影响：调度台手动重登录、跨线路呼叫中断；基站中断至割接完成" +
       (L.data ? "\n注：数据业务不能跨 MSO，须先于新老 MSO 互联完成割接" : "") +
       "\n应急：异常即退回 8.1版 系统，800 兆手持台联系" +
-      (done ? "\n状态：✅ 已接入 9.4版 新脑（东宝兴路·3C大楼）" : "\n状态：⏳ 仍接入 8.1版 旧脑（东宝兴路·西藏北路）");
+      (done ? "\n状态：✅ 已接入 9.4版 新脑（东宝兴路·3C大楼）" : "\n状态：⏳ 仍接入 8.1版 旧脑（东宝兴路·西藏北路）") +
+      (function () { var st = statusOf(L.n); if (st.type === "done") return "\n实际完成：" + fmtDate(st.date); if (st.type === "doing") return "\n实际状态：🔧 实施中"; return ""; })();
   }
 
   var curIdx = 0;
@@ -391,7 +438,17 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
         if (L.cut > lc + 1e-9) { lc = L.cut; lnames = L.n; ltime = L.t; }
         else if (Math.abs(L.cut - lc) < 1e-9) { lnames += "、" + L.n; }
       });
-      ev = lnames ? ("🚧 " + ltime + "：" + lnames + "割接至 9.4版，基站链路由E1升级为以太网") : ""; evOn = !!ev;
+      if (lnames) {
+        var grp = lnames.split("、");
+        var allDone = grp.every(function (nm) { return statusOf(nm).type === "done"; });
+        var anyDoing = grp.some(function (nm) { return statusOf(nm).type === "doing"; });
+        var doneDate = "";
+        grp.forEach(function (nm) { var st = statusOf(nm); if (st.type === "done" && !doneDate) doneDate = st.date; });
+        if (allDone) ev = "✅ " + fmtDate(doneDate) + "：" + lnames + "割接至 9.4版，基站链路由E1升级为以太网（已完成）";
+        else if (anyDoing) ev = "🔧 " + ltime + "：" + lnames + "割接至 9.4版，基站链路由E1升级为以太网（实施中）";
+        else ev = "🚧 " + ltime + "：" + lnames + "割接至 9.4版，基站链路由E1升级为以太网";
+        evOn = true;
+      } else { ev = ""; evOn = false; }
     }
     else if (demolish) {
       stage = "✦ 8.1版 MSO 已退役 · 换脑工程圆满完成";
@@ -411,18 +468,18 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
   var STEPS = [
     { idx: 0,    sch: 0,    name: "全网运行于 8.1版",       time: "现状" },
     { idx: 0,    sch: 1,    build: true, name: "9.4版 主备 MSO 建成", time: "2026年6月" },
-    { idx: 2.0,  sch: 2,    name: "10 号线先行割接",       time: "2026年7月" },
+    { idx: 2.0,  sch: 2,    line: "10号线", name: "10 号线先行割接",       time: "2026年7月" },
     { idx: 3.1,  sch: 3,    name: "8.1版↔9.4版 MSO 互联",  time: "2026年8月26日" },
-    { idx: 4.0,  sch: 4.0,  name: "17 号线割接",           time: "2026年9月" },
-    { idx: 5,    sch: 5,    name: "1 号线割接",            time: "2026年10月" },
-    { idx: 6,    sch: 6,    name: "5 号线割接",            time: "2026年11月" },
-    { idx: 7,    sch: 7,    name: "6 号线割接",            time: "2026年12月" },
-    { idx: 8,    sch: 8,    name: "8 号线割接",            time: "2027年1月" },
-    { idx: 10,   sch: 10,   name: "9 号线割接",            time: "2027年3月" },
-    { idx: 11,   sch: 11,   name: "12 号线割接",           time: "2027年3-4月" },
-    { idx: 12,   sch: 11.5, name: "11 号线割接",           time: "2027年4-5月" },
-    { idx: 13,   sch: 13,   name: "16 号线 / 浦江线",       time: "2027年5-6月" },
-    { idx: 15,   sch: 14,   name: "轨交公安割接 · 换脑完成", time: "2027年7月" },
+    { idx: 4.0,  sch: 4.0,  line: "17号线", name: "17 号线割接",           time: "2026年9月" },
+    { idx: 5,    sch: 5,    line: "1号线", name: "1 号线割接",            time: "2026年10月" },
+    { idx: 6,    sch: 6,    line: "5号线", name: "5 号线割接",            time: "2026年11月" },
+    { idx: 7,    sch: 7,    line: "6号线", name: "6 号线割接",            time: "2026年12月" },
+    { idx: 8,    sch: 8,    line: "8号线", name: "8 号线割接",            time: "2027年1月" },
+    { idx: 10,   sch: 10,   line: "9号线", name: "9 号线割接",            time: "2027年3月" },
+    { idx: 11,   sch: 11,   line: "12号线", name: "12 号线割接",           time: "2027年3-4月" },
+    { idx: 12,   sch: 11.5, line: "11号线", name: "11 号线割接",           time: "2027年4-5月" },
+    { idx: 13,   sch: 13,   line: "16号线", name: "16 号线 / 浦江线",       time: "2027年5-6月" },
+    { idx: 15,   sch: 14,   line: "轨交公安", name: "轨交公安割接 · 换脑完成", time: "2027年7月" },
     { idx: 15,   sch: 16,   demolish: true, name: "8.1版 MSO 拆除", time: "2027年后" }
   ];
   var timeline = document.getElementById("timeline");
@@ -436,7 +493,13 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
   STEPS.forEach(function (s, i) {
     var c = document.createElement("span");
     c.className = "chip";
-    c.innerHTML = "<b>" + (i + 1) + "</b> " + s.name + " · <i>" + s.time + "</i>";
+    var extra = "";
+    if (s.line) {
+      var stt = statusOf(s.line);
+      if (stt.type === "done") extra = " · ✅" + fmtDate(stt.date);
+      else if (stt.type === "doing") extra = " · 🔧实施中";
+    }
+    c.innerHTML = "<b>" + (i + 1) + "</b> " + s.name + " · <i>" + s.time + "</i>" + extra;
     c.addEventListener("click", function () { stepIdx = i; applyStep(); });
     stepList.appendChild(c); chipEls.push(c);
   });
@@ -473,6 +536,63 @@ body { background: #0a0e1a; font-family: "Microsoft YaHei", "SimHei", sans-serif
   }
   stepIdx = currentStepIndex();
   applyStep();
+
+  // ===== 割接进度管理（密码入口） =====
+  var ADMIN_PWD = "shmetro2026"; // 默认管理密码，可在源码中修改
+  var adminBtn = document.getElementById("adminBtn");
+  var adminMask = document.getElementById("adminMask");
+  var pwBox = document.getElementById("pwBox");
+  var pwInput = document.getElementById("pwInput");
+  var pwOk = document.getElementById("pwOk");
+  var pwErr = document.getElementById("pwErr");
+  var editBox = document.getElementById("editBox");
+  adminBtn.onclick = function () {
+    adminMask.classList.add("on"); pwBox.style.display = "block"; editBox.style.display = "none";
+    pwErr.textContent = ""; pwInput.value = ""; setTimeout(function () { pwInput.focus(); }, 50);
+  };
+  adminMask.addEventListener("click", function (e) { if (e.target === adminMask) adminMask.classList.remove("on"); });
+  pwOk.onclick = function () {
+    if (pwInput.value === ADMIN_PWD) { pwBox.style.display = "none"; renderEdit(); editBox.style.display = "block"; }
+    else { pwErr.textContent = "密码错误，请重试"; }
+  };
+  pwInput.addEventListener("keydown", function (e) { if (e.key === "Enter") pwOk.onclick(); });
+  function renderEdit() {
+    var html = "";
+    lines.forEach(function (L) {
+      var st = statusOf(L.n);
+      var sel = st.type === "done" ? "done" : (st.type === "doing" ? "doing" : "planned");
+      html += '<div class="row"><div class="ln">' + L.n + '</div>'
+        + '<select data-ln="' + L.n + '">'
+        + '<option value="planned"' + (sel === "planned" ? " selected" : "") + '>计划中</option>'
+        + '<option value="doing"' + (sel === "doing" ? " selected" : "") + '>实施中</option>'
+        + '<option value="done"' + (sel === "done" ? " selected" : "") + '>已完成</option>'
+        + '</select>'
+        + '<input type="date" data-ln="' + L.n + '" value="' + (st.type === "done" ? st.date : "") + '"' + (sel === "done" ? "" : ' style="display:none"') + '>'
+        + '</div>';
+    });
+    html += '<div class="acts"><button id="saveBtn">保存</button><button id="closeBtn">关闭</button></div>';
+    editBox.innerHTML = html;
+    editBox.querySelectorAll("select").forEach(function (s) {
+      s.addEventListener("change", function () {
+        var inp = editBox.querySelector('input[type=date][data-ln="' + s.getAttribute("data-ln") + '"]');
+        inp.style.display = s.value === "done" ? "inline-block" : "none";
+      });
+    });
+    document.getElementById("saveBtn").onclick = function () {
+      var ns = {};
+      lines.forEach(function (L) {
+        var sel = editBox.querySelector('select[data-ln="' + L.n + '"]').value;
+        if (sel === "done") {
+          var d = editBox.querySelector('input[type=date][data-ln="' + L.n + '"]').value;
+          ns[L.n] = d ? "done:" + d : "doing";
+        } else if (sel === "doing") { ns[L.n] = "doing"; }
+      });
+      saveStatus(ns); lineStatus = ns;
+      adminMask.classList.remove("on");
+      location.reload();
+    };
+    document.getElementById("closeBtn").onclick = function () { adminMask.classList.remove("on"); };
+  }
 })();
 </script>
 </body>

@@ -357,6 +357,8 @@ function loadDB(){
 function saveDB(){
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); }
   catch(e){ toast('保存失败：浏览器存储空间不足','err'); }
+  /* 云端同步已开启时，异步把这次改动推上去（未开启则直接跳过） */
+  if(typeof cloudQueue === 'function') cloudQueue();
 }
 
 /* ---------- 账本与积分引擎 ---------- */
@@ -1621,17 +1623,22 @@ function viewParentConfig(){
 
   var lastSync = (DB.meta && DB.meta.lastSyncAt) ? new Date(DB.meta.lastSyncAt) : null;
   var syncHint = lastSync
-    ? ('上次同步：' + lastSync.getFullYear() + '-' + pad2(lastSync.getMonth() + 1) + '-' + pad2(lastSync.getDate()))
-    : '这台设备还没有同步过';
+    ? ('上次用同步码搬运：' + lastSync.getFullYear() + '-' + pad2(lastSync.getMonth() + 1) + '-' + pad2(lastSync.getDate()))
+    : '';
+  var cloudBtn = (CS.state === 'off') ? '云端同步（本地址不支持）'
+               : (CS.user ? '云端同步 · 已开启' : '开启云端自动同步');
   html += '<div class="card pad mb12">' +
     '<div class="bd sm mb4">跨设备同步</div>' +
-    '<div class="xs mut mb10" style="line-height:1.7">数据只存在<b>当前这个浏览器</b>里——换手机、换电脑，甚至同一台手机上换一个 App（微信 / Safari）打开，都是各自独立的。<br>用同步码把数据带过去：</div>' +
+    '<div class="xs mut mb10" style="line-height:1.7">手机、平板、电脑共用一份数据。开启后<b>一处改动，另一处几秒内自动更新</b>，不用再手动搬。</div>' +
+    '<button class="btn ' + (CS.user ? 'ok' : 'pri') + ' wide" onclick="openAccount()">' + cloudBtn + '</button>' +
+    '<div class="xs mut mt4" style="line-height:1.7">' + cloudStateLine() + '</div>' +
+    '<div class="xs mut mt12 mb4" style="line-height:1.7">下面是<b>备用手段</b>：没网、或在没登录的设备上临时搬一次时用。</div>' +
     '<div class="grid2">' +
-      '<button class="btn pri" onclick="showSyncExport(\'cfg\')">⚙️ 同步设置</button>' +
-      '<button class="btn bl" onclick="showSyncExport(\'full\')">🔄 完整同步</button>' +
+      '<button class="btn gh" onclick="showSyncExport(\'cfg\')">⚙️ 同步设置码</button>' +
+      '<button class="btn gh" onclick="showSyncExport(\'full\')">🔄 完整同步码</button>' +
     '</div>' +
-    '<button class="btn ok wide mt8" onclick="showSyncImport()">📥 粘贴同步码导入</button>' +
-    '<div class="xs mut mt8">' + syncHint + '</div></div>';
+    '<button class="btn gh wide mt8" onclick="showSyncImport()">📥 粘贴同步码导入</button>' +
+    (syncHint ? '<div class="xs mut mt8">' + syncHint + '</div>' : '') + '</div>';
 
   html += '<div class="card pad mb12"><div class="bd sm mb10">打印与分享</div>' +
     '<div class="grid2">' +
@@ -2087,6 +2094,431 @@ function checkSyncHash(){
   }, 900);
 }
 
+/* ============================================================
+   云端实时同步（WorkBuddy 云服务）
+   · 未登录 / 不在正式发布地址 → 自动退回纯本地，功能一切照旧
+   · 登录后：localStorage 仍是主缓存（秒开、离线照常记），
+     本地一改就异步推云端，每 5 秒拉一次，两台设备几秒内自动一致
+   ============================================================ */
+var CLOUD = {
+  endpoint: 'https://growth-kit.app.workbuddy.host',
+  key: 'wbpk_zqSOOLnnIMFuMvnagOJzul_VPVK2PUlkDbJSTKwYlvcjcczSD84Ti7e',
+  table: 'family_state',
+  every: 5000
+};
+var CS = {
+  api: null, auth: null, db: null, user: null,
+  rowId: null, rev: 0, state: 'idle',
+  pushing: false, timer: null, lastAt: 0, msg: '',
+  otpId: '', otpExist: false, dev: '', busy: false
+};
+
+function cloudEnvOK(){
+  try {
+    if(location.protocol !== 'https:') return false;
+    var h = String(location.hostname || '').toLowerCase();
+    if(!h) return false;
+    if(/(^|\.)github\.io$/.test(h)) return false;
+    return h.indexOf('workbuddy') >= 0;
+  } catch(e){ return false; }
+}
+function deviceTag(){
+  if(CS.dev) return CS.dev;
+  var t = '';
+  try { t = localStorage.getItem('growth_kit_dev') || ''; } catch(e){}
+  if(!t){
+    t = '设备' + Math.random().toString(36).slice(2, 6).toUpperCase();
+    try { localStorage.setItem('growth_kit_dev', t); } catch(e){}
+  }
+  CS.dev = t;
+  return t;
+}
+function hhmm(d){
+  return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()) + ' ' +
+         pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+}
+function saveLocal(){
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); } catch(e){}
+}
+function localEmpty(){
+  return (!DB.checkins || !DB.checkins.length) &&
+         (!DB.orders   || !DB.orders.length) &&
+         (!DB.ledger   || !DB.ledger.length) &&
+         (!DB.wishes   || !DB.wishes.length);
+}
+
+function cloudLoadSDK(){
+  if(window.WorkBuddyCloud) return Promise.resolve(window.WorkBuddyCloud);
+  return new Promise(function(res, rej){
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/@tencent-ai/workbuddy-cloud-sdk@dev/lib/index.global.js';
+    s.async = true;
+    s.onload = function(){
+      if(window.WorkBuddyCloud) res(window.WorkBuddyCloud);
+      else rej(new Error('云端模块未就绪'));
+    };
+    s.onerror = function(){ rej(new Error('网络不通，加载不到云端模块')); };
+    document.head.appendChild(s);
+  });
+}
+
+function cloudBoot(){
+  if(CS.state !== 'idle') return;
+  if(!cloudEnvOK()){ CS.state = 'off'; return; }
+  CS.state = 'busy';
+  cloudLoadSDK().then(function(WB){
+    CS.api  = WB.createWorkBuddyCloud({ endpoint: CLOUD.endpoint, publishableKey: CLOUD.key });
+    CS.auth = CS.api.auth;
+    CS.db   = CS.api.database;
+    return CS.auth.getSession();
+  }).then(function(r){
+    var s = r && r.data && r.data.session;
+    if(s && s.user){
+      CS.user = s.user || null;
+      CS.state = 'on';
+      return cloudPull().then(function(){ cloudTick(); });
+    }
+    CS.state = 'login';
+  }).catch(function(e){
+    CS.msg = (e && e.message) || '连接云端失败';
+    CS.state = 'err';
+  }).then(function(){
+    if(UI.view === 'parent') render();
+  });
+}
+
+/* ---- 拉取：云端 → 本地 ---- */
+function cloudPull(){
+  if(CS.state === 'off' || !CS.db || !CS.user) return Promise.resolve();
+  return CS.db.from(CLOUD.table).select('id, rev, payload, updated_at').limit(1)
+    .then(function(res){
+      if(res.error) throw res.error;
+      var rows = res.data || [];
+      if(!rows.length){
+        CS.rowId = null; CS.rev = 0;
+        return cloudPush(true);
+      }
+      var row = rows[0];
+      CS.rowId = row.id;
+      if(row.rev === CS.rev) return;
+      var first  = (CS.rev === 0);
+      var remote = row.payload;
+      if(remote && remote.account){
+        if(first && localEmpty()) cloudAdopt(remote);
+        else cloudMerge(remote, first);
+      }
+      CS.rev = row.rev;
+      CS.lastAt = Date.now();
+      CS.state = 'on';
+      saveLocal();
+      updateStreak(); checkBadges(); render();
+      if(!first) toast('已同步另一台设备的改动', 'info');
+    })
+    .catch(function(e){
+      CS.msg = (e && e.message) || '同步失败';
+      CS.state = 'err';
+      if(UI.view === 'parent') render();
+    });
+}
+function cloudAdopt(remote){
+  DB = remote;
+  if(!DB.meta) DB.meta = {};
+}
+function cloudMerge(remote, quiet){
+  if(!remote || !remote.account || !remote.config) return;
+  var REC = ['checkins', 'orders', 'ledger', 'wishes', 'pledges'];
+  var merged = JSON.parse(JSON.stringify(remote));
+  REC.forEach(function(k){
+    var seen = {}, arr = [];
+    (remote[k] || []).concat(DB[k] || []).forEach(function(it){
+      if(!it || !it.id || seen[it.id]) return;
+      seen[it.id] = 1; arr.push(it);
+    });
+    arr.sort(function(a, b){ return (b.ts || 0) - (a.ts || 0); });
+    if(k === 'ledger' && arr.length > 2000) arr.length = 2000;
+    merged[k] = arr;
+  });
+  (merged.badges || []).forEach(function(b){
+    var mine = (DB.badges || []).filter(function(x){ return x.id === b.id; })[0];
+    if(mine && mine.achievedAt && !b.achievedAt) b.achievedAt = mine.achievedAt;
+  });
+  var extra = false;
+  REC.forEach(function(k){
+    var ids = {};
+    (remote[k] || []).forEach(function(it){ if(it && it.id) ids[it.id] = 1; });
+    (DB[k] || []).forEach(function(it){ if(it && it.id && !ids[it.id]) extra = true; });
+  });
+  if(extra){
+    merged.account = JSON.parse(JSON.stringify(DB.account));
+    merged.meta    = JSON.parse(JSON.stringify(DB.meta || merged.meta || {}));
+    merged.flags   = JSON.parse(JSON.stringify(DB.flags || merged.flags || {}));
+  }
+  DB = merged;
+  if(!quiet) toast('已合并两台设备的改动', 'info');
+}
+
+/* ---- 推送：本地 → 云端（本地改动后合并 0.7 秒推一次） ---- */
+var _pushT = null;
+function cloudQueue(){
+  if(CS.state !== 'on' || !CS.db) return;
+  if(_pushT) clearTimeout(_pushT);
+  _pushT = setTimeout(function(){ cloudPush(false); }, 700);
+}
+function cloudPush(silent){
+  if(CS.state === 'off' || !CS.db || !CS.user || CS.pushing) return Promise.resolve();
+  CS.pushing = true;
+  var payload = JSON.parse(JSON.stringify(DB));
+  var q;
+  if(CS.rowId == null){
+    q = CS.db.from(CLOUD.table).insert({ payload: payload, rev: 1, updated_by: deviceTag() }).select();
+  } else {
+    q = CS.db.from(CLOUD.table).update({ payload: payload, rev: CS.rev + 1, updated_by: deviceTag() })
+          .eq('id', CS.rowId).eq('rev', CS.rev).select();
+  }
+  return q.then(function(res){
+    if(res.error) throw res.error;
+    var rows = res.data || [];
+    if(!rows.length) return cloudResync();
+    CS.rowId  = rows[0].id;
+    CS.rev    = rows[0].rev;
+    CS.lastAt = Date.now();
+    CS.state  = 'on';
+    CS.pushing = false;
+    if(!silent && UI.view === 'parent') render();
+  }).catch(function(e){
+    if(e && e.code === '23505'){
+      CS.rowId = null; CS.rev = 0; CS.pushing = false;
+      return cloudPull().then(function(){ cloudQueue(); });
+    }
+    CS.msg = (e && e.message) || '上传失败';
+    CS.state = 'err';
+    CS.pushing = false;
+    if(!silent && UI.view === 'parent') render();
+  });
+}
+function cloudResync(){
+  CS.rev = 0;
+  return CS.db.from(CLOUD.table).select('id, rev, payload').limit(1).then(function(r){
+    var row = (r.data || [])[0];
+    if(row){
+      CS.rowId = row.id;
+      if(row.payload && row.payload.account) cloudMerge(row.payload, true);
+      CS.rev = row.rev;
+      saveLocal(); render();
+    }
+    CS.pushing = false;
+    cloudQueue();
+  }).catch(function(){ CS.pushing = false; });
+}
+
+/* ---- 轮询 ---- */
+function cloudTick(){
+  if(CS.timer) return;
+  CS.timer = setInterval(function(){
+    if(document.hidden || CS.pushing || CS.state !== 'on') return;
+    cloudPull();
+  }, CLOUD.every);
+  document.addEventListener('visibilitychange', function(){
+    if(!document.hidden && CS.state === 'on') cloudPull();
+  });
+  window.addEventListener('online', function(){ if(CS.state === 'on') cloudPull(); });
+}
+function cloudNow(){
+  if(CS.state !== 'on'){ toast('还没连上云端', 'warn'); return; }
+  cloudPush(true).then(function(){ return cloudPull(); }).then(function(){
+    toast('已是最新', 'ok');
+  });
+}
+
+/* ---- 账号面板 ---- */
+function _v(sel){ var e = $(sel); return e ? String(e.value || '').trim() : ''; }
+function cloudStateLine(){
+  if(CS.state === 'idle' || CS.state === 'busy') return '正在连接云端…';
+  if(CS.state === 'off')  return '当前打开方式不支持自动同步（需要从正式发布地址打开）。下方可用「同步码」手动搬运。';
+  if(CS.state === 'err')  return '云端连接异常：' + esc(CS.msg || '未知原因') + '。数据仍在本机，网络恢复后会自动补传。';
+  if(CS.state === 'on')   return '已开启自动同步，每 5 秒与云端对一次。';
+  return '未开启。开启后两台设备不用再手动搬数据。';
+}
+function openAccount(){ openAccountPanel(); }
+function openAccountPanel(){
+  var head = '<div class="card pad mb12" style="background:#FAF8F5">' +
+             '<div class="xs bd mb4">跨设备同步</div>' +
+             '<div class="xs mut" style="line-height:1.7">' + cloudStateLine() + '</div></div>';
+  if(CS.user){
+    var t = CS.lastAt ? new Date(CS.lastAt) : null;
+    openModal('云端同步',
+      head +
+      '<div class="card pad mb12" style="background:#F2F8F4;border-color:#CFE6D6">' +
+        '<div class="xs bd">已登录</div>' +
+        '<div class="xs mut mt4">' + esc(CS.user.email || '') + '</div>' +
+        (t ? '<div class="xs mut mt4">最近同步：' + hhmm(t) + '</div>' : '') +
+        '<div class="xs mut mt4">此设备：' + esc(deviceTag()) + '</div>' +
+      '</div>' +
+      '<div class="row g8"><button class="btn pri fill" id="ac-now">立即同步</button>' +
+      '<button class="btn gh fill" id="ac-out">退出登录</button></div>' +
+      '<div class="xs mut mt10" style="line-height:1.7">换新设备时，用同一个邮箱登录，数据会自动出现。</div>',
+      function(w){
+        w.querySelector('#ac-now').onclick = cloudNow;
+        w.querySelector('#ac-out').onclick = function(){
+          confirmBox('退出后本机数据仍在，但不再自动同步。确定退出？', function(){ doSignOut(); });
+        };
+      });
+    return;
+  }
+  openModal('开启云端同步',
+    head +
+    '<div class="xs mut mb10" style="line-height:1.7">用一个邮箱建「家庭账号」。两台设备都登同一个账号，数据就自动同步了。</div>' +
+    '<div class="grid2 mb12">' +
+      '<button class="btn pri" id="ac-t1">密码登录</button>' +
+      '<button class="btn gh" id="ac-t2">邮箱验证码</button>' +
+    '</div>' +
+    '<div id="ac-body"></div>',
+    function(w){
+      var body = w.querySelector('#ac-body');
+      function tab(on){
+        w.querySelector('#ac-t1').className = 'btn ' + (on === 1 ? 'pri' : 'gh');
+        w.querySelector('#ac-t2').className = 'btn ' + (on === 2 ? 'pri' : 'gh');
+      }
+      function viewLogin(){
+        tab(1);
+        body.innerHTML =
+          '<label class="fl">邮箱</label><input id="ac-em" type="email" placeholder="name@example.com" autocomplete="username">' +
+          '<label class="fl mt8">密码</label><input id="ac-pw" type="password" placeholder="密码" autocomplete="current-password">' +
+          '<button class="btn pri wide mt12" id="ac-go">登录</button>' +
+          '<button class="btn gh wide mt8" id="ac-fg">忘记密码</button>';
+        body.querySelector('#ac-go').onclick = doSignIn;
+        body.querySelector('#ac-fg').onclick = viewFind;
+      }
+      function viewOtp(){
+        tab(2);
+        body.innerHTML =
+          '<label class="fl">邮箱</label><input id="ac-em" type="email" placeholder="name@example.com">' +
+          '<button class="btn bl wide mt8" id="ac-send">发送验证码</button>' +
+          '<label class="fl mt8">验证码</label><input id="ac-cd" type="tel" maxlength="6" placeholder="6 位数字">' +
+          '<label class="fl mt8">密码（新账号时设置，老账号可留空）</label><input id="ac-pw" type="password" placeholder="至少 6 位">' +
+          '<button class="btn pri wide mt12" id="ac-go">登录 / 注册</button>' +
+          '<div class="xs mut mt8" style="line-height:1.6">没有账号也可以：验证通过后自动为你创建家庭账号。</div>';
+        body.querySelector('#ac-send').onclick = doSendOtp;
+        body.querySelector('#ac-go').onclick = doVerifyOtp;
+      }
+      function viewFind(){
+        body.innerHTML =
+          '<label class="fl">注册邮箱</label><input id="ac-em" type="email" placeholder="name@example.com">' +
+          '<button class="btn bl wide mt8" id="ac-send">发送重置码</button>' +
+          '<label class="fl mt8">邮箱里的重置码</label><input id="ac-cd" type="tel" maxlength="6" placeholder="6 位数字">' +
+          '<label class="fl mt8">新密码</label><input id="ac-pw" type="password" placeholder="至少 6 位">' +
+          '<button class="btn pri wide mt12" id="ac-go">重设密码</button>' +
+          '<button class="btn gh wide mt8" id="ac-bk">返回登录</button>';
+        body.querySelector('#ac-send').onclick = doResetSend;
+        body.querySelector('#ac-go').onclick = doReset;
+        body.querySelector('#ac-bk').onclick = viewLogin;
+      }
+      w.querySelector('#ac-t1').onclick = viewLogin;
+      w.querySelector('#ac-t2').onclick = viewOtp;
+      viewLogin();
+    });
+}
+function authErr(e){
+  var k = (e && e.kind) || '';
+  if(k === 'invalid_grant' || /password|credential|invalid/i.test((e && e.message) || '')) return '邮箱或密码不对';
+  if(k === 'network' || k === 'backend-unavailable') return '网络不稳定，稍后再试';
+  return (e && e.message) || '操作失败';
+}
+function doSignIn(){
+  var em = _v('#ac-em'), pw = _v('#ac-pw');
+  if(!em || !pw){ toast('请填写邮箱和密码', 'warn'); return; }
+  if(CS.busy) return;
+  CS.busy = true; toast('正在登录…', 'info');
+  CS.auth.signInWithPassword({ email: em, password: pw }).then(function(r){
+    if(r.error) throw r.error;
+    return afterLogin();
+  }).catch(function(e){
+    toast(authErr(e), 'err');
+  }).then(function(){ CS.busy = false; });
+}
+function doSendOtp(word){
+  var em = _v('#ac-em');
+  if(!em){ toast('请先填邮箱', 'warn'); return; }
+  if(CS.busy) return;
+  CS.busy = true; toast('正在发送…', 'info');
+  CS.auth.sendOtp({ email: em }).then(function(r){
+    if(r.error) throw r.error;
+    CS.otpId    = r.data.verificationId;
+    CS.otpExist = !!r.data.isExistingUser;
+    toast('验证码已发出，请查看邮箱', 'ok');
+  }).catch(function(e){
+    toast(authErr(e), 'err');
+  }).then(function(){ CS.busy = false; });
+}
+function doVerifyOtp(){
+  var em = _v('#ac-em'), cd = _v('#ac-cd'), pw = _v('#ac-pw');
+  if(!CS.otpId){ toast('请先点「发送验证码」', 'warn'); return; }
+  if(!cd){ toast('请填验证码', 'warn'); return; }
+  if(CS.busy) return;
+  CS.busy = true;
+  CS.auth.verifyOtp({
+    verificationId: CS.otpId,
+    token: cd,
+    email: em,
+    isExistingUser: CS.otpExist,
+    password: CS.otpExist ? undefined : (pw || undefined)
+  }).then(function(r){
+    if(r.error) throw r.error;
+    return afterLogin();
+  }).catch(function(e){
+    toast(authErr(e), 'err');
+  }).then(function(){ CS.busy = false; });
+}
+function doResetSend(){
+  var em = _v('#ac-em');
+  if(!em){ toast('请先填注册邮箱', 'warn'); return; }
+  if(CS.busy) return;
+  CS.busy = true; toast('正在发送…', 'info');
+  CS.auth.resetPasswordForEmail(em).then(function(r){
+    if(r.error) throw r.error;
+    CS.resetStart = r.data;
+    toast('重置码已发出，请查看邮箱', 'ok');
+  }).catch(function(e){
+    toast(authErr(e), 'err');
+  }).then(function(){ CS.busy = false; });
+}
+function doReset(){
+  var cd = _v('#ac-cd'), pw = _v('#ac-pw');
+  if(!CS.resetStart){ toast('请先点「发送重置码」', 'warn'); return; }
+  if(!cd || !pw){ toast('重置码和新密码都要填', 'warn'); return; }
+  if(CS.busy) return;
+  CS.busy = true;
+  CS.resetStart.updateUser({ nonce: cd, password: pw }).then(function(done){
+    if(done.error) throw done.error;
+    return afterLogin();
+  }).catch(function(e){
+    toast(authErr(e), 'err');
+  }).then(function(){ CS.busy = false; });
+}
+function afterLogin(){
+  return CS.auth.getSession().then(function(r){
+    CS.user = (r && r.data && r.data.session && r.data.session.user) || CS.user;
+    CS.state = 'on';
+    CS.rev = 0; CS.rowId = null;
+    return cloudPull();
+  }).then(function(){
+    cloudTick();
+    closeModal();
+    toast('云端同步已开启', 'ok');
+    render();
+  });
+}
+function doSignOut(){
+  CS.auth.signOut().then(function(){
+    CS.user = null; CS.state = 'login';
+    CS.rev = 0; CS.rowId = null;
+    if(CS.timer){ clearInterval(CS.timer); CS.timer = null; }
+    closeModal();
+    toast('已退出，数据仍保留在本机', 'info');
+    render();
+  }).catch(function(e){ toast(authErr(e), 'err'); });
+}
+
 /* ---------- 导入导出 / 打印 ---------- */
 function download(filename, content, mime){
   var blob = new Blob([content], { type: mime || 'text/plain;charset=utf-8' });
@@ -2372,6 +2804,8 @@ function boot(){
   }
   /* 链接里带了同步码 → 引导导入（放在最后，等页面渲染完再弹） */
   checkSyncHash();
+  /* 连接云端（未登录 / 非发布地址会自动退回纯本地，不打断使用） */
+  cloudBoot();
 }
 if(document.readyState === 'loading'){
   document.addEventListener('DOMContentLoaded', boot);

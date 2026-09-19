@@ -1266,6 +1266,16 @@ function viewKidAccount(){
       '<div class="bd sm" style="color:' + (l.points > 0 ? '#4E9E5B' : '#C0453F') + '">' + (l.points > 0 ? '+' : '') + l.points + '</div></div>';
   });
   html += '</div>';
+
+  /* 云端同步状态：孩子端也放一个入口，方便家长在这台设备上登录一次 */
+  var csCls, csLine;
+  if(CS.state === 'on' && CS.user){ csCls = 'color:#3B8A5A'; csLine = '☁️ 云端同步已开启 · 点这里查看'; }
+  else if(CS.state === 'login'){    csCls = 'color:#3E7BB8'; csLine = '☁️ 还没开启云端同步 · 点这里开启'; }
+  else if(CS.state === 'off'){      csCls = 'color:#9A8C7A'; csLine = '💾 本机保存（此打开方式不支持云同步）'; }
+  else if(CS.state === 'err'){      csCls = 'color:#C0453F'; csLine = '⚠️ 云端连接异常 · 点这里查看'; }
+  else {                            csCls = 'color:#9A8C7A'; csLine = '☁️ 正在检查云端…'; }
+  html += '<button onclick="openAccount()" style="display:block;width:100%;margin-top:2px;padding:12px;' +
+          'border-radius:12px;border:1px solid #E6E1D8;background:#FAF8F5;font-size:12.5px;' + csCls + '">' + csLine + '</button>';
   return html;
 }
 

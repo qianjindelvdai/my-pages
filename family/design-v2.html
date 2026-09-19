@@ -56,12 +56,12 @@ tbody tr:hover{background:#FFFBF4}
   <div class="hero">
     <h1>家庭激励系统 · 设计方案 v2</h1>
     <div class="sub">在 v1 基础上的完善稿：同类系统对标 · 系统架构 · 防作弊与公平性 · 上线首月运行手册</div>
-    <div><span class="badge">v2.3</span><span class="badge">2026-09-19</span><span class="badge">单文件离线应用 · 双端入口</span></div>
+    <div><span class="badge">v2.3</span><span class="badge">2026-09-19</span><span class="badge">单文件离线应用 · 双端入口 · 同步码</span></div>
   </div>
-  <p><strong>项目代号</strong>：Growth Kit（成长工具箱）<br><strong>版本</strong>：v2.0 完善稿<br><strong>日期</strong>：2026 年 9 月 18 日<br><strong>形态</strong>：单文件网页应用（离线可用）+ 配套运行方案<br><strong>说明</strong>：本稿是在 v1 设计方案基础上的<strong>完善版</strong>，重点是补上 v1 缺失的四个部分：同类系统对标、系统架构、防作弊与公平性、上线首月运行手册。</p>
+  <p><strong>项目代号</strong>：Growth Kit（成长工具箱）<br><strong>版本</strong>：v2.3<br><strong>日期</strong>：2026 年 9 月 19 日<br><strong>形态</strong>：单文件网页应用（离线可用）+ 配套运行方案<br><strong>说明</strong>：本稿是在 v1 设计方案基础上的<strong>完善版</strong>，重点是补上 v1 缺失的四个部分：同类系统对标、系统架构、防作弊与公平性、上线首月运行手册。</p>
 <hr>
 <h2>0. v1 → v2 变更清单</h2>
-<table><thead><tr><th>维度</th><th>v1 已有</th><th>v2 补充</th></tr></thead><tbody><tr><td>目标与画像</td><td>完整</td><td>沿用</td></tr><tr><td>任务清单</td><td>17 项预置</td><td>沿用，改为可图形化编辑</td></tr><tr><td>积分商城</td><td>六层分档</td><td>沿用；新增「存钱目标（愿望单）」；<strong>v2.2 新增每件商品的兑换频次上限 + 使用规则备注</strong></td></tr><tr><td>兑换端风控</td><td>无</td><td><strong>新增兑换次数上限（每天／每周／每月／每 N 天／仅一次）</strong></td></tr><tr><td>审核机制</td><td>家长逐条审核</td><td><strong>新增信任分级 + 免审限额 + 抽检</strong></td></tr><tr><td>家长角色</td><td>审核者</td><td><strong>新增「家长承诺账」——家长也要守约</strong></td></tr><tr><td>风险管理</td><td>提到过度理由效应</td><td><strong>新增「通胀监控看板」+ 三阶段退出</strong></td></tr><tr><td>数据</td><td>localStorage</td><td><strong>新增导出/导入/打印实物备份</strong></td></tr><tr><td>可视化</td><td>无</td><td><strong>新增打卡热力图、周报、趋势图</strong></td></tr><tr><td>门禁</td><td>无</td><td><strong>新增家长端 PIN 码</strong></td></tr><tr><td>外部依赖</td><td>依赖 CDN 图表库</td><td><strong>全部去除，自绘 SVG，可离线双击打开</strong></td></tr></tbody></table>
+<table><thead><tr><th>维度</th><th>v1 已有</th><th>v2 补充</th></tr></thead><tbody><tr><td>目标与画像</td><td>完整</td><td>沿用</td></tr><tr><td>任务清单</td><td>17 项预置</td><td>沿用，改为可图形化编辑</td></tr><tr><td>积分商城</td><td>六层分档</td><td>沿用；新增「存钱目标（愿望单）」；<strong>v2.2 新增每件商品的兑换频次上限 + 使用规则备注</strong></td></tr><tr><td>兑换端风控</td><td>无</td><td><strong>新增兑换次数上限（每天／每周／每月／每 N 天／仅一次）</strong></td></tr><tr><td>审核机制</td><td>家长逐条审核</td><td><strong>新增信任分级 + 免审限额 + 抽检</strong></td></tr><tr><td>家长角色</td><td>审核者</td><td><strong>新增「家长承诺账」——家长也要守约</strong></td></tr><tr><td>风险管理</td><td>提到过度理由效应</td><td><strong>新增「通胀监控看板」+ 三阶段退出</strong></td></tr><tr><td>数据</td><td>localStorage</td><td><strong>新增导出/导入/打印实物备份</strong></td></tr><tr><td>跨设备</td><td>无（各设备各存各的）</td><td><strong>v2.3 新增「同步码」：设置同步 / 完整同步 + 链接直达导入</strong></td></tr><tr><td>可视化</td><td>无</td><td><strong>新增打卡热力图、周报、趋势图</strong></td></tr><tr><td>门禁</td><td>无</td><td><strong>新增家长端 PIN 码</strong></td></tr><tr><td>外部依赖</td><td>依赖 CDN 图表库</td><td><strong>全部去除，自绘 SVG，可离线双击打开</strong></td></tr></tbody></table>
 <hr>
 <h2>1. 同类系统对标研究</h2>
 <p>设计前先看了市面上真实存在的同类产品与相关研究，避免重复造轮子、也避免踩别人踩过的坑。</p>
@@ -148,11 +148,25 @@ tbody tr:hover{background:#FFFBF4}
 <h2>4. 防作弊与公平性</h2>
 <table><thead><tr><th>风险</th><th>对策</th></tr></thead><tbody><tr><td>孩子虚报</td><td>高价值任务必须审核；低价值任务靠抽检</td></tr><tr><td>家长随手加/减分</td><td>所有变动必须走账本，孩子端可见</td></tr><tr><td>家长临时改规则</td><td>规则修改在「约定」页留痕，孩子端能查到</td></tr><tr><td>孩子只挑低分任务刷分</td><td>设「每日封顶」+ 类别均衡提示</td></tr><tr><td>兑换被无限拖延</td><td>家长 24 小时未处理计入承诺账</td></tr><tr><td>多家长口径不一</td><td>双家长模式（dualRate），规则以系统为准，不靠记忆</td></tr></tbody></table>
 <hr>
-<h2>5. 数据安全与备份</h2>
-<p>系统全部数据在家里这台设备的浏览器本地（localStorage），<strong>不上传任何服务器</strong>，也不需要注册。好处是隐私安全、离线可用；代价是清浏览器数据会丢。</p>
-<p>所以 v2 提供了三层备份：</p>
-<ol><li><strong>导出 JSON</strong>：完整备份，可原样导入恢复。</li><li><strong>导出 CSV</strong>：账本流水，方便用 Excel 看。</li><li><strong>打印卡币 / 公约 / 周报</strong>：实物留档。孩子每赚到一档积分，可以打印一张卡片当「实物奖状」。</li></ol>
-<p><strong>换设备迁移</strong>：旧设备导出 JSON → 新设备导入即可，含全部历史记录。</p>
+<h2>5. 数据、同步与备份</h2>
+<h3>5.1 默认形态：纯本地</h3>
+<p>系统全部数据存在<strong>当前浏览器</strong>的 localStorage 里，<strong>不上传服务器</strong>，不需要注册，离线可用。好处是隐私、免费、断网也能打卡；代价见下。</p>
+<h3>5.2 必须先讲清楚的一件事：localStorage 是「浏览器 × 设备」级的</h3>
+<p>这是最容易被误解的一点。localStorage 不属于网址、不属于账号，它属于<strong>某一个浏览器实例</strong>。于是：</p>
+<table><thead><tr><th>场景</th><th>是否互通</th></tr></thead><tbody><tr><td>同一台手机上，孩子端 <code>/family/kid/</code> 与家长端 <code>/family/parent/</code></td><td>✅ 互通（同源同浏览器）</td></tr><tr><td>同一台手机上，微信里打开 与 Safari 里打开</td><td>❌ <strong>不互通</strong></td></tr><tr><td>手机 与 平板 / 电脑</td><td>❌ 不互通</td></tr><tr><td>换了手机、清了浏览器数据、用了无痕模式</td><td>❌ 数据不在</td></tr></tbody></table>
+<p>所以「我在家长端改了任务，换台设备看不到」是<strong>结构性的</strong>，不是 bug。</p>
+<h3>5.3 跨设备：同步码</h3>
+<p>v2.3 加入了「同步码」机制，把数据压缩成一串纯文本，在设备之间搬：</p>
+<ul><li><strong>设置同步（轻量，约 3–4 KB）</strong> — 只带任务清单、商品清单、家长设置（含 PIN）。<strong>不动</strong>对方的积分与记录。用途：家长改完配置，推给孩子那台设备。</li><li><strong>完整同步（约 14 KB 起）</strong> — 带全部数据（积分、流水、打卡、兑换、任务、商品、设置）。用途：换设备整体搬家。</li></ul>
+<p>传输有两条路：</p>
+<ol><li><strong>复制链接</strong> — 生成 <code>...#sync=GK1:xxxx</code> 的形式，发到微信 / 短信，对方点开就在页面里问「是否导入」。<strong>最省事。</strong></li><li><strong>复制同步码</strong> — 纯文本，对方在「家长端 → 设置 → 粘贴同步码导入」里粘贴。</li></ol>
+<p>技术上：<code>JSON → deflate-raw 压缩 → base64url</code>，前缀 <code>GK1:</code>；浏览器不支持 <code>CompressionStream</code> 时自动降级为未压缩的 <code>GK0:</code>。整条链路<strong>不发往任何服务器</strong>。</p>
+<h3>5.4 三层备份（沿用 v1）</h3>
+<ol><li><strong>导出 JSON</strong>：完整备份，可原样导入恢复，适合长期归档。</li><li><strong>导出 CSV</strong>：账本流水，方便用 Excel 看。</li><li><strong>打印卡币 / 公约 / 周报</strong>：实物留档。</li></ol>
+<h3>5.5 诚实的边界</h3>
+<p>同步码解决的是<strong>「搬一次」</strong>，不是<strong>「持续自动同步」</strong>。两台设备各自打卡之后，仍旧会分叉，需要再搬一次。</p>
+<p>真正的双向自动同步需要有后端（云端数据库 + 登录）。当前的纯静态页面做不到这一点，这是架构决定的天花板：用「零成本、零注册、离线可用、数据不出家门」换掉了「自动同步」。如果哪天觉得手动搬太麻烦，可以再评估引入后端。</p>
+<p><strong>实践建议</strong>：把「一台设备」定为唯一主设备（通常是家长手机），孩子在那台上打卡、家长在那台上审核。第二台设备只在换机或需要在场展示时用同步码拉一次。</p>
 <hr>
 <h2>6. 上线首月运行手册</h2>
 <p><strong>这一节比功能更重要。</strong> 大多数同类系统不是被孩子放弃的，是被家长的「一次全上」压垮的。</p>
@@ -178,7 +192,7 @@ tbody tr:hover{background:#FFFBF4}
 <hr>
 <h2>10. 下一步可选增强</h2>
 <p>按优先级排列，都可以后续再加：</p>
-<ol><li><strong>拍照存证</strong>（打卡附一张照片，存 base64，注意 localStorage 容量上限约 5MB）</li><li><strong>家庭多设备同步</strong>（需要一台常开设备做同步服务，或改用云端存储）</li><li><strong>每周自动生成周报推送给家长</strong>（可做成定时任务）</li><li><strong>孩子端「今天只剩 3 件事了」的收尾提示</strong>（降低半途放弃率）</li><li><strong>自定义徽章图案</strong></li></ol>
+<ol><li><strong>拍照存证</strong>（打卡附一张照片，存 base64，注意 localStorage 容量上限约 5MB）</li><li><strong>家庭多设备自动同步</strong>（需要后端：云端数据库 + 登录。当前是纯静态页面，只能靠同步码手动搬。若家长端配置改得频繁，这一项的收益会明显上升）</li><li><strong>每周自动生成周报推送给家长</strong>（可做成定时任务）</li><li><strong>孩子端「今天只剩 3 件事了」的收尾提示</strong>（降低半途放弃率）</li><li><strong>自定义徽章图案</strong></li></ol>
 <hr>
 <p><em>本方案与配套应用 index.html 一起构成完整交付物。应用内已实现本文档第 3 章的全部机制。</em></p>
   <div class="foot">成长工具箱 · 家庭激励系统</div>

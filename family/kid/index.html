@@ -77,6 +77,9 @@ select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,#B
 .pill{padding:7px 14px;border-radius:20px;font-size:13px;font-weight:700;border:0;cursor:pointer;font-family:inherit;
   background:#fff;color:var(--sub);box-shadow:0 2px 0 rgba(197,168,116,.18);white-space:nowrap}
 .pill.on{color:#fff;box-shadow:0 2px 0 rgba(0,0,0,.12)}
+/* 分类标签条：换行铺开，手机上不让任何一档被挤出屏幕（靠横滑藏分类等于隐藏入口） */
+.tierbar{display:flex;flex-wrap:wrap;gap:8px}
+.tierbar .pill{padding:6px 11px;font-size:12.5px}
 .mask{position:fixed;inset:0;background:rgba(48,36,24,.4);display:flex;align-items:center;justify-content:center;
   padding:14px;z-index:900;overflow:auto}
 .mask.bottom{align-items:flex-end}
@@ -1111,7 +1114,9 @@ function viewKidShop(){
     html += '<button class="btn wide dash mb12" style="padding:14px" onclick="addWish()">🎯 我想要一个大目标，去设个存钱计划</button>';
   }
 
-  html += '<div class="row g8 mb10" style="overflow-x:auto;padding-bottom:4px">';
+  html += '<button class="btn bl wide mb12" style="padding:12px" onclick="UI.shopTier=\'零花钱\';render()">💱 兑换零花钱 · 可转入拼豆基金</button>';
+
+  html += '<div class="tierbar mb10">';
   TIER_ORDER.forEach(function(t){
     var on = UI.shopTier === t;
     html += '<button class="pill' + (on ? ' on' : '') + '" onclick="UI.shopTier=\'' + t + '\';render()" ' +
@@ -1119,6 +1124,11 @@ function viewKidShop(){
       (t === '拼豆' ? '⭐ 拼豆专区' : TIER_ICON[t] + ' ' + t) + '</button>';
   });
   html += '</div>';
+
+  if(UI.shopTier === '零花钱'){
+    html += '<div class="xs mb10" style="background:#FDF7EC;color:#8C7E68;padding:8px 11px;border-radius:10px;line-height:1.75">' +
+      '先选一个档位 → 弹窗里挑「🧩 拼豆基金」或「💳 自由钱包」→ 家长通过后到账</div>';
+  }
 
   var list = activeRewards().filter(function(r){ return r.tier === UI.shopTier; });
   if(!list.length){

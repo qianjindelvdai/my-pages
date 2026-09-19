@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>我的工作台</title>
 <style>
-  :root{--bg:#0a0e1a;--panel:#0e1830;--line:#1d3252;--txt:#e8eefc;--sub:#8aa0c0;--cyan:#7fdfff;--blue:#37c0ff;--gold:#ffd479}
+  :root{--bg:#0a0e1a;--panel:#0e1830;--line:#1d3252;--txt:#e8eefc;--sub:#8aa0c0;--cyan:#7fdfff;--blue:#37c0ff;--gold:#ffd479;--pink:#ff9fc4}
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--txt);font-family:-apple-system,"Microsoft YaHei","PingFang SC",sans-serif;min-height:100vh}
   .wrap{max-width:1000px;margin:0 auto;padding:48px 22px 60px;
@@ -13,15 +13,28 @@
   .head{text-align:center;margin-bottom:8px}
   .head h1{font-size:28px;letter-spacing:2px;color:#fff}
   .head p{color:var(--sub);font-size:14px;margin-top:8px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:34px}
+
+  .mod{margin-top:40px}
+  .mod-h{display:flex;align-items:center;gap:9px}
+  .mod-h .bar{width:3px;height:15px;border-radius:2px;background:var(--blue)}
+  .mod-h.fam .bar{background:var(--pink)}
+  .mod-h h2{font-size:16px;color:#d5e8ff;letter-spacing:1.5px;font-weight:700}
+  .mod-h .n{font-size:12px;color:#5c6f8c;margin-left:2px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:16px}
   .card{display:block;text-decoration:none;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 22px 20px;transition:.25s;position:relative;overflow:hidden}
   .card:hover{transform:translateY(-4px);border-color:var(--blue);box-shadow:0 8px 30px rgba(55,192,255,.15)}
+  .card.fam:hover{border-color:var(--pink);box-shadow:0 8px 30px rgba(255,159,196,.15)}
   .card .ic{font-size:30px;margin-bottom:10px}
   .card h3{font-size:18px;color:#dff0ff;margin-bottom:8px}
   .card .desc{font-size:13.5px;color:var(--sub);line-height:1.7}
   .card .go{margin-top:14px;display:inline-block;color:var(--cyan);font-size:13px;font-weight:700}
+  .card.fam .go{color:var(--pink)}
   .card .tag{position:absolute;top:14px;right:14px;font-size:11px;color:var(--gold);border:1px solid #3a4a63;border-radius:20px;padding:2px 9px}
-  .foot{text-align:center;color:#5c6f8c;font-size:12px;margin-top:40px}
+  .card .role{position:absolute;top:14px;right:14px;font-size:11px;border-radius:20px;padding:2px 9px}
+  .role.kid{color:var(--gold);border:1px solid #5a4a2a}
+  .role.par{color:var(--cyan);border:1px solid #274a63}
+  .foot{text-align:center;color:#5c6f8c;font-size:12px;margin-top:46px}
 </style>
 </head>
 <body>
@@ -30,50 +43,66 @@
     <h1>我的工作台</h1>
   </div>
 
-  <div class="grid">
-    <a class="card" href="family/">
-      <div class="ic">&#127775;</div>
-      <h3>成长工具箱</h3>
-      <div class="desc">家庭激励系统：孩子打卡赚积分、商城兑换奖励；家长端审核、约定与看板。含存钱目标、信任分级、免审限额与通胀监控。</div>
-      <span class="go">打开应用 &rarr;</span>
-      <span class="tag">NEW</span>
-    </a>
+  <div class="mod">
+    <div class="mod-h fam"><span class="bar"></span><h2>我的家庭</h2><span class="n">成长激励系统</span></div>
+    <div class="grid">
+      <a class="card fam" href="family/kid/">
+        <div class="ic">&#127775;</div>
+        <span class="role kid">孩子端</span>
+        <h3>成长工具箱</h3>
+        <div class="desc">打卡赚积分、商城兑换奖励。今日任务、成就墙、存钱目标、账本一目了然，给她/他用的那个入口。</div>
+        <span class="go">打开孩子端 &rarr;</span>
+      </a>
 
-    <a class="card" href="family/design-v2.html">
-      <div class="ic">&#128208;</div>
-      <h3>激励系统设计方案 v2</h3>
-      <div class="desc">同类系统对标、系统架构、机制设计、防作弊与公平性、上线首月运行手册与三阶段退出机制。</div>
-      <span class="go">阅读方案 &rarr;</span>
-    </a>
+      <a class="card fam" href="family/parent/">
+        <div class="ic">&#128736;&#65039;</div>
+        <span class="role par">家长端</span>
+        <h3>家长管理台</h3>
+        <div class="desc">审核打卡、管理约定与看板、配置任务与商品。含信任分级、免审限额、通胀监控与数据备份。需 PIN 进入。</div>
+        <span class="go">打开家长端 &rarr;</span>
+      </a>
 
-    <a class="card" href="brain-swap/">
-      <div class="ic">🛰️</div>
-      <h3>路网级"换脑"工程</h3>
-      <div class="desc">TETRA 无线通信系统路网级改造动画，呈现核心网切换与车站节点演进全过程。</div>
-      <span class="go">查看动画 →</span>
-    </a>
+      <a class="card fam" href="family/design-v2.html">
+        <div class="ic">&#128208;</div>
+        <h3>激励系统设计方案 V2</h3>
+        <div class="desc">同类系统对标、系统架构、机制设计、防作弊与公平性、上线首月运行手册与三阶段退出机制。</div>
+        <span class="go">阅读方案 &rarr;</span>
+      </a>
+    </div>
+  </div>
 
-    <a class="card" href="camera-cost/">
-      <div class="ic">🎥</div>
-      <h3>摄像机成本估算</h3>
-      <div class="desc">单台摄像机年维护成本测算：硬件 175 + 人工 116 = 291 元，含 2021–2026 历史均摊。</div>
-      <span class="go">查看测算 →</span>
-    </a>
+  <div class="mod">
+    <div class="mod-h"><span class="bar"></span><h2>工作项目</h2></div>
+    <div class="grid">
+      <a class="card" href="brain-swap/">
+        <div class="ic">🛰️</div>
+        <h3>路网级"换脑"工程</h3>
+        <div class="desc">TETRA 无线通信系统路网级改造动画，呈现核心网切换与车站节点演进全过程。</div>
+        <span class="go">查看动画 →</span>
+      </a>
 
-    <a class="card" href="ppt/huawei-safety-exchange-v8.pptx">
-      <div class="ic">📑</div>
-      <h3>华为安全交流讲稿 PPT</h3>
-      <div class="desc">面向华为的安全交流汇报，按规划设计→建设→运维→全生命周期主线展开。</div>
-      <span class="go">下载 PPTX →</span>
-    </a>
+      <a class="card" href="camera-cost/">
+        <div class="ic">🎥</div>
+        <h3>摄像机成本估算</h3>
+        <div class="desc">单台摄像机年维护成本测算：硬件 175 + 人工 116 = 291 元，含 2021–2026 历史均摊。</div>
+        <span class="go">查看测算 →</span>
+      </a>
 
-    <a class="card" href="workbench.html">
-      <div class="ic">🧰</div>
-      <h3>工作台（原首页）</h3>
-      <div class="desc">个人工作台仪表盘，原 GitHub Pages 首页，已备份保留于此。</div>
-      <span class="go">打开工作台 →</span>
-      <span class="tag">备份</span>
-    </a>
+      <a class="card" href="ppt/huawei-safety-exchange-v8.pptx">
+        <div class="ic">📑</div>
+        <h3>华为安全交流讲稿 PPT</h3>
+        <div class="desc">面向华为的安全交流汇报，按规划设计→建设→运维→全生命周期主线展开。</div>
+        <span class="go">下载 PPTX →</span>
+      </a>
+
+      <a class="card" href="workbench.html">
+        <div class="ic">🧰</div>
+        <h3>工作台（原首页）</h3>
+        <div class="desc">个人工作台仪表盘，原 GitHub Pages 首页，已备份保留于此。</div>
+        <span class="go">打开工作台 →</span>
+        <span class="tag">备份</span>
+      </a>
+    </div>
   </div>
 
   <div class="foot">© 2026 前进的履带</div>

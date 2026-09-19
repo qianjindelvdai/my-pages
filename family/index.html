@@ -215,35 +215,35 @@ var TASKS_DEFAULT = [
 ];
 
 var REWARDS_DEFAULT = [
-  {id:'r01',name:'一张新拼豆图纸（打印版）',tier:'拼豆',price:80,stock:null,walletOption:false},
-  {id:'r02',name:'拼豆作品家庭展览 + 拍照',tier:'拼豆',price:50,stock:null,walletOption:false},
-  {id:'r03',name:'和爸妈一起做拼豆 2 小时',tier:'拼豆',price:100,stock:null,walletOption:false},
-  {id:'r04',name:'拼豆材料包（基础色）',tier:'拼豆',price:200,stock:null,walletOption:false},
-  {id:'r05',name:'拼豆材料包（指定款）',tier:'拼豆',price:400,stock:null,walletOption:false},
-  {id:'r06',name:'拼豆工具升级（镊子 / 熨斗 / 模板板）',tier:'拼豆',price:600,stock:null,walletOption:false},
-  {id:'r07',name:'选今晚的睡前故事',tier:'即时',price:5,stock:null,walletOption:false},
-  {id:'r08',name:'听故事额外 30 分钟',tier:'即时',price:10,stock:null,walletOption:false},
-  {id:'r09',name:'一份小零食',tier:'即时',price:10,stock:null,walletOption:false},
-  {id:'r10',name:'多看 20 分钟动画片',tier:'即时',price:15,stock:null,walletOption:false},
-  {id:'r11',name:'多玩 15 分钟自由时间',tier:'即时',price:15,stock:null,walletOption:false},
-  {id:'r12',name:'多看 30 分钟电视',tier:'即时',price:20,stock:null,walletOption:false},
-  {id:'r13',name:'周末看一部电影',tier:'短期',price:60,stock:null,walletOption:false},
-  {id:'r14',name:'周末公园 / 游乐场半日',tier:'短期',price:100,stock:null,walletOption:false},
-  {id:'r15',name:'全家外出吃饭（你选餐厅）',tier:'短期',price:120,stock:null,walletOption:false},
-  {id:'r16',name:'周末亲子特别活动',tier:'短期',price:150,stock:null,walletOption:false},
-  {id:'r17',name:'心仪小玩具（50 元内）',tier:'长期',price:400,stock:null,walletOption:false},
-  {id:'r18',name:'心仪玩具（100-200 元）',tier:'长期',price:800,stock:null,walletOption:false},
-  {id:'r19',name:'生日特别礼物',tier:'长期',price:1500,stock:null,walletOption:false},
-  {id:'r20',name:'主题乐园 / 大型游玩',tier:'长期',price:2000,stock:null,walletOption:false},
-  {id:'r21',name:'兑换零花钱 5 元',tier:'零花钱',price:50,stock:null,walletOption:true},
-  {id:'r22',name:'兑换零花钱 10 元',tier:'零花钱',price:100,stock:null,walletOption:true},
-  {id:'r23',name:'兑换零花钱 20 元',tier:'零花钱',price:200,stock:null,walletOption:true},
-  {id:'r24',name:'决定周末菜单',tier:'特权',price:30,stock:null,walletOption:false},
-  {id:'r25',name:'选择全家看的电影',tier:'特权',price:40,stock:null,walletOption:false},
-  {id:'r26',name:'免做一次家务券',tier:'特权',price:40,stock:null,walletOption:false},
-  {id:'r27',name:'晚睡券（推迟 30 分钟）',tier:'特权',price:50,stock:null,walletOption:false},
-  {id:'r28',name:'专属陪伴 1 小时',tier:'特权',price:50,stock:null,walletOption:false},
-  {id:'r29',name:'小主人券（决定家庭活动）',tier:'特权',price:80,stock:null,walletOption:false}
+  {id:'r01',name:'一张新拼豆图纸（打印版）',tier:'拼豆',price:80,stock:null,walletOption:false,note:'不限次数。选好图纸告诉爸妈，打印出来即可，一次一张。'},
+  {id:'r02',name:'拼豆作品家庭展览 + 拍照',tier:'拼豆',price:50,stock:null,walletOption:false,note:'不限次数。作品完成后随时可以展出，照片会存进家庭相册。'},
+  {id:'r03',name:'和爸妈一起做拼豆 2 小时',tier:'拼豆',price:100,stock:null,walletOption:false,rFreq:'weekly',rTimes:1,note:'每周限一次。需提前约定时间，爸妈那两小时不看手机。'},
+  {id:'r04',name:'拼豆材料包（基础色）',tier:'拼豆',price:200,stock:null,walletOption:false,note:'不限次数，用完即买。基础色是消耗品，缺哪个颜色告诉爸妈。'},
+  {id:'r05',name:'拼豆材料包（指定款）',tier:'拼豆',price:400,stock:null,walletOption:false,rFreq:'weekly',rTimes:1,note:'每周限一次。指定款要凑单买，凑满 99 元一起下单。'},
+  {id:'r06',name:'拼豆工具升级（镊子 / 熨斗 / 模板板）',tier:'拼豆',price:600,stock:null,walletOption:false,rFreq:'monthly',rTimes:1,note:'每月限一次。工具是耐用品，坏了可以理由充分直接换，不算兑换。'},
+  {id:'r07',name:'选今晚的睡前故事',tier:'即时',price:5,stock:null,walletOption:false,rFreq:'daily',rTimes:1,note:'每天限一次。晚上 20:30 前兑换，从故事书里挑一个，爸妈读给你听。'},
+  {id:'r08',name:'听故事额外 30 分钟',tier:'即时',price:10,stock:null,walletOption:false,rFreq:'daily',rTimes:1,note:'每天限一次。最晚到 21:00，第二天要上学时不可用。'},
+  {id:'r09',name:'一份小零食',tier:'即时',price:10,stock:null,walletOption:false,rFreq:'daily',rTimes:1,note:'每天限一次。睡前 1 小时不吃甜食；正餐没吃完当天不可兑换。'},
+  {id:'r10',name:'多看 20 分钟动画片',tier:'即时',price:15,stock:null,walletOption:false,rFreq:'daily',rTimes:1,note:'每天限一次。需先完成当天作业和练琴；单次不超过 20 分钟。'},
+  {id:'r11',name:'多玩 15 分钟自由时间',tier:'即时',price:15,stock:null,walletOption:false,note:'不限次数。可累积使用，但每晚 21:00 是硬底线。'},
+  {id:'r12',name:'多看 30 分钟电视',tier:'即时',price:20,stock:null,walletOption:false,rFreq:'daily',rTimes:1,note:'每天限一次。和「多看 20 分钟动画片」当天不能同时用。'},
+  {id:'r13',name:'周末看一部电影',tier:'短期',price:60,stock:null,walletOption:false,rFreq:'weekly',rTimes:1,note:'每周限一次。周五 18:00 后或周末使用，片长不超过 2 小时。'},
+  {id:'r14',name:'周末公园 / 游乐场半日',tier:'短期',price:100,stock:null,walletOption:false,rFreq:'weekly',rTimes:1,note:'每周限一次。遇下雨顺延到下周，不折现、不叠加。'},
+  {id:'r15',name:'全家外出吃饭（你选餐厅）',tier:'短期',price:120,stock:null,walletOption:false,rFreq:'weekly',rTimes:1,note:'每周限一次。需提前一天告诉爸妈，人均不超过 80 元。'},
+  {id:'r16',name:'周末亲子特别活动',tier:'短期',price:150,stock:null,walletOption:false,rFreq:'weekly',rTimes:1,note:'每周限一次。内容你提方案、爸妈配合，预算 150 元以内。'},
+  {id:'r17',name:'心仪小玩具（50 元内）',tier:'长期',price:400,stock:null,walletOption:false,rFreq:'monthly',rTimes:1,note:'每月限一次。和爸妈一起挑，加进购物车后统一下单。'},
+  {id:'r18',name:'心仪玩具（100-200 元）',tier:'长期',price:800,stock:null,walletOption:false,rFreq:'monthly',rTimes:1,note:'每月限一次。需连续两周无退回记录才可兑换。'},
+  {id:'r19',name:'生日特别礼物',tier:'长期',price:1500,stock:null,walletOption:false,rFreq:'once',note:'整个记录里只能兑换一次。需在生日前 2 周提出，提前商量。'},
+  {id:'r20',name:'主题乐园 / 大型游玩',tier:'长期',price:2000,stock:null,walletOption:false,rFreq:'custom',rDays:90,note:'每 90 天可兑换一次。寒暑假使用，需提前一周定日子。'},
+  {id:'r21',name:'兑换零花钱 5 元',tier:'零花钱',price:50,stock:null,walletOption:true,rFreq:'weekly',rTimes:1,note:'每周限兑换一次。周五晚上统一发放；单身周合计不超过 20 元。'},
+  {id:'r22',name:'兑换零花钱 10 元',tier:'零花钱',price:100,stock:null,walletOption:true,rFreq:'weekly',rTimes:1,note:'每周限兑换一次。周五晚上统一发放；单身周合计不超过 20 元。'},
+  {id:'r23',name:'兑换零花钱 20 元',tier:'零花钱',price:200,stock:null,walletOption:true,rFreq:'weekly',rTimes:1,note:'每周限兑换一次。换 20 元这一档，本周就不能再换 5 元 / 10 元了。'},
+  {id:'r24',name:'决定周末菜单',tier:'特权',price:30,stock:null,walletOption:false,rFreq:'weekly',rTimes:1,note:'每周限一次。周六或周日的一顿正餐，你定菜、爸妈做。'},
+  {id:'r25',name:'选择全家看的电影',tier:'特权',price:40,stock:null,walletOption:false,rFreq:'weekly',rTimes:1,note:'每周限一次。全家一起看，需选合家欢类型。'},
+  {id:'r26',name:'免做一次家务券',tier:'特权',price:40,stock:null,walletOption:false,rFreq:'weekly',rTimes:1,note:'每周限一次。只能免自己分内的家务，不能转让给别人。'},
+  {id:'r27',name:'晚睡券（推迟 30 分钟）',tier:'特权',price:50,stock:null,walletOption:false,rFreq:'weekly',rTimes:1,note:'每周限一次。最晚推迟到 21:30；第二天要上学时不可用。'},
+  {id:'r28',name:'专属陪伴 1 小时',tier:'特权',price:50,stock:null,walletOption:false,note:'不限次数。提前一天约时间，这一小时爸妈只陪你，不看手机。'},
+  {id:'r29',name:'小主人券（决定家庭活动）',tier:'特权',price:80,stock:null,walletOption:false,rFreq:'monthly',rTimes:1,note:'每月限一次。你可以安排一个半天的家庭活动，爸妈配合执行。'}
 ];
 
 var TIER_ORDER = ['拼豆','即时','短期','长期','零花钱','特权'];
@@ -487,6 +487,59 @@ function freqText(t){
   return n > 1 ? '每' + u + n + '次' : '每' + u + '一次';
 }
 function dailyDone(task){ return freqDone(task); }
+
+/* ---------- 奖品兑换限制引擎 ----------
+   规则来源：商品上的 rFreq / rTimes / rDays / rNoLimit
+   语义与打卡频次一致，但统计对象是订单 DB.orders
+   （被驳回 / 未通过的订单不占额度）
+   ============================================ */
+function rTimesOf(r){ var n = parseInt(r.rTimes, 10); return (isNaN(n) || n < 1) ? 1 : n; }
+function rDaysOf(r){ var n = parseInt(r.rDays, 10); return (isNaN(n) || n < 2) ? 2 : n; }
+function rHasLimit(r){ return !!r.rFreq && !r.rNoLimit; }
+function rWindowLabel(r){
+  if(r.rFreq === 'weekly')  return '本周';
+  if(r.rFreq === 'monthly') return '本月';
+  if(r.rFreq === 'custom')  return '近' + rDaysOf(r) + '天';
+  return '今天';
+}
+function rPeriodStart(r){
+  if(r.rFreq === 'weekly')  return weekStart();
+  if(r.rFreq === 'monthly') return monthStr(0) + '-01';
+  if(r.rFreq === 'custom')  return dateStr(-(rDaysOf(r) - 1));
+  return todayStr();
+}
+function rUsed(r){
+  if(!rHasLimit(r)) return 0;
+  var ok = function(o){ return o.rewardId === r.id && o.status !== 'rejected'; };
+  if(r.rFreq === 'once') return DB.orders.filter(ok).length;
+  var s = rPeriodStart(r);
+  return DB.orders.filter(function(o){ return ok(o) && o.date >= s; }).length;
+}
+function rMax(r){
+  if(!rHasLimit(r)) return Infinity;
+  if(r.rFreq === 'once' || r.rFreq === 'custom') return 1;
+  return rTimesOf(r);
+}
+function rLeft(r){ return Math.max(0, rMax(r) - rUsed(r)); }
+function rDone(r){ return rLeft(r) <= 0; }
+function rLimitText(r){
+  if(!rHasLimit(r)) return '不限次数';
+  if(r.rFreq === 'once') return '只能兑换一次';
+  if(r.rFreq === 'custom') return '每 ' + rDaysOf(r) + ' 天限兑换一次';
+  var n = rTimesOf(r), u = FREQ_UNIT[r.rFreq] || '天';
+  return n > 1 ? '每' + u + '最多兑换 ' + n + ' 次' : '每' + u + '限兑换一次';
+}
+function rDoneMsg(r){
+  if(r.rFreq === 'once') return '「' + r.name + '」只能兑换一次，已经换过啦';
+  return '「' + r.name + '」' + rWindowLabel(r) + '最多兑换 ' + rMax(r) + ' 次，已经用完啦';
+}
+function rNextHint(r){
+  if(r.rFreq === 'once') return '机会已经用掉，不再刷新。';
+  if(r.rFreq === 'custom') return '再等 ' + rDaysOf(r) + ' 天就能重新兑换。';
+  if(r.rFreq === 'weekly') return '下周一自动刷新。';
+  if(r.rFreq === 'monthly') return '下个月 1 号自动刷新。';
+  return '明天自动刷新。';
+}
 function updateStreak(){
   var days = DB.checkins
     .filter(function(c){ return c.status === 'approved' || c.status === 'auto_approved'; })
@@ -643,6 +696,7 @@ function checkBadges(){
 
 /* ---------- 兑换 ---------- */
 function redeem(reward, wallet, cashAmount){
+  if(rDone(reward)){ toast(rDoneMsg(reward),'warn'); return; }
   if(DB.account.mainBalance < reward.price){ toast('积分还不够哦，继续加油','warn'); return; }
   DB.orders.unshift({
     id: uid(), rewardId: reward.id, rewardName: reward.name, tier: reward.tier,
@@ -790,7 +844,7 @@ function openModal(title, bodyHtml, onMount){
 function closeModal(){ var m = $('#modals'); if(m) m.innerHTML = ''; }
 function confirmBox(text, onOk){
   openModal('确认一下',
-    '<div class="nm mb16" style="line-height:1.7">' + esc(text) + '</div>' +
+    '<div class="nm mb16" style="line-height:1.7;white-space:pre-line">' + esc(text) + '</div>' +
     '<div class="row g8"><button class="btn gh fill" onclick="closeModal()">取消</button>' +
     '<button class="btn pri fill" id="cf-ok">确定</button></div>',
     function(w){ w.querySelector('#cf-ok').onclick = function(){ closeModal(); onOk(); }; });
@@ -1065,17 +1119,32 @@ function viewKidShop(){
       var tc = TIER_COLOR[r.tier] || '#B4B2A9';
       var diff = r.price - DB.account.mainBalance;
       var soldOut = (r.stock != null && r.stock <= 0);
+      var capped = rDone(r);
+      var rmax = rMax(r), rused = rUsed(r);
       var pend = DB.orders.filter(function(o){
         return o.rewardId === r.id && (o.status === 'pending' || o.status === 'approved');
       }).length;
-      html += '<div class="card pad col" style="gap:8px">' +
+      var btnTxt, btnOn = false;
+      if(soldOut){ btnTxt = '补货中'; }
+      else if(capped){ btnTxt = (r.rFreq === 'once') ? '已兑换过' : rWindowLabel(r) + '已兑换'; }
+      else if(!afford){ btnTxt = '还差 ' + diff + ' 分'; }
+      else { btnTxt = pend ? '再兑换一个' : '兑换'; btnOn = true; }
+      var limitLine = rHasLimit(r)
+        ? '<div style="font-size:10px;line-height:1.4;color:' + (capped ? '#C0453F' : '#B8791F') + '">⏱ ' +
+          rLimitText(r) + (rmax !== Infinity && rmax > 1 ? '（' + rused + '/' + rmax + '）' : '') + '</div>'
+        : '';
+      var noteLine = r.note
+        ? '<div style="font-size:10px;line-height:1.4;color:#8A6A34;text-decoration:underline dotted" ' +
+          'onclick="showRewardNote(\'' + r.id + '\')">📋 使用规则</div>'
+        : '';
+      html += '<div class="card pad col" style="gap:6px">' +
         '<div class="tc" style="border-radius:14px;padding:14px 0;font-size:28px;background:' + tc + '1A">' + (TIER_ICON[r.tier] || '🎁') + '</div>' +
         '<div class="xs bd fill" style="line-height:1.35">' + esc(r.name) + '</div>' +
+        limitLine + noteLine +
         '<div class="row g4" style="align-items:baseline"><span class="bd" style="color:' + tc + '">' + r.price + '</span><span class="xs mut">分</span>' +
         (r.stock != null ? '<span class="xs mut" style="margin-left:auto">' + (soldOut ? '补货中' : '剩 ' + r.stock) + '</span>' : '') + '</div>' +
-        '<button class="btn wide tiny" ' + (afford && !soldOut ? 'style="background:' + tc + ';color:#fff"' : '') + ' ' +
-        (afford && !soldOut ? 'onclick="onRedeem(\'' + r.id + '\')"' : 'disabled') + '>' +
-        (soldOut ? '补货中' : (afford ? (pend ? '再兑换一个' : '兑换') : '还差 ' + diff + ' 分')) + '</button></div>';
+        '<button class="btn wide tiny" ' + (btnOn ? 'style="background:' + tc + ';color:#fff"' : '') + ' ' +
+        (btnOn ? 'onclick="onRedeem(\'' + r.id + '\')"' : 'disabled') + '>' + btnTxt + '</button></div>';
     });
     html += '</div>';
   }
@@ -1096,9 +1165,29 @@ function viewKidShop(){
 function onRedeem(rewardId){
   var r = rewardById(rewardId);
   if(!r) return;
+  if(rDone(r)){ toast(rDoneMsg(r),'warn'); return; }
   if(DB.account.mainBalance < r.price){ toast('积分还不够哦，继续加油','warn'); return; }
   if(r.walletOption){ showWalletPicker(r); return; }
-  confirmBox('确定用 ' + r.price + ' 分兑换「' + r.name + '」吗？\n兑换后余额：' + (DB.account.mainBalance - r.price) + ' 分', function(){ redeem(r); });
+  var extra = r.note ? '\n\n【使用规则】' + r.note : '';
+  confirmBox('确定用 ' + r.price + ' 分兑换「' + r.name + '」吗？\n兑换后余额：' +
+    (DB.account.mainBalance - r.price) + ' 分' +
+    (rHasLimit(r) ? '\n兑换额度的使用情况：' + rWindowLabel(r) + ' ' + rUsed(r) + '/' + rMax(r) : '') +
+    extra, function(){ redeem(r); });
+}
+function showRewardNote(r){
+  var body = '<div class="sm bd mb10">' + esc(r.name) + '</div>' +
+    '<div style="background:#FFF6E9;color:#8A6A34;font-size:13px;line-height:1.8;padding:12px 14px;border-radius:12px">' +
+      esc(r.note || '暂无使用规则').replace(/\n/g,'<br>') + '</div>' +
+    (rHasLimit(r)
+      ? '<div class="card pad mt10"><div class="row between"><div><div class="xs mut mb2">兑换频次限制</div>' +
+        '<div class="sm bd">' + rLimitText(r) + '</div></div>' +
+        '<div class="tr"><div class="xs mut mb2">' + rWindowLabel(r) + '已用</div>' +
+        '<div class="sm xb" style="color:' + (rDone(r) ? '#C0453F' : '#4E9E5B') + '">' +
+        rUsed(r) + ' / ' + rMax(r) + '</div></div></div>' +
+        '<div class="xs mut mt8">' + rNextHint(r) + '</div></div>'
+      : '<div class="xs mut mt10">此项不限兑换次数。</div>') +
+    '<button class="btn pri wide mt16" onclick="closeModal()">知道了</button>';
+  openModal('使用规则', body);
 }
 function showWalletPicker(r){
   var dual = DB.config.dualRate !== false;
@@ -1106,6 +1195,10 @@ function showWalletPicker(r){
   var beadCash = Math.round(r.price / DB.config.pointsPerYuan * (DB.config.beadFundRate / DB.config.pointsPerYuan));
   if(!dual) beadCash = freeCash;
   var body = '<div class="sm mut mb12">' + r.price + ' 分 · 请选择转入哪个钱包</div>' +
+    (rHasLimit(r) ? '<div class="xs mb10" style="background:#FFF6E9;color:#8A6A34;padding:8px 11px;border-radius:10px;line-height:1.7">⏱ ' +
+      rLimitText(r) + ' · ' + rWindowLabel(r) + '已用 ' + rUsed(r) + '/' + rMax(r) + '，' + rNextHint(r) + '</div>' : '') +
+    (r.note ? '<div class="xs mb12" style="background:#F4F7FF;color:#4A5B8C;padding:9px 12px;border-radius:10px;line-height:1.75">📋 ' +
+      esc(r.note).replace(/\n/g,'<br>') + '</div>' : '') +
     '<button class="btn wide" id="w-bead" style="justify-content:space-between;padding:14px 16px;background:#fff;border:2px solid var(--pink);text-align:left">' +
       '<span><span class="bd sm" style="display:block">🧩 拼豆基金</span><span class="xs mut">只能买拼豆 / 文具 / 书</span></span>' +
       '<span class="tr"><span class="xl xb" style="color:var(--pink);display:block">' + beadCash + ' 元</span>' +
@@ -1509,9 +1602,13 @@ function viewParentConfig(){
     if(!list.length) return;
     html += '<div class="xs mut mb4 mt6">' + TIER_ICON[tier] + ' ' + tier + '</div>';
     list.forEach(function(r){
+      var meta = [];
+      if(r.stock != null) meta.push('库存 ' + r.stock);
+      if(rHasLimit(r)) meta.push('⏱ ' + rLimitText(r) + '（' + rWindowLabel(r) + '已用 ' + rUsed(r) + '/' + rMax(r) + '）');
+      if(r.note) meta.push('📋 有使用规则');
       html += '<div class="row g8 list mb4">' +
         '<div class="fill"><div class="xs bd trunc">' + esc(r.name) + '</div>' +
-        (r.stock != null ? '<div class="xs mut" style="font-size:10px">库存 ' + r.stock + '</div>' : '') + '</div>' +
+        (meta.length ? '<div class="xs mut" style="font-size:10px;line-height:1.5">' + meta.join(' · ') + '</div>' : '') + '</div>' +
         '<span class="xs xb" style="color:var(--blue);flex:0 0 auto">' + r.price + '</span>' +
         '<button class="btn gh tiny" onclick="editReward(\'' + r.id + '\')">改</button>' +
         '<button class="btn gh tiny" onclick="delReward(\'' + r.id + '\')">删</button></div>';
@@ -1681,7 +1778,19 @@ function delTask(id){
 function editReward(id){
   var r = id ? rewardById(id) : null;
   var isNew = !r;
-  if(isNew) r = { id:uid(), name:'', tier:'即时', price:50, stock:null, walletOption:false, active:true };
+  if(isNew) r = { id:uid(), name:'', tier:'即时', price:50, stock:null, walletOption:false, active:true,
+                  rFreq:'daily', rTimes:1, rDays:2, rNoLimit:false, note:'' };
+  /* 老数据（完全没有频次字段）默认「不限次数」，保持原有行为不变；
+     已有限次规则的商品，rNoLimit 缺省必须为 false，否则一保存就会把限制清掉 */
+  if(!r.rFreq){
+    r.rFreq = 'daily';
+    if(r.rNoLimit === undefined) r.rNoLimit = true;
+  } else if(r.rNoLimit === undefined){
+    r.rNoLimit = false;
+  }
+  var freqOpts = Object.keys(FREQ_LABEL).map(function(k){
+    return '<option value="' + k + '"' + (r.rFreq === k ? ' selected' : '') + '>' + FREQ_LABEL[k] + '</option>';
+  }).join('');
   var body =
     '<label class="fl">商品名称</label><input id="r-name" value="' + esc(r.name) + '" placeholder="例如：拼豆材料包（基础色）">' +
     '<div class="grid2 mt10">' +
@@ -1690,14 +1799,54 @@ function editReward(id){
       '</select></div>' +
       '<div><label class="fl">积分价格</label><input id="r-price" type="number" value="' + r.price + '"></div>' +
     '</div>' +
-    '<div class="mt10"><label class="fl">库存（留空 = 不限）</label>' +
-      '<input id="r-stock" type="number" value="' + (r.stock == null ? '' : r.stock) + '" placeholder="不限"></div>' +
+    '<div class="grid2 mt10">' +
+      '<div><label class="fl">兑换频次</label><select id="r-freq" onchange="rFreqFormSync()">' + freqOpts + '</select></div>' +
+      '<div id="r-times-wrap"><label class="fl">每周期最多几次</label>' +
+        '<input id="r-times" type="number" min="1" max="20" value="' + rTimesOf(r) + '" oninput="rFreqFormSync()"></div>' +
+    '</div>' +
+    '<div class="grid2 mt10">' +
+      '<div id="r-days-wrap"><label class="fl">间隔天数</label>' +
+        '<input id="r-days" type="number" min="2" max="60" value="' + rDaysOf(r) + '" oninput="rFreqFormSync()"></div>' +
+      '<div><label class="fl">库存（留空 = 不限）</label>' +
+        '<input id="r-stock" type="number" value="' + (r.stock == null ? '' : r.stock) + '" placeholder="不限"></div>' +
+    '</div>' +
+    '<div class="row g8 mt10" style="align-items:center">' +
+      '<input type="checkbox" id="r-nolimit" style="width:auto;flex:0 0 auto;min-width:18px;height:18px"' + (r.rNoLimit ? ' checked' : '') + ' onchange="rFreqFormSync()">' +
+      '<label for="r-nolimit" class="sm" style="margin:0">不限次数（随时都能兑换）</label>' +
+    '</div>' +
+    '<div class="mt8" id="r-hint" style="font-size:12px;line-height:1.7;padding:9px 11px;border-radius:10px;background:#FFF6E9;color:#8A6A34"></div>' +
+    '<div class="mt10"><label class="fl">使用规则备注（兑换时会给孩子看）</label>' +
+      '<textarea id="r-note" rows="3" placeholder="例如：每周只能兑换一次，兑换后周末统一发放；兑换电视时间需先完成当天作业。">' + esc(r.note || '') + '</textarea></div>' +
     '<div class="xs mut mt8">价格参考：50 分 = 5 元。要卖 10 元零花钱，就填 100 分。</div>' +
     '<div class="row g8 mt16"><button class="btn gh fill" onclick="closeModal()">取消</button>' +
     '<button class="btn pri fill" id="r-save">保存</button></div>';
   openModal(isNew ? '新增商品' : '编辑商品', body, function(w){
+    rFreqFormSync();
     w.querySelector('#r-save').onclick = function(){ saveRewardForm(isNew ? null : r.id); };
   });
+}
+function rFreqFormSync(){
+  var f = ($('#r-freq') || {}).value || 'daily';
+  var noLim = !!(($('#r-nolimit') || {}).checked);
+  var isWindow = (f === 'daily' || f === 'weekly' || f === 'monthly');
+  var tw = $('#r-times-wrap'), dw = $('#r-days-wrap');
+  if(tw) tw.style.display = (isWindow && !noLim) ? '' : 'none';
+  if(dw) dw.style.display = (f === 'custom' && !noLim) ? '' : 'none';
+  var hint = $('#r-hint');
+  if(!hint) return;
+  var n = parseInt(($('#r-times') || {}).value, 10);
+  var d = parseInt(($('#r-days') || {}).value, 10);
+  var times = (isNaN(n) || n < 1) ? 1 : n;
+  var days  = (isNaN(d) || d < 2) ? 2 : d;
+  var limitText = rLimitText({ rFreq:f, rTimes:times, rDays:days, rNoLimit:noLim });
+  var tail;
+  if(noLim)              tail = '孩子随时都能兑换，不做次数限制。';
+  else if(f === 'once')  tail = '整个记录里只允许兑换一次，换完就锁定。';
+  else if(f === 'custom')tail = '每兑换一次，要再等 ' + days + ' 天才能重新兑换。';
+  else if(f === 'monthly')tail = '本月最多兑换 ' + times + ' 次，到下个月 1 号自动刷新。';
+  else if(f === 'weekly') tail = '本周最多兑换 ' + times + ' 次，到周一自动刷新。';
+  else                    tail = '今天最多兑换 ' + times + ' 次，到明天自动刷新。';
+  hint.innerHTML = '当前规则：<b>' + limitText + '</b><br>' + tail;
 }
 function saveRewardForm(id){
   var name = ($('#r-name') || {}).value || '';
@@ -1707,8 +1856,17 @@ function saveRewardForm(id){
   if(!name.trim()){ toast('商品名称不能为空','warn'); return; }
   if(isNaN(price) || price <= 0){ toast('价格要填个正数','warn'); return; }
   var stock = (stockRaw === '' || stockRaw == null) ? null : parseInt(stockRaw, 10);
+  var rFreq  = ($('#r-freq') || {}).value || 'daily';
+  var timesRaw = parseInt(($('#r-times') || {}).value, 10);
+  var daysRaw  = parseInt(($('#r-days')  || {}).value, 10);
+  var noLimit  = !!(($('#r-nolimit') || {}).checked);
   var payload = { name:name.trim(), price:price, tier:tier, stock:isNaN(stock) ? null : stock,
-                  walletOption: tier === '零花钱', active:true };
+                  walletOption: tier === '零花钱', active:true,
+                  rFreq:rFreq,
+                  rTimes:(isNaN(timesRaw) || timesRaw < 1) ? 1 : Math.min(20, timesRaw),
+                  rDays: (isNaN(daysRaw)  || daysRaw  < 2) ? 2 : Math.min(60, daysRaw),
+                  rNoLimit:noLimit,
+                  note:($('#r-note') || {}).value.trim() };
   if(id){
     var r = rewardById(id);
     Object.keys(payload).forEach(function(k){ r[k] = payload[k]; });

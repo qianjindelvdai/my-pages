@@ -187,7 +187,8 @@ var CATS = {
   '挑战': { color:'#FF9F43', icon:'⚡' }
 };
 var CAT_ORDER = ['学业','素养','生活','挑战'];
-var FREQ_LABEL = { daily:'每日', weekly:'每周', once:'一次性' };
+var FREQ_LABEL = { daily:'每天', weekly:'每周', monthly:'每月', custom:'自定义间隔', once:'只记一次' };
+var FREQ_UNIT  = { daily:'天', weekly:'周', monthly:'月' };
 var MODE_LABEL = { auto:'免审', auto_limit:'免审限额', audit:'需审核' };
 var TRUST_LABEL = { trusted:'已信任', watch:'观察期', audit:'需审核' };
 
@@ -210,7 +211,7 @@ var TASKS_DEFAULT = [
   {id:'t14',name:'扫地 / 擦桌',cat:'生活',points:2,tiers:null,freq:'daily',auditMode:'auto',trustLevel:'trusted',evi:false,desc:''},
   {id:'t15',name:'洗漱 + 整理书包（不用催）',cat:'生活',points:2,tiers:null,freq:'daily',auditMode:'auto',trustLevel:'trusted',evi:false,desc:''},
   {id:'t16',name:'21:30 前关灯入睡',cat:'生活',points:2,tiers:null,freq:'daily',auditMode:'auto',trustLevel:'trusted',evi:false,desc:''},
-  {id:'t17',name:'主动帮助家人',cat:'挑战',points:3,tiers:null,freq:'once',auditMode:'auto',trustLevel:'trusted',evi:false,desc:'家长发现即时给予'}
+  {id:'t17',name:'主动帮助家人',cat:'挑战',points:3,tiers:null,freq:'weekly',freqTimes:3,auditMode:'auto',trustLevel:'trusted',evi:false,desc:'家长发现即时给予，一周最多 3 次'}
 ];
 
 var REWARDS_DEFAULT = [
@@ -440,15 +441,52 @@ function autoApprovedToday(){
   var t = todayStr();
   return DB.checkins.filter(function(c){ return c.date === t && c.status === 'auto_approved'; });
 }
-function dailyDone(task){
-  if(task.freq === 'once') return false;
-  var t = todayStr();
-  if(task.freq === 'daily'){
-    return DB.checkins.some(function(c){ return c.taskId === task.id && c.date === t && c.status !== 'rejected' && c.status !== 'revoked'; });
-  }
-  var s = weekStart();
-  return DB.checkins.some(function(c){ return c.taskId === task.id && c.date >= s && c.status !== 'rejected' && c.status !== 'revoked'; });
+/* ---------- 频次与次数上限引擎 ----------
+   规则来源：任务上的 freq / freqTimes / freqDays / noLimit
+     daily   + freqTimes=1 → 一天一次（默认）
+     daily   + freqTimes=2 → 一天最多两次
+     weekly  + freqTimes=3 → 一周最多三次
+     monthly + freqTimes=1 → 一月一次
+     custom  + freqDays=3  → 每 3 天一次
+     once                  → 这辈子只记一次
+     noLimit               → 不限次数
+   ============================================ */
+function freqTimesOf(t){ var n = parseInt(t.freqTimes, 10); return (isNaN(n) || n < 1) ? 1 : n; }
+function freqDaysOf(t){ var n = parseInt(t.freqDays, 10); return (isNaN(n) || n < 2) ? 2 : n; }
+function freqWindowLabel(t){
+  if(t.freq === 'weekly')  return '本周';
+  if(t.freq === 'monthly') return '本月';
+  if(t.freq === 'custom')  return '近' + freqDaysOf(t) + '天';
+  return '今天';
 }
+function freqPeriodStart(t){
+  if(t.freq === 'weekly')  return weekStart();
+  if(t.freq === 'monthly') return monthStr(0) + '-01';
+  if(t.freq === 'custom')  return dateStr(-(freqDaysOf(t) - 1));
+  return todayStr();
+}
+function freqUsed(t){
+  if(t.noLimit) return 0;
+  var ok = function(c){ return c.taskId === t.id && c.status !== 'rejected' && c.status !== 'revoked'; };
+  if(t.freq === 'once') return DB.checkins.filter(ok).length;
+  var s = freqPeriodStart(t);
+  return DB.checkins.filter(function(c){ return ok(c) && c.date >= s; }).length;
+}
+function freqMax(t){
+  if(t.noLimit) return Infinity;
+  if(t.freq === 'once' || t.freq === 'custom') return 1;
+  return freqTimesOf(t);
+}
+function freqLeft(t){ return Math.max(0, freqMax(t) - freqUsed(t)); }
+function freqDone(t){ return freqLeft(t) <= 0; }
+function freqText(t){
+  if(t.noLimit) return '不限次数';
+  if(t.freq === 'once') return '只记一次';
+  if(t.freq === 'custom') return '每 ' + freqDaysOf(t) + ' 天一次';
+  var n = freqTimesOf(t), u = FREQ_UNIT[t.freq] || '天';
+  return n > 1 ? '每' + u + n + '次' : '每' + u + '一次';
+}
+function dailyDone(task){ return freqDone(task); }
 function updateStreak(){
   var days = DB.checkins
     .filter(function(c){ return c.status === 'approved' || c.status === 'auto_approved'; })
@@ -469,7 +507,11 @@ function pointsOn(ds){
 
 /* ---------- 打卡 / 审核 ---------- */
 function doCheckIn(task, tierLabel){
-  if(dailyDone(task)){ toast('今天这项已经打过卡啦，明天再来','warn'); return; }
+  if(freqLeft(task) <= 0){
+    toast(task.freq === 'once' ? '这项已经完成过啦' : freqWindowLabel(task) + '的次数已经用完啦，下次再来',
+      'warn');
+    return;
+  }
   var points = task.points;
   if(task.tiers && tierLabel != null){
     var t = task.tiers.filter(function(x){ return x.label === tierLabel; })[0];
@@ -825,27 +867,44 @@ function heatmapHtml(days){
 function taskCard(t, rec){
   var c = CATS[t.cat] || { color:'#B4B2A9', icon:'📌' };
   var mode = effectiveAuditMode(t);
-  var btn, tag = '';
-  if(rec){
-    if(rec.status === 'auto_approved' || rec.status === 'approved'){
-      btn = '<div class="tc sm bd" style="padding:9px;border-radius:12px;background:#EAF7EC;color:#4E9E5B">✔ 已完成 +' + rec.points + '</div>';
-    } else if(rec.status === 'pending'){
-      btn = '<div class="tc sm bd" style="padding:9px;border-radius:12px;background:#FFF6E5;color:#B8791F">⏳ 等爸妈确认</div>';
-    } else if(rec.status === 'revoked'){
-      btn = '<div class="tc sm bd" style="padding:9px;border-radius:12px;background:#F4F1EC;color:#9C9083">已撤销</div>';
-    } else {
-      btn = '<div class="tc sm bd" style="padding:9px;border-radius:12px;background:#FDECEA;color:#C0453F">↩ 被退回：' + esc(rec.note || '未通过') + '</div>';
-    }
+  var left = freqLeft(t), max = freqMax(t);
+  var approved = rec && (rec.status === 'auto_approved' || rec.status === 'approved');
+  var pending  = rec && rec.status === 'pending';
+  var rejected = rec && rec.status === 'rejected';
+  var revoked  = rec && rec.status === 'revoked';
+  var btn = '', tag = '';
+
+  if(pending){
+    btn = '<div class="tc sm bd" style="padding:9px;border-radius:12px;background:#FFF6E5;color:#B8791F">⏳ 等爸妈确认</div>';
+    tag = '<span class="xs mut">待审</span>';
+  } else if(left <= 0){
+    btn = '<div class="tc sm bd" style="padding:9px;border-radius:12px;background:#EAF7EC;color:#4E9E5B">✔ ' +
+          (t.freq === 'once' ? '已完成' : freqWindowLabel(t) + '已完成') +
+          (max !== Infinity && max > 1 ? '（' + freqUsed(t) + '/' + max + '）' : '') + '</div>';
+  } else if(approved){
+    btn = '<button class="btn wide" onclick="onTaskClick(\'' + t.id + '\')" style="background:' + c.color +
+          ';color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.12)">再做一次</button>';
+    tag = '<span class="xs" style="color:#4E9E5B">已完成 +' + rec.points + '</span>';
   } else {
-    btn = '<button class="btn wide" onclick="onTaskClick(\'' + t.id + '\')" style="background:' + c.color + ';color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.12)">打卡</button>';
+    btn = '<button class="btn wide" onclick="onTaskClick(\'' + t.id + '\')" style="background:' + c.color +
+          ';color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.12)">打卡</button>';
     tag = mode === 'audit' ? '<span class="xs mut">需确认</span>' : '<span class="xs" style="color:#4E9E5B">免审</span>';
   }
-  return '<div class="card pad" style="' + (rec ? 'opacity:.88' : '') + '">' +
+
+  var freqLine = '<div class="xs mut mt2">' + freqText(t) +
+    (max !== Infinity && max > 1 ? ' · 已 ' + freqUsed(t) + '/' + max + ' 次' : '') + '</div>';
+
+  var noteLine = '';
+  if(rejected)      noteLine = '<div class="xs mt8" style="padding:7px 9px;border-radius:10px;background:#FDECEA;color:#C0453F">↩ 被退回：' + esc(rec.note || '未通过') + '（可以重新打卡）</div>';
+  else if(revoked)  noteLine = '<div class="xs mut mt8">这条记录已被撤销</div>';
+
+  return '<div class="card pad" style="' + (left <= 0 ? 'opacity:.88' : '') + '">' +
     '<div class="row between g8 mb8" style="align-items:flex-start">' +
       '<div class="fill">' +
         '<div class="sm bd" style="line-height:1.35">' + esc(t.name) + '</div>' +
         (t.desc ? '<div class="xs mut mt2">' + esc(t.desc) + '</div>' : '') +
         (t.tiers ? '<div class="xs mut mt2">' + t.tiers.map(function(x){ return x.label + ' +' + x.points; }).join(' ／ ') + '</div>' : '') +
+        freqLine +
       '</div>' +
       '<div class="tr" style="flex:0 0 auto">' +
         '<div class="lg xb" style="color:' + c.color + '">+' + t.points + '</div>' + tag +
@@ -894,22 +953,30 @@ function viewKidToday(){
     var list = activeTasks().filter(function(t){ return t.cat === cat; });
     if(!list.length) return;
     var c = CATS[cat];
-    var doneCount = list.filter(function(t){ return dailyDone(t) || list.indexOf(t) === -1; }).length;
+    var doneCount = list.filter(function(t){ return dailyDone(t); }).length;
     html += '<div class="mb16"><div class="row g8 mb8" style="padding:0 4px">' +
       '<span class="bead" style="background:' + c.color + '"></span>' +
       '<span class="bd">' + c.icon + ' ' + cat + '</span>' +
       '<span class="xs mut" style="margin-left:auto">' + doneCount + ' / ' + list.length + '</span>' +
       '</div><div class="grid2">';
     list.forEach(function(t){
-      var rec = todayCheckins().filter(function(x){ return x.taskId === t.id && x.status !== 'rejected' && x.status !== 'revoked'; })[0];
-      if(!rec && t.freq === 'weekly'){
-        rec = DB.checkins.filter(function(x){
-          return x.taskId === t.id && x.status !== 'rejected' && x.status !== 'revoked' && x.date >= weekStart();
-        })[0];
+      var valid = function(x){ return x.taskId === t.id && x.status !== 'rejected' && x.status !== 'revoked'; };
+      var s = freqPeriodStart(t);
+      var rec = null;
+      if(t.freq === 'once'){
+        rec = DB.checkins.filter(valid)[0] || null;
+      } else {
+        rec = DB.checkins.filter(function(x){ return valid(x) && x.date >= s; })[0] || null;
       }
-      if(!rec && t.freq === 'daily'){
-        var rj = todayCheckins().filter(function(x){ return x.taskId === t.id && x.status === 'rejected'; })[0];
-        if(rj) rec = rj;
+      if(!rec){   /* 没有已完成记录 → 退回展示待审 / 被退回 */
+        var pend = DB.checkins.filter(function(x){ return x.taskId === t.id && x.status === 'pending'; })[0];
+        if(pend) rec = pend;
+        else {
+          var rej = DB.checkins.filter(function(x){
+            return x.taskId === t.id && x.status === 'rejected' && (t.freq === 'once' || x.date >= s);
+          })[0];
+          if(rej) rec = rej;
+        }
       }
       html += taskCard(t, rec);
     });
@@ -929,6 +996,10 @@ function viewKidToday(){
 function onTaskClick(taskId){
   var t = taskById(taskId);
   if(!t) return;
+  if(freqLeft(t) <= 0){
+    toast(t.freq === 'once' ? '这项已经完成过啦' : freqWindowLabel(t) + '的次数用完了', 'warn');
+    return;
+  }
   if(t.tiers){ showTierPicker(t); return; }
   doCheckIn(t, null);
 }
@@ -1422,7 +1493,7 @@ function viewParentConfig(){
     list.forEach(function(t){
       html += '<div class="row g8 list mb4">' +
         '<div class="fill"><div class="xs bd trunc">' + esc(t.name) + '</div>' +
-        '<div class="xs mut" style="font-size:10px">' + FREQ_LABEL[t.freq] + ' · ' + MODE_LABEL[t.auditMode] +
+        '<div class="xs mut" style="font-size:10px">' + freqText(t) + ' · ' + (MODE_LABEL[t.auditMode] || '') +
           (t.tiers ? ' · ' + t.tiers.length + ' 档' : '') + '</div></div>' +
         '<span class="xs xb" style="color:var(--orange);flex:0 0 auto">+' + t.points + '</span>' +
         '<button class="btn gh tiny" onclick="editTask(\'' + t.id + '\')">改</button>' +
@@ -1485,7 +1556,7 @@ function savePin(){
 function editTask(id){
   var t = id ? taskById(id) : null;
   var isNew = !t;
-  if(isNew) t = { id:uid(), name:'', cat:'生活', points:2, tiers:null, freq:'daily', auditMode:'auto', trustLevel:'trusted', evi:false, desc:'', active:true };
+  if(isNew) t = { id:uid(), name:'', cat:'生活', points:2, tiers:null, freq:'daily', auditMode:'audit', trustLevel:'watch', evi:false, desc:'', active:true };
   var tierRows = (t.tiers || []).map(function(x,i){
     return '<div class="row g6 mb4 trow"><input class="t-l" value="' + esc(x.label) + '" placeholder="档位说明" style="flex:2">' +
       '<input class="t-p" type="number" value="' + x.points + '" placeholder="分" style="flex:1">' +
@@ -1500,13 +1571,24 @@ function editTask(id){
       '<div><label class="fl">基础分值</label><input id="t-points" type="number" value="' + t.points + '"></div>' +
     '</div>' +
     '<div class="grid2 mt10">' +
-      '<div><label class="fl">频次</label><select id="t-freq">' +
+      '<div><label class="fl">打卡频次</label><select id="t-freq" onchange="freqFormSync()">' +
         Object.keys(FREQ_LABEL).map(function(k){ return '<option value="' + k + '"' + (t.freq === k ? ' selected' : '') + '>' + FREQ_LABEL[k] + '</option>'; }).join('') +
       '</select></div>' +
+      '<div id="t-times-wrap"><label class="fl">每周期最多几次</label>' +
+        '<input id="t-times" type="number" min="1" max="20" value="' + freqTimesOf(t) + '" oninput="freqFormSync()"></div>' +
+    '</div>' +
+    '<div class="grid2 mt10">' +
+      '<div id="t-days-wrap"><label class="fl">间隔天数</label>' +
+        '<input id="t-days" type="number" min="2" max="60" value="' + freqDaysOf(t) + '" oninput="freqFormSync()"></div>' +
       '<div><label class="fl">审核模式</label><select id="t-mode">' +
         Object.keys(MODE_LABEL).map(function(k){ return '<option value="' + k + '"' + (t.auditMode === k ? ' selected' : '') + '>' + MODE_LABEL[k] + '</option>'; }).join('') +
       '</select></div>' +
     '</div>' +
+    '<div class="row g8 mt10" style="align-items:center">' +
+      '<input type="checkbox" id="t-nolimit" style="width:auto;flex:0 0 auto;min-width:18px;height:18px"' + (t.noLimit ? ' checked' : '') + ' onchange="freqFormSync()">' +
+      '<label for="t-nolimit" class="sm" style="margin:0">不限次数（做完随时能再打卡）</label>' +
+    '</div>' +
+    '<div class="mt8" id="t-hint" style="font-size:12px;line-height:1.7;padding:9px 11px;border-radius:10px;background:#FFF6E9;color:#8A6A34"></div>' +
     '<div class="mt10"><label class="fl">备注（可留空）</label><input id="t-desc" value="' + esc(t.desc || '') + '" placeholder="例如：20-30 分钟"></div>' +
     '<div class="mt12"><div class="row between mb6"><label class="fl" style="margin:0">进步档（可留空 = 单一分值）</label>' +
       '<button class="btn gh tiny" onclick="addTierRow()">+ 加一档</button></div>' +
@@ -1514,8 +1596,34 @@ function editTask(id){
     '<div class="row g8 mt16"><button class="btn gh fill" onclick="closeModal()">取消</button>' +
     '<button class="btn pri fill" id="t-save">保存</button></div>';
   openModal(isNew ? '新增任务' : '编辑任务', body, function(w){
+    freqFormSync();
     w.querySelector('#t-save').onclick = function(){ saveTaskForm(isNew ? null : t.id); };
   });
+}
+function freqFormSync(){
+  var f = ($('#t-freq') || {}).value || 'daily';
+  var noLim = !!(($('#t-nolimit') || {}).checked);
+  var isWindow = (f === 'daily' || f === 'weekly' || f === 'monthly');
+  var tw = $('#t-times-wrap'), dw = $('#t-days-wrap');
+  if(tw) tw.style.display = (isWindow && !noLim) ? '' : 'none';
+  if(dw) dw.style.display = (f === 'custom' && !noLim) ? '' : 'none';
+  var hint = $('#t-hint');
+  if(hint){
+    var n = parseInt(($('#t-times') || {}).value, 10);
+    var d = parseInt(($('#t-days') || {}).value, 10);
+    var times = (isNaN(n) || n < 1) ? 1 : n;
+    var days  = (isNaN(d) || d < 2) ? 2 : d;
+    var max = freqMax({ freq:f, freqTimes:times, freqDays:days, noLimit:noLim });
+    var preview = freqText({ freq:f, freqTimes:times, freqDays:days, noLimit:noLim });
+    var tail;
+    if(max === Infinity)   tail = '做完随时能再打卡，不限次数。';
+    else if(f === 'once')  tail = '整个记录里只记一次，打完就锁定。';
+    else if(f === 'custom')tail = '打完之后要再等 ' + days + ' 天才能重新打卡。';
+    else if(f === 'monthly') tail = '本月最多打 ' + max + ' 次卡，到下个月 1 号自动刷新。';
+    else if(f === 'weekly')  tail = '本周最多打 ' + max + ' 次卡，到周一自动刷新。';
+    else                     tail = '今天最多打 ' + max + ' 次卡，到明天自动刷新。';
+    hint.innerHTML = '当前规则：<b>' + preview + '</b><br>' + tail;
+  }
 }
 function addTierRow(){
   var box = $('#t-tiers');
@@ -1538,10 +1646,17 @@ function saveTaskForm(id){
     var p = parseInt(r.querySelector('.t-p').value, 10);
     if(l && !isNaN(p)) tiers.push({ label:l, points:p });
   });
+  var freq = ($('#t-freq') || {}).value || 'daily';
+  var timesRaw = parseInt(($('#t-times') || {}).value, 10);
+  var daysRaw  = parseInt(($('#t-days')  || {}).value, 10);
+  var noLimit  = !!(($('#t-nolimit') || {}).checked);
   var payload = {
     name: name.trim(), points: points, tiers: tiers.length ? tiers : null,
     cat: ($('#t-cat') || {}).value || '生活',
-    freq: ($('#t-freq') || {}).value || 'daily',
+    freq: freq,
+    freqTimes: (isNaN(timesRaw) || timesRaw < 1) ? 1 : Math.min(20, timesRaw),
+    freqDays:  (isNaN(daysRaw)  || daysRaw  < 2) ? 2 : Math.min(60, daysRaw),
+    noLimit: noLimit,
     auditMode: ($('#t-mode') || {}).value || 'auto',
     desc: ($('#t-desc') || {}).value.trim(),
     active: true
@@ -1550,7 +1665,7 @@ function saveTaskForm(id){
     var t = taskById(id);
     Object.keys(payload).forEach(function(k){ t[k] = payload[k]; });
   } else {
-    payload.id = uid(); payload.trustLevel = 'trusted'; payload.evi = false;
+    payload.id = uid(); payload.trustLevel = 'watch'; payload.evi = false;
     DB.tasks.push(payload);
   }
   saveDB(); closeModal(); render();
@@ -1671,7 +1786,7 @@ function printCharter(){
     list.forEach(function(t){
       tasks += '<tr><td>' + esc(t.name) + (t.desc ? '（' + esc(t.desc) + '）' : '') + '</td>' +
         '<td>' + (t.tiers ? t.tiers.map(function(x){ return x.label + ' +' + x.points; }).join(' / ') : '+' + t.points) + '</td>' +
-        '<td>' + FREQ_LABEL[t.freq] + ' · ' + MODE_LABEL[t.auditMode] + '</td></tr>';
+        '<td>' + freqText(t) + ' · ' + (MODE_LABEL[t.auditMode] || '') + '</td></tr>';
     });
   });
   var rewards = '';

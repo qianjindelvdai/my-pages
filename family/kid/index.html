@@ -3,22 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#FF9F43">
-<title>成长工具箱 · 家庭激励系统 v2</title>
+<meta name="theme-color" content="#F5A524">
+<title>成长工具箱 · 星星人主题 · 家庭激励系统 v2</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --cream:#FFF8F0;--ink:#3E3328;--sub:#9C9083;--line:#F0E7DB;
-  --red:#F4635E;--orange:#FF9F43;--yellow:#FFC93C;--green:#6BCB77;
-  --blue:#4D96FF;--purple:#9D7CE8;--pink:#FF8FB1;--brown:#B08968;--gray:#B4B2A9;
+  --cream:#FFFBF2;--ink:#453A2C;--sub:#A6977F;--line:#F3E8D6;
+  --red:#F26D63;--orange:#F5A524;--yellow:#FFCB3D;--green:#63C871;
+  --blue:#5B8DEF;--purple:#8A7BE0;--pink:#FF9DBB;--brown:#B08968;--gray:#B9B0A2;
+  --night:#453E6B;
 }
 html,body{margin:0;padding:0}
 body{
   background:var(--cream);
-  background-image:
-    radial-gradient(circle at 20px 20px,rgba(255,159,67,.07) 2px,transparent 2px),
-    radial-gradient(circle at 60px 60px,rgba(77,150,255,.07) 2px,transparent 2px);
-  background-size:80px 80px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Cpath d='M14,6L16.2,13.8L24,16L16.2,18.2L14,26L11.8,18.2L4,16L11.8,13.8Z' fill='%23F5A524' fill-opacity='.17'/%3E%3Cpath d='M66,48L67.7,54.3L74,56L67.7,57.7L66,64L64.3,57.7L58,56L64.3,54.3Z' fill='%238A7BE0' fill-opacity='.15'/%3E%3Ccircle cx='42' cy='78' r='1.6' fill='%23F5A524' fill-opacity='.22'/%3E%3Ccircle cx='84' cy='22' r='1.3' fill='%235B8DEF' fill-opacity='.2'/%3E%3C/svg%3E");
+  background-size:96px 96px;
   font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif;
   color:var(--ink);font-size:14px;line-height:1.5;
 }
@@ -40,21 +39,21 @@ body{
 .mut{color:var(--sub)}.bd{font-weight:700}.xb{font-weight:900}
 .trunc{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .hide{display:none!important}
-.card{background:#fff;border-radius:18px;box-shadow:0 3px 0 rgba(180,160,140,.16),0 1px 3px rgba(0,0,0,.04)}
+.card{background:#fff;border-radius:22px;box-shadow:0 3px 0 rgba(197,168,116,.18),0 1px 3px rgba(0,0,0,.04)}
 .pad{padding:14px}.padl{padding:16px}
 .grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 @media(max-width:560px){.grid3,.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;border:0;border-radius:12px;
-  padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer;transition:transform .08s;font-family:inherit;color:var(--ink);background:#F3EDE4}
+  padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer;transition:transform .08s;font-family:inherit;color:var(--ink);background:#F7F0E3}
 .btn:active{transform:translateY(2px)}
 .btn.pri{background:var(--orange);color:#fff}
 .btn.ok{background:var(--green);color:#fff}
 .btn.bl{background:var(--blue);color:#fff}
 .btn.pk{background:var(--pink);color:#fff}
-.btn.dk{background:var(--ink);color:var(--cream)}
-.btn.gh{background:#F3EDE4;color:#8B7F72}
+.btn.dk{background:var(--night);color:#FFFBF2}
+.btn.gh{background:#F7F0E3;color:#8C7E68}
 .btn.wide{width:100%}
 .btn.tiny{padding:5px 9px;font-size:11px;border-radius:9px}
 .btn:disabled{opacity:.4;cursor:not-allowed}
@@ -62,21 +61,21 @@ input,select,textarea{font-family:inherit;font-size:14px;padding:9px 11px;border
   border-radius:10px;background:#fff;color:var(--ink);width:100%;outline:none;transition:border-color .15s}
 input:focus,select:focus,textarea:focus{border-color:var(--orange)}
 label.fl{font-size:11px;color:var(--sub);display:block;margin-bottom:4px}
-select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,#B4B2A9 50%),linear-gradient(135deg,#B4B2A9 50%,transparent 50%);
+select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,#B9B0A2 50%),linear-gradient(135deg,#B9B0A2 50%,transparent 50%);
   background-position:calc(100% - 15px) 50%,calc(100% - 10px) 50%;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:28px}
-.tabs{display:flex;gap:5px;background:#fff;border-radius:16px;padding:5px;box-shadow:0 3px 0 rgba(180,160,140,.16)}
+.tabs{display:flex;gap:5px;background:#fff;border-radius:16px;padding:5px;box-shadow:0 3px 0 rgba(197,168,116,.18)}
 .tabs button{flex:1;border:0;background:transparent;border-radius:12px;padding:9px 3px;font-size:12px;font-weight:700;
   color:var(--sub);cursor:pointer;font-family:inherit;transition:.15s;white-space:nowrap}
-.tabs button.on{background:var(--ink);color:#FFF8F0}
+.tabs button.on{background:var(--night);color:#FFFBF2}
 .bead{width:13px;height:13px;border-radius:4px;flex:0 0 auto;
   box-shadow:inset 0 -2px 0 rgba(0,0,0,.13),inset 0 2px 0 rgba(255,255,255,.5)}
-.hbar{height:10px;border-radius:6px;background:#F3EDE4;overflow:hidden}
+.hbar{height:10px;border-radius:6px;background:#F7F0E3;overflow:hidden}
 .hbar>i{display:block;height:100%;border-radius:6px;transition:width .4s}
-.dash{border:1.5px dashed #E8DCCB;border-radius:14px;background:transparent}
-.list{border-radius:14px;background:#FAF6F0;padding:9px 11px}
-.chip{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:#F3EDE4;color:#8B7F72}
+.dash{border:1.5px dashed #EDE1CB;border-radius:14px;background:transparent}
+.list{border-radius:14px;background:#FDF7EC;padding:9px 11px}
+.chip{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:#F7F0E3;color:#8C7E68}
 .pill{padding:7px 14px;border-radius:20px;font-size:13px;font-weight:700;border:0;cursor:pointer;font-family:inherit;
-  background:#fff;color:var(--sub);box-shadow:0 2px 0 rgba(180,160,140,.16);white-space:nowrap}
+  background:#fff;color:var(--sub);box-shadow:0 2px 0 rgba(197,168,116,.18);white-space:nowrap}
 .pill.on{color:#fff;box-shadow:0 2px 0 rgba(0,0,0,.12)}
 .mask{position:fixed;inset:0;background:rgba(48,36,24,.4);display:flex;align-items:center;justify-content:center;
   padding:14px;z-index:900;overflow:auto}
@@ -94,17 +93,24 @@ table.tb{width:100%;border-collapse:collapse;font-size:12px}
 table.tb th,table.tb td{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left}
 table.tb th{color:var(--sub);font-weight:700;font-size:11px}
 .hm{display:grid;grid-template-columns:repeat(8,1fr);gap:3px}
-.hm i{display:block;padding-bottom:100%;border-radius:3px;background:#F3EDE4}
+.hm i{display:block;padding-bottom:100%;border-radius:3px;background:#F7F0E3}
 .bnav{position:fixed;left:0;right:0;bottom:0;z-index:800;display:flex;gap:4px;max-width:780px;margin:0 auto;
-  background:rgba(255,252,247,.97);border-top:1px solid var(--line);backdrop-filter:blur(10px);
+  background:rgba(255,251,242,.97);border-top:1px solid var(--line);backdrop-filter:blur(10px);
   padding:6px 8px calc(6px + env(safe-area-inset-bottom))}
 .bnav button{flex:1;border:0;background:transparent;border-radius:14px;padding:6px 2px;cursor:pointer;
   font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:2px;transition:.15s}
 .bnav button .bi{font-size:19px;line-height:1;filter:grayscale(1) opacity(.5);transition:.15s}
 .bnav button .bt{font-size:10px;font-weight:700;color:var(--sub)}
-.bnav button.on{background:#FFF1E0}
+.bnav button.on{background:#FFF3DC}
 .bnav button.on .bi{filter:none}
 .bnav button.on .bt{color:var(--orange)}
+/* 星星人主题：兜帽小星星 · 星迹微光 */
+.mascot{display:inline-flex;flex:0 0 auto;line-height:0}
+.mascot svg{width:100%;height:100%;display:block}
+.khero{position:relative;overflow:hidden}
+.khero>*{position:relative;z-index:1}
+.khero::after{content:'';position:absolute;right:6px;top:4px;width:80px;height:80px;opacity:.15;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9l6.6-.9z' fill='%23F5A524'/%3E%3C/svg%3E") center/contain no-repeat}
 #print-area{display:none}
 @media print{
   body{background:#fff}
@@ -127,7 +133,7 @@ table.tb th{color:var(--sub);font-weight:700;font-size:11px}
 
 <script>
 /* ============================================================
-   成长工具箱 · 家庭激励系统  v2.0
+   成长工具箱 · 家庭激励系统  v2.0（星星人主题皮肤）
    单文件 · 零外部依赖（可离线双击打开）· localStorage 持久化
    v2 相对 v1 的增强：
      1. 去除全部 CDN 依赖，离线可用（自写 CSS + 自绘 SVG 图表）
@@ -181,10 +187,10 @@ var CONFIG_DEFAULT = {
 };
 
 var CATS = {
-  '学业': { color:'#4D96FF', icon:'📘' },
-  '素养': { color:'#9D7CE8', icon:'🎵' },
-  '生活': { color:'#6BCB77', icon:'🏠' },
-  '挑战': { color:'#FF9F43', icon:'⚡' }
+  '学业': { color:'#5B8DEF', icon:'📘' },
+  '素养': { color:'#8A7BE0', icon:'🎵' },
+  '生活': { color:'#63C871', icon:'🏠' },
+  '挑战': { color:'#F5A524', icon:'⚡' }
 };
 var CAT_ORDER = ['学业','素养','生活','挑战'];
 var FREQ_LABEL = { daily:'每天', weekly:'每周', monthly:'每月', custom:'自定义间隔', once:'只记一次' };
@@ -247,7 +253,7 @@ var REWARDS_DEFAULT = [
 ];
 
 var TIER_ORDER = ['拼豆','即时','短期','长期','零花钱','特权'];
-var TIER_COLOR = { '拼豆':'#FF8FB1','即时':'#6BCB77','短期':'#4D96FF','长期':'#9D7CE8','零花钱':'#FFC93C','特权':'#FF9F43' };
+var TIER_COLOR = { '拼豆':'#FF9DBB','即时':'#63C871','短期':'#5B8DEF','长期':'#8A7BE0','零花钱':'#FFC93C','特权':'#F5A524' };
 var TIER_ICON  = { '拼豆':'🧩','即时':'🍬','短期':'🎡','长期':'🎁','零花钱':'💰','特权':'👑' };
 
 var BADGES_DEFAULT = [
@@ -282,8 +288,8 @@ var LEVELS = [
   {name:'青铜学徒', min:0,    emoji:'🟤', color:'#B08968'},
   {name:'白银行者', min:500,  emoji:'⚪', color:'#9AA5B1'},
   {name:'黄金达人', min:1000, emoji:'🟡', color:'#FFC93C'},
-  {name:'铂金掌门', min:2000, emoji:'🔷', color:'#4D96FF'},
-  {name:'钻石大师', min:3500, emoji:'💎', color:'#9D7CE8'}
+  {name:'铂金掌门', min:2000, emoji:'🔷', color:'#5B8DEF'},
+  {name:'钻石大师', min:3500, emoji:'💎', color:'#8A7BE0'}
 ];
 
 var REJECT_REASONS = ['今天没有完成哦','质量还不够好，再认真一点','时长不够，明天加油','这个是爸妈陪着你做的，不算独立完成','下次可以做得更好'];
@@ -643,7 +649,7 @@ function rejectCheckin(id){
   var body = '<div class="mb8 sm mut">选择或输入退回原因，孩子端会看到这句话</div>' +
     '<div class="mb10" style="display:flex;flex-wrap:wrap;gap:6px">' +
     REJECT_REASONS.map(function(r){
-      return '<button class="pill" onclick="this.parentNode.parentNode.querySelector(\'#rej-note\').value=this.textContent;this.parentNode.querySelectorAll(\'.pill\').forEach(function(b){b.classList.remove(\'on\')});this.classList.add(\'on\');this.style.background=\'#FF9F43\'" style="font-size:12px">' + esc(r) + '</button>';
+      return '<button class="pill" onclick="this.parentNode.parentNode.querySelector(\'#rej-note\').value=this.textContent;this.parentNode.querySelectorAll(\'.pill\').forEach(function(b){b.classList.remove(\'on\')});this.classList.add(\'on\');this.style.background=\'#F5A524\'" style="font-size:12px">' + esc(r) + '</button>';
     }).join('') + '</div>' +
     '<input id="rej-note" placeholder="退回原因" value="">' +
     '<div class="row g8 mt12"><button class="btn gh fill" onclick="closeModal()">取消</button>' +
@@ -804,7 +810,7 @@ function delPledge(id){
 
 /* ---------- 界面基础件 ---------- */
 function toast(msg, kind){
-  var map = { ok:'#6BCB77', warn:'#FF9F43', info:'#4D96FF', err:'#F4635E' };
+  var map = { ok:'#63C871', warn:'#F5A524', info:'#5B8DEF', err:'#F26D63' };
   var box = $('#toastbox');
   if(!box) return;
   var el = document.createElement('div');
@@ -870,14 +876,14 @@ function svgArea(data, labels, color){
   var grid = '';
   for(var g = 0; g <= 3; g++){
     var y = PT + ih * g / 3;
-    grid += '<line x1="' + PL + '" y1="' + y.toFixed(1) + '" x2="' + (PL+iw) + '" y2="' + y.toFixed(1) + '" stroke="#F5EFE7"/>' +
-            '<text x="' + (PL-6) + '" y="' + (y+3).toFixed(1) + '" font-size="9" fill="#B4B2A9" text-anchor="end">' + Math.round(max - max*g/3) + '</text>';
+    grid += '<line x1="' + PL + '" y1="' + y.toFixed(1) + '" x2="' + (PL+iw) + '" y2="' + y.toFixed(1) + '" stroke="#F8F1E5"/>' +
+            '<text x="' + (PL-6) + '" y="' + (y+3).toFixed(1) + '" font-size="9" fill="#B9B0A2" text-anchor="end">' + Math.round(max - max*g/3) + '</text>';
   }
   var xl = '';
   labels.forEach(function(l,i){
     if(i % 5 !== 0 && i !== labels.length - 1) return;
     var x = PL + iw * i / (labels.length - 1);
-    xl += '<text x="' + x.toFixed(1) + '" y="' + (H-6) + '" font-size="9" fill="#B4B2A9" text-anchor="middle">' + esc(l) + '</text>';
+    xl += '<text x="' + x.toFixed(1) + '" y="' + (H-6) + '" font-size="9" fill="#B9B0A2" text-anchor="middle">' + esc(l) + '</text>';
   });
   var dots = pts.map(function(p,i){
     if(data[i] <= 0) return '';
@@ -901,10 +907,10 @@ function svgHBars(items, color, unit, maxVal){
     var y = i * rowH + 4;
     var w = Math.max(2, iw * (it.v / max));
     var label = it.k.length > 11 ? it.k.slice(0, 11) + '…' : it.k;
-    out += '<text x="' + (PL-8) + '" y="' + (y+13) + '" font-size="10.5" fill="#7A6E60" text-anchor="end">' + esc(label) + '</text>' +
-      '<rect x="' + PL + '" y="' + y + '" width="' + iw + '" height="14" rx="7" fill="#F7F2EA"/>' +
+    out += '<text x="' + (PL-8) + '" y="' + (y+13) + '" font-size="10.5" fill="#7E7159" text-anchor="end">' + esc(label) + '</text>' +
+      '<rect x="' + PL + '" y="' + y + '" width="' + iw + '" height="14" rx="7" fill="#FAF3E7"/>' +
       '<rect x="' + PL + '" y="' + y + '" width="' + w.toFixed(1) + '" height="14" rx="7" fill="' + color + '"/>' +
-      '<text x="' + (PL + iw + 6) + '" y="' + (y+12) + '" font-size="10.5" fill="#7A6E60">' + it.v + (unit || '') + '</text>';
+      '<text x="' + (PL + iw + 6) + '" y="' + (y+12) + '" font-size="10.5" fill="#7E7159">' + it.v + (unit || '') + '</text>';
   });
   return '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;display:block">' + out + '</svg>';
 }
@@ -912,11 +918,11 @@ function heatmapHtml(days){
   var cells = '';
   days.forEach(function(d){
     var v = d.v;
-    var bg = '#F3EDE4';
-    if(v > 0 && v <= 8)   bg = '#FFE1BC';
-    if(v > 8 && v <= 18)  bg = '#FFC98A';
-    if(v > 18 && v <= 30) bg = '#FF9F43';
-    if(v > 30)            bg = '#E8801F';
+    var bg = '#F7F0E3';
+    if(v > 0 && v <= 8)   bg = '#FFE6C4';
+    if(v > 8 && v <= 18)  bg = '#FFD79A';
+    if(v > 18 && v <= 30) bg = '#F5A524';
+    if(v > 30)            bg = '#D98E12';
     cells += '<i title="' + d.d + ' · ' + v + ' 分" style="background:' + bg + '"></i>';
   });
   return '<div class="hm">' + cells + '</div>';
@@ -924,7 +930,7 @@ function heatmapHtml(days){
 
 /* ---------- 孩子端 · 今日任务 ---------- */
 function taskCard(t, rec){
-  var c = CATS[t.cat] || { color:'#B4B2A9', icon:'📌' };
+  var c = CATS[t.cat] || { color:'#B9B0A2', icon:'📌' };
   var mode = effectiveAuditMode(t);
   var left = freqLeft(t), max = freqMax(t);
   var approved = rec && (rec.status === 'auto_approved' || rec.status === 'approved');
@@ -934,7 +940,7 @@ function taskCard(t, rec){
   var btn = '', tag = '';
 
   if(pending){
-    btn = '<div class="tc sm bd" style="padding:9px;border-radius:12px;background:#FFF6E5;color:#B8791F">⏳ 等爸妈确认</div>';
+    btn = '<div class="tc sm bd" style="padding:9px;border-radius:12px;background:#FFF6E5;color:#B47C10">⏳ 等爸妈确认</div>';
     tag = '<span class="xs mut">待审</span>';
   } else if(left <= 0){
     btn = '<div class="tc sm bd" style="padding:9px;border-radius:12px;background:#EAF7EC;color:#4E9E5B">✔ ' +
@@ -980,12 +986,12 @@ function viewKidToday(){
     autoApprovedToday().reduce(function(s,c){ return s + c.points; }, 0));
   var rejected = todayCheckins().filter(function(c){ return c.status === 'rejected'; });
 
-  var html = '<div class="card padl mb12">' +
+  var html = '<div class="card padl mb12 khero">' +
     '<div class="row between mb12" style="align-items:flex-start">' +
-      '<div><div class="xs mut mb2">今天已得</div>' +
+      '<div><div class="xs mut mb2">今天摘到的星星</div>' +
       '<div class="row g4" style="align-items:baseline"><span class="huge xb" style="color:var(--orange)">' + todayPts + '</span>' +
       '<span class="sm mut">/ ' + maxPts + ' 分</span></div></div>' +
-      '<div class="tr"><div class="xs mut mb2">我的余额</div>' +
+      '<div class="tr"><div class="xs mut mb2">我的星星罐</div>' +
       '<div class="xxl xb">' + DB.account.mainBalance + '<span class="xs mut"> 分</span></div></div>' +
     '</div>' +
     '<div class="row g6 mb6">' +
@@ -1063,7 +1069,7 @@ function onTaskClick(taskId){
   doCheckIn(t, null);
 }
 function showTierPicker(t){
-  var c = CATS[t.cat] || { color:'#B4B2A9' };
+  var c = CATS[t.cat] || { color:'#B9B0A2' };
   var body = '<div class="sm mut mb12">选一个今天完成到的情况</div><div class="col g8">' +
     t.tiers.map(function(x){
       return '<button class="btn wide" data-lv="' + esc(x.label) + '" ' +
@@ -1098,7 +1104,7 @@ function viewKidShop(){
       html += '<div class="mb10">' +
         '<div class="row between xs mb4"><span class="bd">' + esc(w.name) + '</span>' +
         '<span class="mut">' + DB.account.mainBalance + ' / ' + w.target + (left ? '（还差 ' + left + '）' : ' 已达到！') + '</span></div>' +
-        '<div class="hbar"><i style="width:' + pct + '%;background:' + (left ? '#FF8FB1' : '#6BCB77') + '"></i></div></div>';
+        '<div class="hbar"><i style="width:' + pct + '%;background:' + (left ? '#FF9DBB' : '#63C871') + '"></i></div></div>';
     });
     html += '</div>';
   } else {
@@ -1121,7 +1127,7 @@ function viewKidShop(){
     html += '<div class="grid2">';
     list.forEach(function(r){
       var afford = DB.account.mainBalance >= r.price;
-      var tc = TIER_COLOR[r.tier] || '#B4B2A9';
+      var tc = TIER_COLOR[r.tier] || '#B9B0A2';
       var diff = r.price - DB.account.mainBalance;
       var soldOut = (r.stock != null && r.stock <= 0);
       var capped = rDone(r);
@@ -1135,11 +1141,11 @@ function viewKidShop(){
       else if(!afford){ btnTxt = '还差 ' + diff + ' 分'; }
       else { btnTxt = pend ? '再兑换一个' : '兑换'; btnOn = true; }
       var limitLine = rHasLimit(r)
-        ? '<div style="font-size:10px;line-height:1.4;color:' + (capped ? '#C0453F' : '#B8791F') + '">⏱ ' +
+        ? '<div style="font-size:10px;line-height:1.4;color:' + (capped ? '#C0453F' : '#B47C10') + '">⏱ ' +
           rLimitText(r) + (rmax !== Infinity && rmax > 1 ? '（' + rused + '/' + rmax + '）' : '') + '</div>'
         : '';
       var noteLine = r.note
-        ? '<div style="font-size:10px;line-height:1.4;color:#8A6A34;text-decoration:underline dotted" ' +
+        ? '<div style="font-size:10px;line-height:1.4;color:#8A6629;text-decoration:underline dotted" ' +
           'onclick="showRewardNote(\'' + r.id + '\')">📋 使用规则</div>'
         : '';
       html += '<div class="card pad col" style="gap:6px">' +
@@ -1158,7 +1164,7 @@ function viewKidShop(){
   if(myOrders.length){
     html += '<div class="card pad mt12"><div class="sm bd mb8">我的兑换单</div>';
     myOrders.forEach(function(o){
-      var st = o.status === 'pending' ? '<span class="chip" style="background:#FFF6E5;color:#B8791F">等爸妈确认</span>'
+      var st = o.status === 'pending' ? '<span class="chip" style="background:#FFF6E5;color:#B47C10">等爸妈确认</span>'
              : '<span class="chip" style="background:#EAF7EC;color:#4E9E5B">待发放</span>';
       html += '<div class="row between list mb4"><div class="fill"><div class="xs bd trunc">' + esc(o.rewardName) + '</div>' +
         '<div class="xs mut">' + o.date + ' · ' + o.price + ' 分</div></div>' + st + '</div>';
@@ -1181,7 +1187,7 @@ function onRedeem(rewardId){
 }
 function showRewardNote(r){
   var body = '<div class="sm bd mb10">' + esc(r.name) + '</div>' +
-    '<div style="background:#FFF6E9;color:#8A6A34;font-size:13px;line-height:1.8;padding:12px 14px;border-radius:12px">' +
+    '<div style="background:#FFF6E9;color:#8A6629;font-size:13px;line-height:1.8;padding:12px 14px;border-radius:12px">' +
       esc(r.note || '暂无使用规则').replace(/\n/g,'<br>') + '</div>' +
     (rHasLimit(r)
       ? '<div class="card pad mt10"><div class="row between"><div><div class="xs mut mb2">兑换频次限制</div>' +
@@ -1200,7 +1206,7 @@ function showWalletPicker(r){
   var beadCash = Math.round(r.price / DB.config.pointsPerYuan * (DB.config.beadFundRate / DB.config.pointsPerYuan));
   if(!dual) beadCash = freeCash;
   var body = '<div class="sm mut mb12">' + r.price + ' 分 · 请选择转入哪个钱包</div>' +
-    (rHasLimit(r) ? '<div class="xs mb10" style="background:#FFF6E9;color:#8A6A34;padding:8px 11px;border-radius:10px;line-height:1.7">⏱ ' +
+    (rHasLimit(r) ? '<div class="xs mb10" style="background:#FFF6E9;color:#8A6629;padding:8px 11px;border-radius:10px;line-height:1.7">⏱ ' +
       rLimitText(r) + ' · ' + rWindowLabel(r) + '已用 ' + rUsed(r) + '/' + rMax(r) + '，' + rNextHint(r) + '</div>' : '') +
     (r.note ? '<div class="xs mb12" style="background:#F4F7FF;color:#4A5B8C;padding:9px 12px;border-radius:10px;line-height:1.75">📋 ' +
       esc(r.note).replace(/\n/g,'<br>') + '</div>' : '') +
@@ -1221,8 +1227,8 @@ function showWalletPicker(r){
 function viewKidAccount(){
   var a = DB.account;
   var typeMap = {
-    earn:['收入','#4E9E5B'], spend:['支出','#C0453F'], savings:['储蓄','#4D96FF'],
-    transfer:['转账','#9D7CE8'], bonus:['奖励','#E8801F'], settle:['结算','#B4B2A9']
+    earn:['收入','#4E9E5B'], spend:['支出','#C0453F'], savings:['储蓄','#5B8DEF'],
+    transfer:['转账','#8A7BE0'], bonus:['奖励','#D98E12'], settle:['结算','#B9B0A2']
   };
   var html = '<div class="grid2 mb12">' +
     '<div class="card pad"><div class="xs mut mb2">💰 主账户</div><div class="xxl xb">' + a.mainBalance + '</div>' +
@@ -1237,7 +1243,7 @@ function viewKidAccount(){
     '<div class="card pad mb12 grid3 tc">' +
       '<div><div class="xs mut mb2">累计获得</div><div class="bd" style="color:#4E9E5B">' + a.totalEarned + '</div></div>' +
       '<div><div class="xs mut mb2">累计消耗</div><div class="bd" style="color:#C0453F">' + a.totalSpent + '</div></div>' +
-      '<div><div class="xs mut mb2">诚信记录</div><div class="bd" style="color:#4D96FF">' + a.integrityScore + ' 次</div></div>' +
+      '<div><div class="xs mut mb2">诚信记录</div><div class="bd" style="color:#5B8DEF">' + a.integrityScore + ' 次</div></div>' +
     '</div>';
 
   if(DB.wishes.length){
@@ -1246,7 +1252,7 @@ function viewKidAccount(){
       var pct = Math.min(100, Math.round(DB.account.mainBalance / w.target * 100));
       html += '<div class="mb10 row between g8" style="align-items:flex-start">' +
         '<div class="fill"><div class="xs bd">' + esc(w.name) + (w.achievedAt ? ' ✅' : '') + '</div>' +
-        '<div class="hbar mt4"><i style="width:' + pct + '%;background:' + (w.achievedAt ? '#6BCB77' : '#FF8FB1') + '"></i></div></div>' +
+        '<div class="hbar mt4"><i style="width:' + pct + '%;background:' + (w.achievedAt ? '#63C871' : '#FF9DBB') + '"></i></div></div>' +
         '<div class="tr xs mut" style="flex:0 0 auto">' + pct + '%<br><span style="font-size:10px">' + w.target + ' 分</span></div>' +
         '<button class="btn gh tiny" onclick="delWish(\'' + w.id + '\')">✕</button></div>';
     });
@@ -1258,8 +1264,8 @@ function viewKidAccount(){
     '<div class="card" style="padding:6px;max-height:420px;overflow:auto">';
   if(!DB.ledger.length) html += '<div class="tc mut sm" style="padding:40px 0">还没有记录，去完成任务吧</div>';
   DB.ledger.slice(0, 200).forEach(function(l){
-    var m = typeMap[l.type] || [l.type, '#B4B2A9'];
-    html += '<div class="row g10" style="padding:9px 11px;border-bottom:1px solid #FAF4EC">' +
+    var m = typeMap[l.type] || [l.type, '#B9B0A2'];
+    html += '<div class="row g10" style="padding:9px 11px;border-bottom:1px solid #FDF6EA">' +
       '<div class="xs mut" style="width:38px;flex:0 0 auto">' + l.date.slice(5) + '</div>' +
       '<div class="fill"><div class="xs trunc">' + esc(l.desc) + '</div>' +
       '<div class="xs" style="font-size:10px;color:' + m[1] + '">' + m[0] + '</div></div>' +
@@ -1271,11 +1277,11 @@ function viewKidAccount(){
   var csCls, csLine;
   if(CS.state === 'on' && CS.user){ csCls = 'color:#3B8A5A'; csLine = '☁️ 云端同步已开启 · 点这里查看'; }
   else if(CS.state === 'login'){    csCls = 'color:#3E7BB8'; csLine = '☁️ 还没开启云端同步 · 点这里开启'; }
-  else if(CS.state === 'off'){      csCls = 'color:#9A8C7A'; csLine = '💾 本机保存（此打开方式不支持云同步）'; }
+  else if(CS.state === 'off'){      csCls = 'color:#A0917C'; csLine = '💾 本机保存（此打开方式不支持云同步）'; }
   else if(CS.state === 'err'){      csCls = 'color:#C0453F'; csLine = '⚠️ 云端连接异常 · 点这里查看'; }
-  else {                            csCls = 'color:#9A8C7A'; csLine = '☁️ 正在检查云端…'; }
+  else {                            csCls = 'color:#A0917C'; csLine = '☁️ 正在检查云端…'; }
   html += '<button onclick="openAccount()" style="display:block;width:100%;margin-top:2px;padding:12px;' +
-          'border-radius:12px;border:1px solid #E6E1D8;background:#FAF8F5;font-size:12.5px;' + csCls + '">' + csLine + '</button>';
+          'border-radius:12px;border:1px solid #E9E2D3;background:#FDF7EC;font-size:12.5px;' + csCls + '">' + csLine + '</button>';
   return html;
 }
 
@@ -1322,14 +1328,14 @@ function viewParentAudit(){
 
   var html = '<div class="card pad mb12 row between">' +
     '<div><div class="bd sm">待审打卡</div><div class="xs mut">建议每天 30 秒处理完</div></div>' +
-    '<div class="xxl xb" style="color:' + (pendC.length ? 'var(--orange)' : '#D8D2C8') + '">' + pendC.length + '</div></div>';
+    '<div class="xxl xb" style="color:' + (pendC.length ? 'var(--orange)' : '#DCD4C5') + '">' + pendC.length + '</div></div>';
 
   if(pendC.length){
     html += '<div class="card pad mb12"><div class="row between mb10">' +
       '<label class="row g6 xs mut"><input type="checkbox" id="chk-all" style="width:auto" onchange="toggleAllCheckins(this.checked)">全选</label>' +
       '<button class="btn ok tiny" onclick="batchApproveCheckins(Array.prototype.map.call(document.querySelectorAll(\'.ck:checked\'),function(e){return e.getAttribute(\'data-id\')}))">批量通过</button></div>';
     pendC.slice(0, 80).forEach(function(c){
-      var cc = CATS[c.cat] || { color:'#B4B2A9' };
+      var cc = CATS[c.cat] || { color:'#B9B0A2' };
       html += '<div class="row g8 list mb4" style="align-items:flex-start">' +
         '<input type="checkbox" class="ck" data-id="' + c.id + '" style="width:auto;margin-top:3px">' +
         '<span class="bead" style="background:' + cc.color + ';margin-top:3px"></span>' +
@@ -1347,7 +1353,7 @@ function viewParentAudit(){
 
   html += '<div class="card pad mb12 row between">' +
     '<div class="bd sm">待审兑换</div>' +
-    '<div class="xxl xb" style="color:' + (pendO.length ? 'var(--blue)' : '#D8D2C8') + '">' + pendO.length + '</div></div>';
+    '<div class="xxl xb" style="color:' + (pendO.length ? 'var(--blue)' : '#DCD4C5') + '">' + pendO.length + '</div></div>';
   if(pendO.length){
     html += '<div class="card pad mb12">';
     pendO.forEach(function(o){
@@ -1390,7 +1396,7 @@ function viewParentTrust(){
     '<div class="row between mb10"><div><div class="bd sm">诚信记录</div>' +
     '<div class="xs mut">每累计 10 次抽查通过，奖励 +20 分</div></div>' +
     '<div class="xxl xb" style="color:var(--blue)">' + DB.account.integrityScore + '</div></div>' +
-    '<div class="hbar"><i style="width:' + ((DB.account.integrityScore % 10) * 10) + '%;background:#4D96FF"></i></div>' +
+    '<div class="hbar"><i style="width:' + ((DB.account.integrityScore % 10) * 10) + '%;background:#5B8DEF"></i></div>' +
     '<div class="xs mut mt6">距下一次诚信奖励还需 ' + nextIn + ' 次抽查通过</div></div>';
 
   var openPledges = DB.pledges.filter(function(p){ return p.status === 'open'; });
@@ -1422,7 +1428,7 @@ function viewParentTrust(){
   html += '<div class="bd sm mb8" style="padding:0 4px">任务信任状态</div><div class="card pad mb12">';
   activeTasks().forEach(function(t){
     var lv = t.trustLevel || 'trusted';
-    var col = lv === 'trusted' ? ['#EAF7EC','#4E9E5B'] : lv === 'watch' ? ['#FFF6E5','#B8791F'] : ['#FDECEA','#C0453F'];
+    var col = lv === 'trusted' ? ['#EAF7EC','#4E9E5B'] : lv === 'watch' ? ['#FFF6E5','#B47C10'] : ['#FDECEA','#C0453F'];
     html += '<div class="row g8" style="padding:7px 9px;border-radius:10px;background:' + col[0] + ';margin-bottom:4px">' +
       '<div class="fill xs bd trunc">' + esc(t.name) + '</div>' +
       '<span class="xs bd" style="color:' + col[1] + ';flex:0 0 auto">' + TRUST_LABEL[lv] + '</span>' +
@@ -1443,7 +1449,7 @@ function viewParentTrust(){
     var tag = sc === 'verified' ? '<span class="xs bd" style="color:#4E9E5B">已确认真实</span>'
             : sc === 'false_report' ? '<span class="xs bd" style="color:#C0453F">虚报</span>'
             : (c.status === 'pending' ? '<span class="xs mut">待审</span>' : '<span class="xs mut">未抽查</span>');
-    html += '<div class="row g8" style="padding:9px 11px;border-bottom:1px solid #FAF4EC">' +
+    html += '<div class="row g8" style="padding:9px 11px;border-bottom:1px solid #FDF6EA">' +
       '<div class="fill"><div class="xs bd trunc">' + esc(c.taskName) + '</div>' +
       '<div class="xs mut" style="font-size:10px">' + c.date + ' · +' + c.points + ' 分 · ' + tag + '</div></div>' +
       (sc === 'none' && c.status !== 'pending'
@@ -1528,7 +1534,7 @@ function viewParentDashboard(){
     '</div>';
 
   html += '<div class="card pad mb12"><div class="row between mb8"><div class="bd sm">⚖️ 通胀监控</div>' +
-    '<span class="chip" style="background:' + (inf.flags.length ? '#FFF6E5' : '#EAF7EC') + ';color:' + (inf.flags.length ? '#B8791F' : '#4E9E5B') + '">' +
+    '<span class="chip" style="background:' + (inf.flags.length ? '#FFF6E5' : '#EAF7EC') + ';color:' + (inf.flags.length ? '#B47C10' : '#4E9E5B') + '">' +
     (inf.flags.length ? '建议关注' : '健康') + '</span></div>' +
     '<div class="grid3 tc mb10">' +
       '<div><div class="xs mut mb2">收入/支出</div><div class="bd">' + (inf.cover ? inf.cover.toFixed(2) : '—') + '</div></div>' +
@@ -1541,11 +1547,11 @@ function viewParentDashboard(){
     '</div></div>';
 
   html += '<div class="card pad mb12"><div class="bd sm mb8">近 30 天积分收入</div>' +
-    svgArea(series, labels, '#FF9F43') + '</div>';
+    svgArea(series, labels, '#F5A524') + '</div>';
   html += '<div class="card pad mb12"><div class="bd sm mb8">任务完成率 · 近 30 天（越靠上越低）</div>' +
-    (doneItems.length ? svgHBars(doneItems, '#4D96FF', '%', 100) : '<div class="xs mut">暂无每日任务</div>') + '</div>';
+    (doneItems.length ? svgHBars(doneItems, '#5B8DEF', '%', 100) : '<div class="xs mut">暂无每日任务</div>') + '</div>';
   html += '<div class="card pad mb12"><div class="bd sm mb8">兑换偏好 TOP6</div>' +
-    (prefItems.length ? svgHBars(prefItems, '#FF8FB1', ' 次') : '<div class="xs mut">还没有兑换记录</div>') + '</div>';
+    (prefItems.length ? svgHBars(prefItems, '#FF9DBB', ' 次') : '<div class="xs mut">还没有兑换记录</div>') + '</div>';
 
   var daily = activeTasks().filter(function(t){ return t.freq === 'daily'; }).map(function(t){
     var total = 30, done = 0;
@@ -1719,7 +1725,7 @@ function editTask(id){
       '<input type="checkbox" id="t-nolimit" style="width:auto;flex:0 0 auto;min-width:18px;height:18px"' + (t.noLimit ? ' checked' : '') + ' onchange="freqFormSync()">' +
       '<label for="t-nolimit" class="sm" style="margin:0">不限次数（做完随时能再打卡）</label>' +
     '</div>' +
-    '<div class="mt8" id="t-hint" style="font-size:12px;line-height:1.7;padding:9px 11px;border-radius:10px;background:#FFF6E9;color:#8A6A34"></div>' +
+    '<div class="mt8" id="t-hint" style="font-size:12px;line-height:1.7;padding:9px 11px;border-radius:10px;background:#FFF6E9;color:#8A6629"></div>' +
     '<div class="mt10"><label class="fl">备注（可留空）</label><input id="t-desc" value="' + esc(t.desc || '') + '" placeholder="例如：20-30 分钟"></div>' +
     '<div class="mt12"><div class="row between mb6"><label class="fl" style="margin:0">进步档（可留空 = 单一分值）</label>' +
       '<button class="btn gh tiny" onclick="addTierRow()">+ 加一档</button></div>' +
@@ -1848,7 +1854,7 @@ function editReward(id){
       '<input type="checkbox" id="r-nolimit" style="width:auto;flex:0 0 auto;min-width:18px;height:18px"' + (r.rNoLimit ? ' checked' : '') + ' onchange="rFreqFormSync()">' +
       '<label for="r-nolimit" class="sm" style="margin:0">不限次数（随时都能兑换）</label>' +
     '</div>' +
-    '<div class="mt8" id="r-hint" style="font-size:12px;line-height:1.7;padding:9px 11px;border-radius:10px;background:#FFF6E9;color:#8A6A34"></div>' +
+    '<div class="mt8" id="r-hint" style="font-size:12px;line-height:1.7;padding:9px 11px;border-radius:10px;background:#FFF6E9;color:#8A6629"></div>' +
     '<div class="mt10"><label class="fl">使用规则备注（兑换时会给孩子看）</label>' +
       '<textarea id="r-note" rows="3" placeholder="例如：每周只能兑换一次，兑换后周末统一发放；兑换电视时间需先完成当天作业。">' + esc(r.note || '') + '</textarea></div>' +
     '<div class="xs mut mt8">价格参考：50 分 = 5 元。要卖 10 元零花钱，就填 100 分。</div>' +
@@ -2051,7 +2057,7 @@ function showSyncExport(kind){
           ? '只带 <b>任务清单、商品清单、家长设置（含 PIN）</b>，<b>不动</b>对方的积分、打卡和兑换记录。<br>家长改完配置，用这个推到孩子那台设备。'
           : '带上 <b>全部数据</b>：积分、流水、打卡、兑换、任务、商品、设置。<br>换设备整体搬家时用这个。') +
       '</div>' +
-      '<textarea id="sy-out" readonly style="width:100%;height:104px;font-size:11px;line-height:1.5;padding:10px;border-radius:12px;border:1px solid #E6E1D8;background:#FAF8F5;word-break:break-all;resize:none">' + esc(code) + '</textarea>' +
+      '<textarea id="sy-out" readonly style="width:100%;height:104px;font-size:11px;line-height:1.5;padding:10px;border-radius:12px;border:1px solid #E9E2D3;background:#FDF7EC;word-break:break-all;resize:none">' + esc(code) + '</textarea>' +
       '<div class="xs mut mt6">共 ' + kb + ' KB · 越用越长的只有“完整同步”（它带历史记录）</div>' +
       '<div class="row g8 mt12">' +
         '<button class="btn pri fill" id="sy-copy">复制同步码</button>' +
@@ -2067,7 +2073,7 @@ function showSyncExport(kind){
 function showSyncImport(){
   openModal('粘贴同步码',
     '<div class="xs mut mb8" style="line-height:1.6">把另一台设备生成的<b>同步码</b>或<b>链接</b>粘进来：</div>' +
-    '<textarea id="sy-in" placeholder="GK1:..." style="width:100%;height:104px;font-size:12px;line-height:1.5;padding:10px;border-radius:12px;border:1px solid #E6E1D8;resize:none"></textarea>' +
+    '<textarea id="sy-in" placeholder="GK1:..." style="width:100%;height:104px;font-size:12px;line-height:1.5;padding:10px;border-radius:12px;border:1px solid #E9E2D3;resize:none"></textarea>' +
     '<div class="row g8 mt12"><button class="btn gh fill" onclick="closeModal()">取消</button>' +
     '<button class="btn pri fill" id="sy-go">导入</button></div>',
     function(w){
@@ -2400,7 +2406,7 @@ function cloudStateLine(){
 }
 function openAccount(){ openAccountPanel(); }
 function openAccountPanel(){
-  var head = '<div class="card pad mb12" style="background:#FAF8F5">' +
+  var head = '<div class="card pad mb12" style="background:#FDF7EC">' +
              '<div class="xs bd mb4">跨设备同步</div>' +
              '<div class="xs mut" style="line-height:1.7">' + cloudStateLine() + '</div></div>';
   if(CS.user){
@@ -2641,7 +2647,7 @@ function printCharter(){
   CAT_ORDER.forEach(function(cat){
     var list = activeTasks().filter(function(t){ return t.cat === cat; });
     if(!list.length) return;
-    tasks += '<tr><td colspan="3" style="background:#F7F2EA;font-weight:700">' + cat + '</td></tr>';
+    tasks += '<tr><td colspan="3" style="background:#FAF3E7;font-weight:700">' + cat + '</td></tr>';
     list.forEach(function(t){
       tasks += '<tr><td>' + esc(t.name) + (t.desc ? '（' + esc(t.desc) + '）' : '') + '</td>' +
         '<td>' + (t.tiers ? t.tiers.map(function(x){ return x.label + ' +' + x.points; }).join(' / ') : '+' + t.points) + '</td>' +
@@ -2680,7 +2686,7 @@ function printCharter(){
 }
 function printCoins(){
   var denoms = [1,2,5,10,20,50,100];
-  var color = { 1:'#6BCB77',2:'#FF9F43',5:'#4D96FF',10:'#9D7CE8',20:'#FF8FB1',50:'#FFC93C',100:'#B08968' };
+  var color = { 1:'#63C871',2:'#F5A524',5:'#5B8DEF',10:'#8A7BE0',20:'#FF9DBB',50:'#FFC93C',100:'#B08968' };
   var blocks = '';
   denoms.forEach(function(d){
     blocks += '<div style="border-bottom:1px dashed #ccc;padding:10px 0">' +
@@ -2718,14 +2724,14 @@ function printWeekReport(){
     '<p style="text-align:center;color:#888;font-size:12px;margin:0 0 20px">' + esc(DB.config.kidName) +
       ' · ' + ws + ' 起的这一周</p>' +
     '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px">' +
-      '<div style="flex:1;min-width:110px;background:#FFF8F0;border-radius:12px;padding:12px"><div style="font-size:11px;color:#999">本周挣到</div>' +
-      '<div style="font-size:26px;font-weight:900;color:#FF9F43">' + earned + '</div></div>' +
-      '<div style="flex:1;min-width:110px;background:#FFF8F0;border-radius:12px;padding:12px"><div style="font-size:11px;color:#999">完成任务</div>' +
-      '<div style="font-size:26px;font-weight:900;color:#6BCB77">' + cnt + '</div></div>' +
-      '<div style="flex:1;min-width:110px;background:#FFF8F0;border-radius:12px;padding:12px"><div style="font-size:11px;color:#999">连续打卡</div>' +
-      '<div style="font-size:26px;font-weight:900;color:#4D96FF">' + DB.account.streakDays + '</div></div>' +
-      '<div style="flex:1;min-width:110px;background:#FFF8F0;border-radius:12px;padding:12px"><div style="font-size:11px;color:#999">当前余额</div>' +
-      '<div style="font-size:26px;font-weight:900;color:#9D7CE8">' + DB.account.mainBalance + '</div></div>' +
+      '<div style="flex:1;min-width:110px;background:#FFFBF2;border-radius:12px;padding:12px"><div style="font-size:11px;color:#999">本周挣到</div>' +
+      '<div style="font-size:26px;font-weight:900;color:#F5A524">' + earned + '</div></div>' +
+      '<div style="flex:1;min-width:110px;background:#FFFBF2;border-radius:12px;padding:12px"><div style="font-size:11px;color:#999">完成任务</div>' +
+      '<div style="font-size:26px;font-weight:900;color:#63C871">' + cnt + '</div></div>' +
+      '<div style="flex:1;min-width:110px;background:#FFFBF2;border-radius:12px;padding:12px"><div style="font-size:11px;color:#999">连续打卡</div>' +
+      '<div style="font-size:26px;font-weight:900;color:#5B8DEF">' + DB.account.streakDays + '</div></div>' +
+      '<div style="flex:1;min-width:110px;background:#FFFBF2;border-radius:12px;padding:12px"><div style="font-size:11px;color:#999">当前余额</div>' +
+      '<div style="font-size:26px;font-weight:900;color:#8A7BE0">' + DB.account.mainBalance + '</div></div>' +
     '</div>' +
     '<h2 style="font-size:15px;margin:0 0 8px">这周做得最多的是</h2>' +
     (top.length
@@ -2748,7 +2754,7 @@ function printWeekReport(){
 function viewPinGate(){
   if(DB.config.parentPin === null || DB.config.parentPin === undefined){
     return '<div class="card padl tc">' +
-      '<div style="font-size:38px">🔐</div>' +
+      '<div style="display:flex;justify-content:center">' + starMascot(52) + '</div>' +
       '<div class="bd mt6 mb2">首次使用，先设置家长端 PIN</div>' +
       '<div class="xs mut mb16">4 位数字，用于保护审核与配置权限，孩子不会自己通过审核</div>' +
       '<input id="pin-new" type="tel" maxlength="4" inputmode="numeric" autofocus placeholder="输入 4 位数字" ' +
@@ -2757,7 +2763,7 @@ function viewPinGate(){
       '<button class="btn pri wide mt12" onclick="setupPin()">设置并进入</button></div>';
   }
   return '<div class="card padl tc">' +
-    '<div style="font-size:38px">🔐</div>' +
+    '<div style="display:flex;justify-content:center">' + starMascot(52) + '</div>' +
     '<div class="bd mt6 mb2">家长端</div>' +
     '<div class="xs mut mb16">请输入 PIN 码</div>' +
     '<input id="pin-in" type="tel" maxlength="4" inputmode="numeric" autofocus placeholder="4 位数字" ' +
@@ -2814,6 +2820,21 @@ function navBar(items, cur, tabVar){
   }).join('') + '</div>';
 }
 
+/* 自绘兜帽小星星：零外部依赖，随便放大不模糊 */
+var STAR_MASCOT_SVG = '<svg viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">' +
+  '<path d="M22 3C13.4 3 7 11.4 7 23L7 36C7 39 37 39 37 36L37 23C37 11.4 30.6 3 22 3Z" fill="#FFD35C" stroke="#E8A92A" stroke-width="1.6"/>' +
+  '<ellipse cx="22" cy="26" rx="10.4" ry="8.8" fill="#FFF7E3"/>' +
+  '<ellipse cx="13.6" cy="29.4" rx="2.6" ry="1.7" fill="#FFAFA0"/>' +
+  '<ellipse cx="30.4" cy="29.4" rx="2.6" ry="1.7" fill="#FFAFA0"/>' +
+  '<circle cx="18.2" cy="24.6" r="1.55" fill="#4A3A2A"/>' +
+  '<circle cx="25.8" cy="24.6" r="1.55" fill="#4A3A2A"/>' +
+  '<path d="M18.8 30.4c1.8 1.5 4.6 1.5 6.4 0" fill="none" stroke="#4A3A2A" stroke-width="1.3" stroke-linecap="round"/>' +
+  '</svg>';
+function starMascot(size){
+  var s = size || 36;
+  return '<span class="mascot" style="width:' + s + 'px;height:' + s + 'px">' + STAR_MASCOT_SVG + '</span>';
+}
+
 function render(){
   var app = $('#app');
   if(!app) return;
@@ -2836,11 +2857,12 @@ function render(){
       'onclick="switchRole()" title="家长端（需要 PIN）">🔒</button>'
     : '<button class="btn gh tiny" style="white-space:nowrap;flex:0 0 auto" onclick="switchRole()">' +
       btnLabel + '</button>';
-  var head = '<div class="row between mb12" style="padding:2px 4px;align-items:flex-start">' +
-      '<div><div class="bd lg">' +
-        (isKid ? '🌟 ' + esc(DB.config.kidName || '宝贝') + '的成长工具箱' : '🛠 家长管理台') +
+  var head = '<div class="row between mb12" style="padding:2px 4px;align-items:flex-start;gap:10px">' +
+      '<div class="row g8" style="align-items:center;min-width:0">' + starMascot(isKid ? 40 : 34) +
+      '<div style="min-width:0"><div class="bd lg">' +
+        (isKid ? esc(DB.config.kidName || '宝贝') + '的成长工具箱' : '家长管理台') +
       '</div><div class="xs mut mt4">' + todayStr() +
-        (isKid ? ' · 今天也要加油呀' : ' · 审核 · 约定 · 看板 · 设置') + '</div></div>' +
+        (isKid ? ' · 今天也一起摘星星呀' : ' · 审核 · 约定 · 看板 · 设置') + '</div></div></div>' +
       roleBtn + '</div>';
 
   var body, nav;

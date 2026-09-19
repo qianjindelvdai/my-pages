@@ -291,6 +291,9 @@ var PLEDGE_DEFAULT = '答应的事一定做到，不做交换条件';
 
 /* ---------- 状态 ---------- */
 var DB = null;
+/* 入口角色：'both' 双端可切换 / 'kid' 孩子端入口 / 'parent' 家长端入口
+   发布时会生成 family/kid/ 与 family/parent/ 两个入口，本行由构建脚本替换 */
+var APP_ROLE = 'both';
 var UI = { view:'kid', kidTab:'today', parentTab:'audit', shopTier:'拼豆', parentUnlocked:false };
 var TIER_PICK = {};
 
@@ -2127,13 +2130,20 @@ function render(){
   }
 
   var isKid = UI.view === 'kid';
+  var btnLabel = isKid
+    ? (APP_ROLE === 'parent' ? '返回家长端 🔒' : '家长端 🔒')
+    : '孩子端 →';
+  var roleBtn = (APP_ROLE === 'kid')
+    ? '<button class="btn gh tiny" style="white-space:nowrap;flex:0 0 auto;padding:6px 10px" ' +
+      'onclick="switchRole()" title="家长端（需要 PIN）">🔒</button>'
+    : '<button class="btn gh tiny" style="white-space:nowrap;flex:0 0 auto" onclick="switchRole()">' +
+      btnLabel + '</button>';
   var head = '<div class="row between mb12" style="padding:2px 4px;align-items:flex-start">' +
       '<div><div class="bd lg">' +
         (isKid ? '🌟 ' + esc(DB.config.kidName || '宝贝') + '的成长工具箱' : '🛠 家长管理台') +
       '</div><div class="xs mut mt4">' + todayStr() +
         (isKid ? ' · 今天也要加油呀' : ' · 审核 · 约定 · 看板 · 设置') + '</div></div>' +
-      '<button class="btn gh tiny" style="white-space:nowrap;flex:0 0 auto" onclick="switchRole()">' +
-        (isKid ? '家长端 🔒' : '孩子端 →') + '</button></div>';
+      roleBtn + '</div>';
 
   var body, nav;
   if(isKid){
@@ -2156,11 +2166,14 @@ function render(){
    ============================================================ */
 function boot(){
   loadDB();
+  /* 按入口角色决定起始视图：家长端入口直接进 PIN 门，孩子端入口直接进打卡页 */
+  if(APP_ROLE === 'parent'){ UI.view = 'parent'; UI.parentUnlocked = false; }
+  else { UI.view = 'kid'; UI.kidTab = UI.kidTab || 'today'; }
   updateStreak();
   checkBadges();
   render();
-  // 首次使用提示
-  if(!DB.config.parentPin){
+  // 首次使用提示（家长端入口不提示，孩子端入口也不提示，交给家长端链接）
+  if(!DB.config.parentPin && APP_ROLE === 'both'){
     setTimeout(function(){ toast('第一次用？先点右上角「家长端」设个 PIN 码','info'); }, 900);
   }
 }

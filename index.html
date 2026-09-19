@@ -34,6 +34,9 @@
   .card .role{position:absolute;top:14px;right:14px;font-size:11px;border-radius:20px;padding:2px 9px}
   .role.kid{color:var(--gold);border:1px solid #5a4a2a}
   .role.par{color:var(--cyan);border:1px solid #274a63}
+  .role.cloud{color:#9ef5c8;border:1px solid #2a5a42}
+  .subs{margin-top:13px;font-size:12.5px;color:#5c6f8c;line-height:1.9}
+  .subs a{color:var(--cyan);text-decoration:none;border-bottom:1px dotted #2b5570}
   .foot{text-align:center;color:#5c6f8c;font-size:12px;margin-top:46px}
 </style>
 </head>
@@ -44,21 +47,21 @@
   </div>
 
   <div class="mod">
-    <div class="mod-h fam"><span class="bar"></span><h2>我的家庭</h2><span class="n">成长激励系统</span></div>
+    <div class="mod-h fam"><span class="bar"></span><h2>我的家庭</h2><span class="n">成长激励系统 · 云端同步</span></div>
     <div class="grid">
-      <a class="card fam" href="family/kid/">
+      <a class="card fam" href="https://growth-kit.app.workbuddy.host/kid/">
         <div class="ic">&#127775;</div>
-        <span class="role kid">孩子端</span>
-        <h3>成长工具箱</h3>
+        <span class="role cloud">云同步</span>
+        <h3>成长工具箱 · 孩子端</h3>
         <div class="desc">打卡赚积分、商城兑换奖励。今日任务、成就墙、存钱目标、账本一目了然，给她/他用的那个入口。</div>
         <span class="go">打开孩子端 &rarr;</span>
       </a>
 
-      <a class="card fam" href="family/parent/">
+      <a class="card fam" href="https://growth-kit.app.workbuddy.host/parent/">
         <div class="ic">&#128736;&#65039;</div>
-        <span class="role par">家长端</span>
+        <span class="role cloud">云同步</span>
         <h3>家长管理台</h3>
-        <div class="desc">审核打卡、管理约定与看板、配置任务与商品。含信任分级、免审限额、通胀监控与数据备份。需 PIN 进入。</div>
+        <div class="desc">审核打卡、管理约定与看板、配置任务与商品。手机、平板、电脑共用一份数据，一处改动几秒内自动同步。需 PIN 进入。</div>
         <span class="go">打开家长端 &rarr;</span>
       </a>
 
@@ -69,6 +72,7 @@
         <span class="go">阅读方案 &rarr;</span>
       </a>
     </div>
+    <div class="subs">离线备用（不开云同步、各自记各自，断网也能用）：<a href="family/kid/">孩子端·本机版</a> · <a href="family/parent/">家长端·本机版</a></div>
   </div>
 
   <div class="mod">

@@ -56,12 +56,12 @@ tbody tr:hover{background:#FFFBF4}
   <div class="hero">
     <h1>家庭激励系统 · 设计方案 v2</h1>
     <div class="sub">在 v1 基础上的完善稿：同类系统对标 · 系统架构 · 防作弊与公平性 · 上线首月运行手册</div>
-    <div><span class="badge">v2.1</span><span class="badge">2026-09-18</span><span class="badge">单文件离线应用</span></div>
+    <div><span class="badge">v2.2</span><span class="badge">2026-09-19</span><span class="badge">单文件离线应用</span></div>
   </div>
   <p><strong>项目代号</strong>：Growth Kit（成长工具箱）<br><strong>版本</strong>：v2.0 完善稿<br><strong>日期</strong>：2026 年 9 月 18 日<br><strong>形态</strong>：单文件网页应用（离线可用）+ 配套运行方案<br><strong>说明</strong>：本稿是在 v1 设计方案基础上的<strong>完善版</strong>，重点是补上 v1 缺失的四个部分：同类系统对标、系统架构、防作弊与公平性、上线首月运行手册。</p>
 <hr>
 <h2>0. v1 → v2 变更清单</h2>
-<table><thead><tr><th>维度</th><th>v1 已有</th><th>v2 补充</th></tr></thead><tbody><tr><td>目标与画像</td><td>完整</td><td>沿用</td></tr><tr><td>任务清单</td><td>17 项预置</td><td>沿用，改为可图形化编辑</td></tr><tr><td>积分商城</td><td>六层分档</td><td>沿用，新增「存钱目标（愿望单）」</td></tr><tr><td>审核机制</td><td>家长逐条审核</td><td><strong>新增信任分级 + 免审限额 + 抽检</strong></td></tr><tr><td>家长角色</td><td>审核者</td><td><strong>新增「家长承诺账」——家长也要守约</strong></td></tr><tr><td>风险管理</td><td>提到过度理由效应</td><td><strong>新增「通胀监控看板」+ 三阶段退出</strong></td></tr><tr><td>数据</td><td>localStorage</td><td><strong>新增导出/导入/打印实物备份</strong></td></tr><tr><td>可视化</td><td>无</td><td><strong>新增打卡热力图、周报、趋势图</strong></td></tr><tr><td>门禁</td><td>无</td><td><strong>新增家长端 PIN 码</strong></td></tr><tr><td>外部依赖</td><td>依赖 CDN 图表库</td><td><strong>全部去除，自绘 SVG，可离线双击打开</strong></td></tr></tbody></table>
+<table><thead><tr><th>维度</th><th>v1 已有</th><th>v2 补充</th></tr></thead><tbody><tr><td>目标与画像</td><td>完整</td><td>沿用</td></tr><tr><td>任务清单</td><td>17 项预置</td><td>沿用，改为可图形化编辑</td></tr><tr><td>积分商城</td><td>六层分档</td><td>沿用；新增「存钱目标（愿望单）」；<strong>v2.2 新增每件商品的兑换频次上限 + 使用规则备注</strong></td></tr><tr><td>兑换端风控</td><td>无</td><td><strong>新增兑换次数上限（每天／每周／每月／每 N 天／仅一次）</strong></td></tr><tr><td>审核机制</td><td>家长逐条审核</td><td><strong>新增信任分级 + 免审限额 + 抽检</strong></td></tr><tr><td>家长角色</td><td>审核者</td><td><strong>新增「家长承诺账」——家长也要守约</strong></td></tr><tr><td>风险管理</td><td>提到过度理由效应</td><td><strong>新增「通胀监控看板」+ 三阶段退出</strong></td></tr><tr><td>数据</td><td>localStorage</td><td><strong>新增导出/导入/打印实物备份</strong></td></tr><tr><td>可视化</td><td>无</td><td><strong>新增打卡热力图、周报、趋势图</strong></td></tr><tr><td>门禁</td><td>无</td><td><strong>新增家长端 PIN 码</strong></td></tr><tr><td>外部依赖</td><td>依赖 CDN 图表库</td><td><strong>全部去除，自绘 SVG，可离线双击打开</strong></td></tr></tbody></table>
 <hr>
 <h2>1. 同类系统对标研究</h2>
 <p>设计前先看了市面上真实存在的同类产品与相关研究，避免重复造轮子、也避免踩别人踩过的坑。</p>
@@ -130,6 +130,16 @@ tbody tr:hover{background:#FFFBF4}
 <h3>3.8 商城六层（沿用 v1）</h3>
 <table><thead><tr><th>层级</th><th>内容</th><th>性质</th></tr></thead><tbody><tr><td>⭐ 拼豆专区</td><td>拼豆材料、图案</td><td>核心激励锚点</td></tr><tr><td>🍬 即时</td><td>小零食、贴纸</td><td>低门槛，快速兑现</td></tr><tr><td>🎡 短期</td><td>一次游乐园、看电影</td><td>周级目标</td></tr><tr><td>🎁 长期</td><td>大玩具、夏令营</td><td>月级目标（配合存钱目标）</td></tr><tr><td>💰 零花钱</td><td>按比例兑成现金</td><td>财商训练</td></tr><tr><td>👑 特权</td><td>晚睡 30 分钟、决定周末吃什么</td><td><strong>最关键的一类</strong></td></tr></tbody></table>
 <p><strong>特权不能用钱买。</strong> 它是孩子真正在意的东西，而且零成本——这也是「逐步撤除外部奖励」时最好用的过渡物。</p>
+<h3>3.9 奖品兑换限制与使用规则（v2.2 新增）</h3>
+<p><strong>v2.1 的漏洞</strong>：打卡端做了次数上限，但<strong>兑换端是敞开的</strong>。孩子一旦攒到分，就会把分一次性砸在最容易兑现的东西上——"多看 30 分钟电视"连兑三次、零花钱一次换光、把"特权"当日常消耗品用。这会让积分从"稀缺凭证"变成"随时可花的代币"，通胀监控怎么调参数都救不回来。</p>
+<p><strong>规则一：每个商品可设兑换频次</strong>，与打卡频次共用同一套语义，家长不用学第二套概念。</p>
+<table><thead><tr><th>兑换频次</th><th>次数</th><th>实际含义</th></tr></thead><tbody><tr><td>每天</td><td>1 次（新建默认）</td><td>一天一次，第二天自动刷新</td></tr><tr><td>每天</td><td>N 次</td><td>一天最多兑换 N 次</td></tr><tr><td>每周</td><td>1 次</td><td>一周一次，到周一自动刷新</td></tr><tr><td>每周</td><td>N 次</td><td>一周最多 N 次</td></tr><tr><td>每月</td><td>N 次</td><td>本月最多 N 次，到下月 1 号刷新</td></tr><tr><td>自定义间隔</td><td>每 N 天一次</td><td>兑换一次要再等 N 天（如"每 90 天一次"的大型游玩）</td></tr><tr><td>只记一次</td><td>—</td><td>整个记录里只允许兑换一次，换完永久锁定（如"生日特别礼物"）</td></tr><tr><td>不限次数</td><td>—</td><td>随时都能兑换（如"多玩 15 分钟自由时间"）</td></tr></tbody></table>
+<p><strong>规则二：每个商品可以写一段"使用规则"</strong>，兑换时孩子会看到——商城卡片上有「📋 使用规则」入口，零花钱这类走独立弹窗的也会把规则带进去。它解决的是"规则只装在家长脑子里"的问题：孩子事先知道边界，事后争执就少。</p>
+<p>预置的几条示例（开箱即用，可随时改）：</p>
+<table><thead><tr><th>商品</th><th>限制</th><th>使用规则备注</th></tr></thead><tbody><tr><td>多看 30 分钟电视</td><td>每天 1 次</td><td>和「多看 20 分钟动画片」当天不能同时用</td></tr><tr><td>周末看一部电影</td><td>每周 1 次</td><td>周五 18:00 后或周末使用，片长不超过 2 小时</td></tr><tr><td>免做一次家务券</td><td>每周 1 次</td><td>只能免自己分内的家务，不能转让给别人</td></tr><tr><td>晚睡券（推迟 30 分钟）</td><td>每周 1 次</td><td>最晚推迟到 21:30；第二天要上学时不可用</td></tr><tr><td>兑换零花钱 20 元</td><td>每周 1 次</td><td>换 20 元这一档，本周就不能再换 5 元 / 10 元了</td></tr><tr><td>心仪玩具（100–200 元）</td><td>每月 1 次</td><td>需连续两周无退回记录才可兑换</td></tr><tr><td>生日特别礼物</td><td>只记一次</td><td>需在生日前 2 周提出，提前商量</td></tr><tr><td>主题乐园 / 大型游玩</td><td>每 90 天 1 次</td><td>寒暑假使用，需提前一周定日子</td></tr></tbody></table>
+<p><strong>被家长驳回的兑换申请不占额度</strong>，孩子可以改天再换——和打卡被退回后的处理保持一致。</p>
+<p><strong>一个默认值上的取舍</strong>：新建商品默认是"每天一次"，而不是"不限次数"。因为奖品天生稀缺，默认应该有上限；但<strong>升级前就存在的老商品保持"不限次数"</strong>，避免升级后行为突然变化（这一点在代码里做了兼容判断，不会因为打开一次编辑弹窗就把限制写坏）。</p>
+<p>孩子端的反馈也做了区分：还有额度时按钮是"兑换"，额度用完后按钮置灰并直接写明"本周已兑换 / 已兑换过"，孩子不用点进去才知道不能换。</p>
 <hr>
 <h2>4. 防作弊与公平性</h2>
 <table><thead><tr><th>风险</th><th>对策</th></tr></thead><tbody><tr><td>孩子虚报</td><td>高价值任务必须审核；低价值任务靠抽检</td></tr><tr><td>家长随手加/减分</td><td>所有变动必须走账本，孩子端可见</td></tr><tr><td>家长临时改规则</td><td>规则修改在「约定」页留痕，孩子端能查到</td></tr><tr><td>孩子只挑低分任务刷分</td><td>设「每日封顶」+ 类别均衡提示</td></tr><tr><td>兑换被无限拖延</td><td>家长 24 小时未处理计入承诺账</td></tr><tr><td>多家长口径不一</td><td>双家长模式（dualRate），规则以系统为准，不靠记忆</td></tr></tbody></table>

@@ -1619,6 +1619,20 @@ function viewParentConfig(){
   });
   html += '</div>';
 
+  var lastSync = (DB.meta && DB.meta.lastSyncAt) ? new Date(DB.meta.lastSyncAt) : null;
+  var syncHint = lastSync
+    ? ('上次同步：' + lastSync.getFullYear() + '-' + pad2(lastSync.getMonth() + 1) + '-' + pad2(lastSync.getDate()))
+    : '这台设备还没有同步过';
+  html += '<div class="card pad mb12">' +
+    '<div class="bd sm mb4">跨设备同步</div>' +
+    '<div class="xs mut mb10" style="line-height:1.7">数据只存在<b>当前这个浏览器</b>里——换手机、换电脑，甚至同一台手机上换一个 App（微信 / Safari）打开，都是各自独立的。<br>用同步码把数据带过去：</div>' +
+    '<div class="grid2">' +
+      '<button class="btn pri" onclick="showSyncExport(\'cfg\')">⚙️ 同步设置</button>' +
+      '<button class="btn bl" onclick="showSyncExport(\'full\')">🔄 完整同步</button>' +
+    '</div>' +
+    '<button class="btn ok wide mt8" onclick="showSyncImport()">📥 粘贴同步码导入</button>' +
+    '<div class="xs mut mt8">' + syncHint + '</div></div>';
+
   html += '<div class="card pad mb12"><div class="bd sm mb10">打印与分享</div>' +
     '<div class="grid2">' +
     '<button class="btn bl" onclick="printCharter()">📜 家庭公约</button>' +
@@ -1628,7 +1642,7 @@ function viewParentConfig(){
     '</div>' +
     '<div class="row g8 mt8"><button class="btn gh fill" onclick="exportCSV()">导出 CSV</button>' +
     '<label class="btn gh fill" style="margin:0">导入恢复<input type="file" accept=".json" style="display:none" onchange="importJSON(this)"></label></div>' +
-    '<div class="xs mut mt10" style="line-height:1.6">数据保存在本机浏览器，不联网、不上传。建议每周导出一次备份；换设备时用「导出 / 导入」迁移。</div>' +
+    '<div class="xs mut mt10" style="line-height:1.6">导出的 JSON 文件适合长期存档；日常在两台设备之间搬数据，用上面的「同步码」更省事。</div>' +
     '<button class="btn gh wide mt10" onclick="resetAll()" style="color:#C0453F">重置全部数据</button></div>';
   return html;
 }
@@ -1891,6 +1905,186 @@ function resetAll(){
     DB = freshDB(); saveDB(); UI.parentUnlocked = false; UI.view = 'kid'; render();
     toast('已重置','ok');
   });
+}
+
+/* ---------- 跨设备同步（同步码） ----------
+   数据存在浏览器本地，天然无法跨设备。同步码把数据压缩成一串纯文本，
+   可以复制、可以塞进链接，在另一台设备上粘贴即完成迁移。
+   cfg  = 只带任务 / 商品 / 设置（不动对方的积分与记录）
+   full = 全部数据（整体迁移）                                    */
+var SYNC_TAG = 'GK';
+
+function _b64urlEnc(bytes){
+  var bin = '', CH = 0x8000;
+  for(var i = 0; i < bytes.length; i += CH){
+    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CH));
+  }
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function _b64urlDec(str){
+  var s = String(str).replace(/-/g, '+').replace(/_/g, '/');
+  while(s.length % 4) s += '=';
+  var bin = atob(s), out = new Uint8Array(bin.length);
+  for(var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+function _canZip(){
+  return typeof CompressionStream === 'function' && typeof DecompressionStream === 'function';
+}
+function _deflate(text){
+  if(!_canZip()) return Promise.resolve(null);
+  try{
+    var cs = new CompressionStream('deflate-raw');
+    var w = cs.writable.getWriter();
+    w.write(new TextEncoder().encode(text));
+    w.close();
+    return new Response(cs.readable).arrayBuffer()
+      .then(function(b){ return new Uint8Array(b); })
+      .catch(function(){ return null; });
+  }catch(e){ return Promise.resolve(null); }
+}
+function _inflate(bytes){
+  var ds = new DecompressionStream('deflate-raw');
+  var w = ds.writable.getWriter();
+  w.write(bytes);
+  w.close();
+  return new Response(ds.readable).text();
+}
+function buildPayload(kind){
+  if(kind === 'cfg') return { k:'cfg', t:DB.tasks, r:DB.rewards, c:DB.config };
+  return { k:'full', d:DB };
+}
+function packCode(kind){
+  var json = JSON.stringify(buildPayload(kind));
+  return _deflate(json).then(function(bytes){
+    if(bytes) return SYNC_TAG + '1:' + _b64urlEnc(bytes);
+    return SYNC_TAG + '0:' + _b64urlEnc(new TextEncoder().encode(json));
+  });
+}
+function extractCode(raw){
+  var s = String(raw == null ? '' : raw);
+  var i = s.indexOf('#sync=');
+  if(i >= 0) s = s.slice(i + 6);
+  s = s.replace(/\s+/g, '');
+  var m = new RegExp('^' + SYNC_TAG + '([01]):([A-Za-z0-9\\-_]+)$').exec(s);
+  if(!m) return null;
+  return { zip: m[1] === '1', body: m[2] };
+}
+function unpackCode(raw){
+  var c = extractCode(raw);
+  if(!c) return Promise.reject(new Error('FORMAT'));
+  var bytes;
+  try{ bytes = _b64urlDec(c.body); }catch(e){ return Promise.reject(new Error('FORMAT')); }
+  var p = c.zip ? _inflate(bytes) : Promise.resolve(new TextDecoder().decode(bytes));
+  return p.then(function(txt){
+    var obj = JSON.parse(txt);
+    if(!obj) throw new Error('FORMAT');
+    if(obj.k === 'cfg' && (!obj.t || !obj.r || !obj.c)) throw new Error('FORMAT');
+    if(obj.k === 'full' && (!obj.d || !obj.d.account || !obj.d.config)) throw new Error('FORMAT');
+    if(obj.k !== 'cfg' && obj.k !== 'full') throw new Error('FORMAT');
+    return obj;
+  });
+}
+function syncBaseUrl(){
+  var p = location.pathname.replace(/\/(kid|parent)\/?$/, '/');
+  if(p.charAt(p.length - 1) !== '/') p += '/';
+  return location.origin + p;
+}
+function applySync(obj){
+  if(obj.k === 'full'){
+    DB = obj.d;
+  } else {
+    DB.tasks = obj.t;
+    DB.rewards = obj.r;
+    DB.config = obj.c;          /* PIN 一并同步，保证一家人一套设置 */
+  }
+  DB.meta = DB.meta || {};
+  DB.meta.lastSyncAt = Date.now();
+  saveDB();
+  updateStreak();
+  checkBadges();
+  UI.parentUnlocked = false;
+  UI.view = (APP_ROLE === 'parent') ? 'parent' : 'kid';
+  render();
+}
+function copyText(txt, okMsg){
+  function fallback(){
+    var ta = document.createElement('textarea');
+    ta.value = txt;
+    ta.style.position = 'fixed'; ta.style.top = '0'; ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    var done = false;
+    try{ done = document.execCommand('copy'); }catch(e){ done = false; }
+    ta.remove();
+    toast(done ? okMsg : '复制失败，请长按选中后手动复制', done ? 'ok' : 'warn');
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(function(){ toast(okMsg, 'ok'); }, fallback);
+  } else fallback();
+}
+function showSyncExport(kind){
+  var isCfg = kind === 'cfg';
+  packCode(kind).then(function(code){
+    var link = syncBaseUrl() + '#sync=' + code.slice(SYNC_TAG.length);
+    var kb = (code.length / 1024).toFixed(1);
+    openModal(isCfg ? '同步设置' : '完整同步',
+      '<div class="xs mut mb10" style="line-height:1.7">' +
+        (isCfg
+          ? '只带 <b>任务清单、商品清单、家长设置（含 PIN）</b>，<b>不动</b>对方的积分、打卡和兑换记录。<br>家长改完配置，用这个推到孩子那台设备。'
+          : '带上 <b>全部数据</b>：积分、流水、打卡、兑换、任务、商品、设置。<br>换设备整体搬家时用这个。') +
+      '</div>' +
+      '<textarea id="sy-out" readonly style="width:100%;height:104px;font-size:11px;line-height:1.5;padding:10px;border-radius:12px;border:1px solid #E6E1D8;background:#FAF8F5;word-break:break-all;resize:none">' + esc(code) + '</textarea>' +
+      '<div class="xs mut mt6">共 ' + kb + ' KB · 越用越长的只有“完整同步”（它带历史记录）</div>' +
+      '<div class="row g8 mt12">' +
+        '<button class="btn pri fill" id="sy-copy">复制同步码</button>' +
+        '<button class="btn bl fill" id="sy-link">复制链接</button>' +
+      '</div>' +
+      '<div class="xs mut mt10" style="line-height:1.7"><b>复制链接最省事</b>：发到微信 / 短信，对方点开就会问「是否导入」。<br>同步码适合当面粘贴：另一台设备 → 家长端 → 设置 → 粘贴同步码。</div>',
+      function(w){
+        w.querySelector('#sy-copy').onclick = function(){ copyText(code, '同步码已复制'); };
+        w.querySelector('#sy-link').onclick = function(){ copyText(link, '链接已复制，发出去让对方点开'); };
+      });
+  }).catch(function(){ toast('生成失败，请重试', 'err'); });
+}
+function showSyncImport(){
+  openModal('粘贴同步码',
+    '<div class="xs mut mb8" style="line-height:1.6">把另一台设备生成的<b>同步码</b>或<b>链接</b>粘进来：</div>' +
+    '<textarea id="sy-in" placeholder="GK1:..." style="width:100%;height:104px;font-size:12px;line-height:1.5;padding:10px;border-radius:12px;border:1px solid #E6E1D8;resize:none"></textarea>' +
+    '<div class="row g8 mt12"><button class="btn gh fill" onclick="closeModal()">取消</button>' +
+    '<button class="btn pri fill" id="sy-go">导入</button></div>',
+    function(w){
+      w.querySelector('#sy-go').onclick = function(){
+        doSyncImport((w.querySelector('#sy-in') || {}).value);
+      };
+    });
+}
+function doSyncImport(raw){
+  unpackCode(raw).then(function(obj){
+    closeModal();
+    setTimeout(function(){
+      var msg = (obj.k === 'cfg')
+        ? '这条同步码是「设置」：\n· 任务清单 ' + obj.t.length + ' 项\n· 商品清单 ' + obj.r.length + ' 项\n· 家长设置与 PIN\n\n导入后覆盖本机这几项，积分、打卡、兑换记录保持不变。'
+        : '这条同步码是「完整数据」：\n· 积分与流水\n· 打卡 / 兑换记录\n· 任务、商品与设置\n\n导入后会完整覆盖本机当前的全部数据。';
+      confirmBox(msg + '\n\n确定导入吗？', function(){
+        try{ applySync(obj); toast('已导入', 'ok'); }
+        catch(e){ toast('导入失败：' + e.message, 'err'); }
+      });
+    }, 120);
+  }).catch(function(){
+    toast('同步码无法识别，请检查是否复制完整', 'err');
+  });
+}
+function checkSyncHash(){
+  var h = (typeof location !== 'undefined' && location.hash) ? String(location.hash) : '';
+  var i = h.indexOf('#sync=');
+  if(i < 0) return;
+  var code = h.slice(i + 6);
+  try{ history.replaceState(null, '', location.pathname + location.search); }catch(e){}
+  setTimeout(function(){
+    toast('检测到同步数据，请确认导入', 'info');
+    doSyncImport(code);
+  }, 900);
 }
 
 /* ---------- 导入导出 / 打印 ---------- */
@@ -2176,6 +2370,8 @@ function boot(){
   if(!DB.config.parentPin && APP_ROLE === 'both'){
     setTimeout(function(){ toast('第一次用？先点右上角「家长端」设个 PIN 码','info'); }, 900);
   }
+  /* 链接里带了同步码 → 引导导入（放在最后，等页面渲染完再弹） */
+  checkSyncHash();
 }
 if(document.readyState === 'loading'){
   document.addEventListener('DOMContentLoaded', boot);

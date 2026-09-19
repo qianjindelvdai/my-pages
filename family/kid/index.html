@@ -2120,7 +2120,7 @@ var CS = {
   api: null, auth: null, db: null, user: null,
   rowId: null, rev: 0, state: 'idle',
   pushing: false, timer: null, lastAt: 0, msg: '',
-  otpId: '', otpExist: false, dev: '', busy: false
+  otpId: '', otpExist: false, dev: '', busy: false, email: '', resetStart: null
 };
 
 function cloudEnvOK(){
@@ -2172,6 +2172,31 @@ function cloudLoadSDK(){
   });
 }
 
+/* SDK 返回约定：getSession() → { data: session }，session = { accessToken, user:{id,raw} }。
+   两个坑：① data 本身就是 session，没有 data.session 这层；
+   ② session.user 里**没有 email**，邮箱要另外用 getUser() 取。 */
+function pickSession(r){
+  var d = r && r.data;
+  if(!d) return null;
+  return d.session ? d.session : d;
+}
+function sessionEmail(s){
+  var u = (s && s.user) || {};
+  var raw = u.raw || {};
+  var md = raw.user_metadata || {};
+  return u.email || raw.email || md.email || '';
+}
+function cloudFillProfile(){
+  if(!CS.auth || typeof CS.auth.getUser !== 'function') return Promise.resolve();
+  return CS.auth.getUser().then(function(r){
+    var u = r && r.data;
+    if(u && u.email && u.email !== CS.email){
+      CS.email = u.email;
+      if(UI.view === 'parent') render();
+    }
+  }).catch(function(){});
+}
+
 function cloudBoot(){
   if(CS.state !== 'idle') return;
   if(!cloudEnvOK()){ CS.state = 'off'; return; }
@@ -2182,10 +2207,12 @@ function cloudBoot(){
     CS.db   = CS.api.database;
     return CS.auth.getSession();
   }).then(function(r){
-    var s = r && r.data && r.data.session;
+    var s = pickSession(r);
     if(s && s.user){
-      CS.user = s.user || null;
+      CS.user  = s.user;
+      CS.email = sessionEmail(s);
       CS.state = 'on';
+      cloudFillProfile();
       return cloudPull().then(function(){ cloudTick(); });
     }
     CS.state = 'login';
@@ -2293,6 +2320,8 @@ function cloudPush(silent){
     CS.rev    = rows[0].rev;
     CS.lastAt = Date.now();
     CS.state  = 'on';
+    CS.msg    = '';
+    _resyncDepth = 0;
     CS.pushing = false;
     if(!silent && UI.view === 'parent') render();
   }).catch(function(e){
@@ -2303,9 +2332,11 @@ function cloudPush(silent){
     CS.msg = (e && e.message) || '上传失败';
     CS.state = 'err';
     CS.pushing = false;
-    if(!silent && UI.view === 'parent') render();
+    /* 首次上传是静默发起的，但失败绝不能再静默：家长端要能立刻看到原因 */
+    if(UI.view === 'parent') render();
   });
 }
+var _resyncDepth = 0;
 function cloudResync(){
   CS.rev = 0;
   return CS.db.from(CLOUD.table).select('id, rev, payload').limit(1).then(function(r){
@@ -2315,10 +2346,28 @@ function cloudResync(){
       if(row.payload && row.payload.account) cloudMerge(row.payload, true);
       CS.rev = row.rev;
       saveLocal(); render();
+      CS.pushing = false;
+      _resyncDepth = 0;
+      cloudQueue();
+      return;
     }
+    /* 写进去却查不到：连续两次就判定为权限/登录问题，停止空转，把真实原因显示出来 */
     CS.pushing = false;
+    _resyncDepth++;
+    if(_resyncDepth >= 2){
+      _resyncDepth = 0;
+      CS.msg = '云端没有接受这次写入（可能登录状态失效，或数据表权限未生效）。';
+      CS.state = 'err';
+      if(UI.view === 'parent') render();
+      return;
+    }
     cloudQueue();
-  }).catch(function(){ CS.pushing = false; });
+  }).catch(function(e){
+    CS.pushing = false;
+    CS.msg = (e && e.message) || '同步失败';
+    CS.state = 'err';
+    if(UI.view === 'parent') render();
+  });
 }
 
 /* ---- 轮询 ---- */
@@ -2360,7 +2409,7 @@ function openAccountPanel(){
       head +
       '<div class="card pad mb12" style="background:#F2F8F4;border-color:#CFE6D6">' +
         '<div class="xs bd">已登录</div>' +
-        '<div class="xs mut mt4">' + esc(CS.user.email || '') + '</div>' +
+        '<div class="xs mut mt4">' + esc(CS.email || '') + '</div>' +
         (t ? '<div class="xs mut mt4">最近同步：' + hhmm(t) + '</div>' : '') +
         '<div class="xs mut mt4">此设备：' + esc(deviceTag()) + '</div>' +
       '</div>' +
@@ -2441,7 +2490,7 @@ function doSignIn(){
   CS.busy = true; toast('正在登录…', 'info');
   CS.auth.signInWithPassword({ email: em, password: pw }).then(function(r){
     if(r.error) throw r.error;
-    return afterLogin();
+    return afterLogin(pickSession(r));
   }).catch(function(e){
     toast(authErr(e), 'err');
   }).then(function(){ CS.busy = false; });
@@ -2474,7 +2523,7 @@ function doVerifyOtp(){
     password: CS.otpExist ? undefined : (pw || undefined)
   }).then(function(r){
     if(r.error) throw r.error;
-    return afterLogin();
+    return afterLogin(pickSession(r));
   }).catch(function(e){
     toast(authErr(e), 'err');
   }).then(function(){ CS.busy = false; });
@@ -2500,27 +2549,40 @@ function doReset(){
   CS.busy = true;
   CS.resetStart.updateUser({ nonce: cd, password: pw }).then(function(done){
     if(done.error) throw done.error;
-    return afterLogin();
+    return afterLogin(pickSession(done));
   }).catch(function(e){
     toast(authErr(e), 'err');
   }).then(function(){ CS.busy = false; });
 }
-function afterLogin(){
-  return CS.auth.getSession().then(function(r){
-    CS.user = (r && r.data && r.data.session && r.data.session.user) || CS.user;
+function afterLogin(sess){
+  return Promise.resolve().then(function(){
+    if(sess && sess.user){
+      CS.user  = sess.user;
+      CS.email = sessionEmail(sess) || CS.email;
+      return null;
+    }
+    return CS.auth.getSession().then(function(r){
+      var s = pickSession(r);
+      if(!s || !s.user) throw new Error('登录没有真正生效，请再试一次');
+      CS.user  = s.user;
+      CS.email = sessionEmail(s) || CS.email;
+    });
+  }).then(function(){
     CS.state = 'on';
     CS.rev = 0; CS.rowId = null;
     return cloudPull();
   }).then(function(){
     cloudTick();
+    cloudFillProfile();
     closeModal();
-    toast('云端同步已开启', 'ok');
+    if(CS.state === 'err') toast('已登录，但首次同步失败：' + (CS.msg || '未知原因'), 'err');
+    else toast('云端同步已开启', 'ok');
     render();
   });
 }
 function doSignOut(){
   CS.auth.signOut().then(function(){
-    CS.user = null; CS.state = 'login';
+    CS.user = null; CS.email = ''; CS.state = 'login';
     CS.rev = 0; CS.rowId = null;
     if(CS.timer){ clearInterval(CS.timer); CS.timer = null; }
     closeModal();

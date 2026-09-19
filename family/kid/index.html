@@ -179,13 +179,14 @@ function dateOffsetOf(ds){
 var CONFIG_DEFAULT = {
   kidName: '宝贝',
   pointsPerYuan: 10,
+  /* beadFundRate / dualRate 已停用（2026-09-19 取消拼豆基金），保留字段仅为兼容旧数据 */
   beadFundRate: 12,
   savingsRate: 0.30,
   dreamInterestRate: 0.01,
   freeAuditDailyPoints: 12,
   freeAuditDailyCount: 6,
   spotCheckRate: 0.15,
-  dualRate: true,
+  dualRate: false,
   parentPin: null
 };
 
@@ -244,8 +245,8 @@ var REWARDS_DEFAULT = [
   {id:'r18',name:'心仪玩具（100-200 元）',tier:'长期',price:800,stock:null,walletOption:false,rFreq:'monthly',rTimes:1,note:'每月限一次。需连续两周无退回记录才可兑换。'},
   {id:'r19',name:'生日特别礼物',tier:'长期',price:1500,stock:null,walletOption:false,rFreq:'once',note:'整个记录里只能兑换一次。需在生日前 2 周提出，提前商量。'},
   {id:'r20',name:'主题乐园 / 大型游玩',tier:'长期',price:2000,stock:null,walletOption:false,rFreq:'custom',rDays:90,note:'每 90 天可兑换一次。寒暑假使用，需提前一周定日子。'},
-  {id:'r21',name:'兑换零花钱 5 元',tier:'零花钱',price:50,stock:null,walletOption:true,rFreq:'weekly',rTimes:1,note:'每周限兑换一次。周五晚上统一发放；单身周合计不超过 20 元。'},
-  {id:'r22',name:'兑换零花钱 10 元',tier:'零花钱',price:100,stock:null,walletOption:true,rFreq:'weekly',rTimes:1,note:'每周限兑换一次。周五晚上统一发放；单身周合计不超过 20 元。'},
+  {id:'r21',name:'兑换零花钱 5 元',tier:'零花钱',price:50,stock:null,walletOption:true,rFreq:'weekly',rTimes:1,note:'每周限兑换一次。周五晚上统一发放；单周合计不超过 20 元。'},
+  {id:'r22',name:'兑换零花钱 10 元',tier:'零花钱',price:100,stock:null,walletOption:true,rFreq:'weekly',rTimes:1,note:'每周限兑换一次。周五晚上统一发放；单周合计不超过 20 元。'},
   {id:'r23',name:'兑换零花钱 20 元',tier:'零花钱',price:200,stock:null,walletOption:true,rFreq:'weekly',rTimes:1,note:'每周限兑换一次。换 20 元这一档，本周就不能再换 5 元 / 10 元了。'},
   {id:'r24',name:'决定周末菜单',tier:'特权',price:30,stock:null,walletOption:false,rFreq:'weekly',rTimes:1,note:'每周限一次。周六或周日的一顿正餐，你定菜、爸妈做。'},
   {id:'r25',name:'选择全家看的电影',tier:'特权',price:40,stock:null,walletOption:false,rFreq:'weekly',rTimes:1,note:'每周限一次。全家一起看，需选合家欢类型。'},
@@ -317,6 +318,7 @@ function freshDB(){
     }),
     checkins: [], orders: [], ledger: [], wishes: [], pledges: [],
     account: {
+      /* beadFund 已停用（2026-09-19 取消拼豆基金），恒为 0，保留字段兼容旧数据 */
       mainBalance:0, beadFund:0, freeWallet:0, dreamBalance:0,
       totalEarned:0, totalSpent:0, streakDays:0, integrityScore:0
     },
@@ -325,6 +327,30 @@ function freshDB(){
   };
 }
 
+/* 取消拼豆基金（2026-09-19）：把基金余额并入「零花钱」，历史订单改走零花钱通道。
+   每一步都幂等——可以反复调用。
+   注意：云端拉取（cloudAdopt / cloudMerge）会整体替换 DB，所以那两处也必须调用本函数，
+   否则另一台设备推上来的旧数据会让基金余额「复活」。 */
+function migrateDB(){
+  if(!DB) return;
+  if(!DB.meta) DB.meta = {};
+  if(!Array.isArray(DB.ledger)) DB.ledger = [];
+  if(!Array.isArray(DB.orders)) DB.orders = [];
+  /* 备注错别字：把旧数据里的「单身周」改成「单周」（只修错字，不改规则） */
+  (DB.rewards || []).forEach(function(r){
+    if(r && typeof r.note === 'string') r.note = r.note.replace(/单身周/g, '单周');
+  });
+  /* 旧订单里选过「拼豆基金」通道的，改走零花钱通道，金额不变 */
+  DB.orders.forEach(function(o){ if(o && o.targetWallet === 'bead_fund') o.targetWallet = 'free'; });
+  /* 基金余额并入零花钱。搬完置 0，所以这段天然只会真正执行一次 */
+  if(DB.account && Number(DB.account.beadFund || 0) > 0){
+    var moved = Number(DB.account.beadFund);
+    DB.account.freeWallet = Number(DB.account.freeWallet || 0) + moved;
+    ledger('transfer', 0, '拼豆基金取消，' + moved + ' 元并入零花钱', null);
+    DB.account.beadFund = 0;
+  }
+  DB.meta.beadFundMerged = true;
+}
 function loadDB(){
   try {
     var raw = localStorage.getItem(STORAGE_KEY);
@@ -361,6 +387,7 @@ function loadDB(){
     DB = freshDB();
     saveDB();
   }
+  migrateDB();
   settleInterest();
 }
 function saveDB(){
@@ -726,13 +753,11 @@ function approveOrder(id, ok){
   if(!ok){ o.status = 'rejected'; saveDB(); render(); toast('已驳回该兑换','info'); return; }
   if(DB.account.mainBalance < o.price){ toast('余额不足，无法通过','warn'); return; }
   debitPoints(o.price, '兑换：' + o.rewardName, o.id);
-  if(o.targetWallet === 'bead_fund'){
-    DB.account.beadFund += (o.cashAmount || 0);
-    ledger('transfer', 0, '转入拼豆基金 ' + o.cashAmount + ' 元', o.id);
-  }
-  if(o.targetWallet === 'free'){
-    DB.account.freeWallet += (o.cashAmount || 0);
-    ledger('transfer', 0, '转入自由钱包 ' + o.cashAmount + ' 元', o.id);
+  /* 零花钱统一进「零花钱」余额；旧订单里残留的 bead_fund 通道一并兼容 */
+  if(o.targetWallet === 'free' || o.targetWallet === 'bead_fund'){
+    var cashIn = o.cashAmount || 0;
+    DB.account.freeWallet += cashIn;
+    ledger('transfer', 0, '转入零花钱 ' + cashIn + ' 元', o.id);
   }
   if(o.tier === '拼豆') DB.flags.bead = true;
   var r = rewardById(o.rewardId);
@@ -1092,8 +1117,8 @@ function viewKidShop(){
   var html = '<div class="card pad mb12 row between">' +
     '<div><div class="xs mut mb2">可用积分</div>' +
     '<div class="xxl xb" style="color:var(--orange)">' + DB.account.mainBalance + '<span class="xs mut"> 分</span></div></div>' +
-    '<div class="tr"><div class="xs mut mb2">拼豆基金</div>' +
-    '<div class="xl xb" style="color:var(--pink)">' + (DB.account.beadFund || 0) + '<span class="xs mut"> 元</span></div></div></div>';
+    '<div class="tr"><div class="xs mut mb2">零花钱</div>' +
+    '<div class="xl xb" style="color:var(--green)">' + (DB.account.freeWallet || 0) + '<span class="xs mut"> 元</span></div></div></div>';
 
   var openWishes = DB.wishes.filter(function(w){ return !w.achievedAt; }).sort(function(a,b){
     return (b.target - DB.account.mainBalance) - (a.target - DB.account.mainBalance);
@@ -1114,7 +1139,7 @@ function viewKidShop(){
     html += '<button class="btn wide dash mb12" style="padding:14px" onclick="addWish()">🎯 我想要一个大目标，去设个存钱计划</button>';
   }
 
-  html += '<button class="btn bl wide mb12" style="padding:12px" onclick="UI.shopTier=\'零花钱\';render()">💱 兑换零花钱 · 可转入拼豆基金</button>';
+  html += '<button class="btn bl wide mb12" style="padding:12px" onclick="UI.shopTier=\'零花钱\';render()">💱 兑换零花钱</button>';
 
   html += '<div class="tierbar mb10">';
   TIER_ORDER.forEach(function(t){
@@ -1127,7 +1152,7 @@ function viewKidShop(){
 
   if(UI.shopTier === '零花钱'){
     html += '<div class="xs mb10" style="background:#FDF7EC;color:#8C7E68;padding:8px 11px;border-radius:10px;line-height:1.75">' +
-      '先选一个档位 → 弹窗里挑「🧩 拼豆基金」或「💳 自由钱包」→ 家长通过后到账</div>';
+      '先选一个档位 → 家长通过后直接到账零花钱</div>';
   }
 
   var list = activeRewards().filter(function(r){ return r.tier === UI.shopTier; });
@@ -1188,7 +1213,7 @@ function onRedeem(rewardId){
   if(!r) return;
   if(rDone(r)){ toast(rDoneMsg(r),'warn'); return; }
   if(DB.account.mainBalance < r.price){ toast('积分还不够哦，继续加油','warn'); return; }
-  if(r.walletOption){ showWalletPicker(r); return; }
+  if(r.walletOption){ showCashConfirm(r); return; }
   var extra = r.note ? '\n\n【使用规则】' + r.note : '';
   confirmBox('确定用 ' + r.price + ' 分兑换「' + r.name + '」吗？\n兑换后余额：' +
     (DB.account.mainBalance - r.price) + ' 分' +
@@ -1210,26 +1235,23 @@ function showRewardNote(r){
     '<button class="btn pri wide mt16" onclick="closeModal()">知道了</button>';
   openModal('使用规则', body);
 }
-function showWalletPicker(r){
-  var dual = DB.config.dualRate !== false;
-  var freeCash = Math.round(r.price / DB.config.pointsPerYuan);
-  var beadCash = Math.round(r.price / DB.config.pointsPerYuan * (DB.config.beadFundRate / DB.config.pointsPerYuan));
-  if(!dual) beadCash = freeCash;
-  var body = '<div class="sm mut mb12">' + r.price + ' 分 · 请选择转入哪个钱包</div>' +
+/* 兑换零花钱：不再选钱包，直接按基准汇率折算（2026-09-19 取消拼豆基金） */
+function showCashConfirm(r){
+  var cash = Math.round(r.price / DB.config.pointsPerYuan);
+  var body = '<div class="sm mut mb12">' + r.price + ' 分 · 兑换后到账零花钱</div>' +
     (rHasLimit(r) ? '<div class="xs mb10" style="background:#FFF6E9;color:#8A6629;padding:8px 11px;border-radius:10px;line-height:1.7">⏱ ' +
       rLimitText(r) + ' · ' + rWindowLabel(r) + '已用 ' + rUsed(r) + '/' + rMax(r) + '，' + rNextHint(r) + '</div>' : '') +
     (r.note ? '<div class="xs mb12" style="background:#F4F7FF;color:#4A5B8C;padding:9px 12px;border-radius:10px;line-height:1.75">📋 ' +
       esc(r.note).replace(/\n/g,'<br>') + '</div>' : '') +
-    '<button class="btn wide" id="w-bead" style="justify-content:space-between;padding:14px 16px;background:#fff;border:2px solid var(--pink);text-align:left">' +
-      '<span><span class="bd sm" style="display:block">🧩 拼豆基金</span><span class="xs mut">只能买拼豆 / 文具 / 书</span></span>' +
-      '<span class="tr"><span class="xl xb" style="color:var(--pink);display:block">' + beadCash + ' 元</span>' +
-      (dual ? '<span class="xs" style="color:var(--pink)">汇率优待</span>' : '') + '</span></button>' +
-    '<button class="btn wide mt8" id="w-free" style="justify-content:space-between;padding:14px 16px;background:#fff;border:2px solid var(--line);text-align:left">' +
-      '<span><span class="bd sm" style="display:block">💳 自由钱包</span><span class="xs mut">用途不限，自由支配</span></span>' +
-      '<span class="xl xb">' + freeCash + ' 元</span></button>';
+    '<div class="card pad mb12 row between" style="align-items:center">' +
+      '<div><div class="xs mut mb2">到账金额</div><div class="bd sm">💳 零花钱</div></div>' +
+      '<div class="xxl xb" style="color:var(--green)">' + cash + '<span class="xs mut"> 元</span></div>' +
+    '</div>' +
+    '<div class="row g8"><button class="btn gh fill" id="w-no">再想想</button>' +
+    '<button class="btn pri fill" id="w-yes">确定兑换</button></div>';
   openModal('兑换零花钱', body, function(w){
-    w.querySelector('#w-bead').onclick = function(){ closeModal(); redeem(r, 'bead_fund', beadCash); };
-    w.querySelector('#w-free').onclick = function(){ closeModal(); redeem(r, 'free', freeCash); };
+    w.querySelector('#w-no').onclick = closeModal;
+    w.querySelector('#w-yes').onclick = function(){ closeModal(); redeem(r, 'free', cash); };
   });
 }
 
@@ -1243,12 +1265,11 @@ function viewKidAccount(){
   var html = '<div class="grid2 mb12">' +
     '<div class="card pad"><div class="xs mut mb2">💰 主账户</div><div class="xxl xb">' + a.mainBalance + '</div>' +
       '<div class="xs mut">可用积分</div></div>' +
-    '<div class="card pad"><div class="xs mut mb2">🧩 拼豆基金</div><div class="xxl xb" style="color:var(--pink)">' + (a.beadFund || 0) + '</div>' +
-      '<div class="xs mut">元 · 专买拼豆 / 文具 / 书</div></div>' +
-    '<div class="card pad"><div class="xs mut mb2">💳 自由钱包</div><div class="xxl xb" style="color:var(--green)">' + (a.freeWallet || 0) + '</div>' +
-      '<div class="xs mut">元 · 自由支配</div></div>' +
-    '<div class="card pad"><div class="xs mut mb2">🎯 梦想账户</div><div class="xxl xb" style="color:var(--blue)">' + a.dreamBalance + '</div>' +
-      '<div class="xs mut">分 · 锁定大目标，每月生息</div></div>' +
+    '<div class="card pad"><div class="xs mut mb2">💳 零花钱</div><div class="xxl xb" style="color:var(--green)">' + (a.freeWallet || 0) + '</div>' +
+      '<div class="xs mut">元 · 可自由支配</div></div>' +
+    '<div class="card pad" style="grid-column:1/-1"><div class="row between" style="align-items:center">' +
+      '<div><div class="xs mut mb2">🎯 梦想账户</div><div class="xs mut">锁定大目标，每月生息</div></div>' +
+      '<div class="xxl xb" style="color:var(--blue)">' + a.dreamBalance + '<span class="xs mut"> 分</span></div></div></div>' +
     '</div>' +
     '<div class="card pad mb12 grid3 tc">' +
       '<div><div class="xs mut mb2">累计获得</div><div class="bd" style="color:#4E9E5B">' + a.totalEarned + '</div></div>' +
@@ -1372,7 +1393,7 @@ function viewParentAudit(){
         '<div class="row between mb4"><div class="xs bd">' + esc(o.rewardName) + '</div>' +
         '<div class="xs mut">' + o.price + ' 分</div></div>' +
         '<div class="xs mut mb8" style="font-size:10px">余额 ' + DB.account.mainBalance + ' → ' + aft +
-          (o.cashAmount ? ' · 转入' + (o.targetWallet === 'bead_fund' ? '拼豆基金' : '自由钱包') + ' ' + o.cashAmount + ' 元' : '') + '</div>' +
+          (o.cashAmount ? ' · 到账零花钱 ' + o.cashAmount + ' 元' : '') + '</div>' +
         '<div class="row g6"><button class="btn bl fill tiny" onclick="approveOrder(\'' + o.id + '\',true)">通过</button>' +
         '<button class="btn gh fill tiny" onclick="approveOrder(\'' + o.id + '\',false)">驳回</button></div></div>';
     });
@@ -1596,15 +1617,12 @@ function viewParentConfig(){
     '<div class="grid2">' +
       cfgField('孩子称呼','kidName',DB.config.kidName,'text') +
       cfgField('基准汇率（分/元）','pointsPerYuan',DB.config.pointsPerYuan,'number') +
-      cfgField('拼豆基金汇率（分/元）','beadFundRate',DB.config.beadFundRate,'number') +
       cfgField('强制储蓄比例','savingsRate',DB.config.savingsRate,'number','0.05') +
       cfgField('梦想账户月息','dreamInterestRate',DB.config.dreamInterestRate,'number','0.005') +
       cfgField('单日免审积分上限','freeAuditDailyPoints',DB.config.freeAuditDailyPoints,'number') +
       cfgField('单日免审次数上限','freeAuditDailyCount',DB.config.freeAuditDailyCount,'number') +
       cfgField('抽查比例','spotCheckRate',DB.config.spotCheckRate,'number','0.05') +
     '</div>' +
-    '<label class="row g6 mt10 xs mut"><input type="checkbox" style="width:auto" ' + (DB.config.dualRate ? 'checked' : '') +
-      ' onchange="setCfg(\'dualRate\',this.checked)">开启双汇率（拼豆基金汇率优待）</label>' +
     '<div class="row g8 mt12"><button class="btn gh" onclick="changePin()">🔑 修改家长 PIN</button>' +
     '<button class="btn gh" onclick="settleInterest(true)">🏦 立即结算月息</button></div></div>';
 
@@ -2276,6 +2294,7 @@ function cloudPull(){
 function cloudAdopt(remote){
   DB = remote;
   if(!DB.meta) DB.meta = {};
+  migrateDB();
 }
 function cloudMerge(remote, quiet){
   if(!remote || !remote.account || !remote.config) return;
@@ -2307,6 +2326,7 @@ function cloudMerge(remote, quiet){
     merged.flags   = JSON.parse(JSON.stringify(DB.flags || merged.flags || {}));
   }
   DB = merged;
+  migrateDB();
   if(!quiet) toast('已合并两台设备的改动', 'info');
 }
 

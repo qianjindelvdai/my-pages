@@ -1,0 +1,2187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#FF9F43">
+<title>成长工具箱 · 家庭激励系统 v2</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --cream:#FFF8F0;--ink:#3E3328;--sub:#9C9083;--line:#F0E7DB;
+  --red:#F4635E;--orange:#FF9F43;--yellow:#FFC93C;--green:#6BCB77;
+  --blue:#4D96FF;--purple:#9D7CE8;--pink:#FF8FB1;--brown:#B08968;--gray:#B4B2A9;
+}
+html,body{margin:0;padding:0}
+body{
+  background:var(--cream);
+  background-image:
+    radial-gradient(circle at 20px 20px,rgba(255,159,67,.07) 2px,transparent 2px),
+    radial-gradient(circle at 60px 60px,rgba(77,150,255,.07) 2px,transparent 2px);
+  background-size:80px 80px;
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif;
+  color:var(--ink);font-size:14px;line-height:1.5;
+}
+.wrap{max-width:780px;margin:0 auto;padding:14px 14px 96px}
+.row{display:flex;align-items:center}
+.col{display:flex;flex-direction:column}
+.between{justify-content:space-between}
+.center{justify-content:center;text-align:center}
+.wrapf{flex-wrap:wrap}
+.fill{flex:1;min-width:0}
+.tr{text-align:right}.tc{text-align:center}
+.g4{gap:4px}.g6{gap:6px}.g8{gap:8px}.g10{gap:10px}.g12{gap:12px}
+.mt4{margin-top:4px}.mt6{margin-top:6px}.mt8{margin-top:8px}.mt10{margin-top:10px}
+.mt12{margin-top:12px}.mt16{margin-top:16px}.mt20{margin-top:20px}.mt24{margin-top:24px}
+.mb2{margin-bottom:2px}.mb4{margin-bottom:4px}.mb6{margin-bottom:6px}.mb8{margin-bottom:8px}
+.mb10{margin-bottom:10px}.mb12{margin-bottom:12px}.mb16{margin-bottom:16px}
+.xs{font-size:11px}.sm{font-size:13px}.nm{font-size:14px}.lg{font-size:16px}
+.xl{font-size:20px}.xxl{font-size:26px}.huge{font-size:34px}
+.mut{color:var(--sub)}.bd{font-weight:700}.xb{font-weight:900}
+.trunc{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hide{display:none!important}
+.card{background:#fff;border-radius:18px;box-shadow:0 3px 0 rgba(180,160,140,.16),0 1px 3px rgba(0,0,0,.04)}
+.pad{padding:14px}.padl{padding:16px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media(max-width:560px){.grid3,.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;border:0;border-radius:12px;
+  padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer;transition:transform .08s;font-family:inherit;color:var(--ink);background:#F3EDE4}
+.btn:active{transform:translateY(2px)}
+.btn.pri{background:var(--orange);color:#fff}
+.btn.ok{background:var(--green);color:#fff}
+.btn.bl{background:var(--blue);color:#fff}
+.btn.pk{background:var(--pink);color:#fff}
+.btn.dk{background:var(--ink);color:var(--cream)}
+.btn.gh{background:#F3EDE4;color:#8B7F72}
+.btn.wide{width:100%}
+.btn.tiny{padding:5px 9px;font-size:11px;border-radius:9px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+input,select,textarea{font-family:inherit;font-size:14px;padding:9px 11px;border:1.5px solid var(--line);
+  border-radius:10px;background:#fff;color:var(--ink);width:100%;outline:none;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--orange)}
+label.fl{font-size:11px;color:var(--sub);display:block;margin-bottom:4px}
+select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,#B4B2A9 50%),linear-gradient(135deg,#B4B2A9 50%,transparent 50%);
+  background-position:calc(100% - 15px) 50%,calc(100% - 10px) 50%;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:28px}
+.tabs{display:flex;gap:5px;background:#fff;border-radius:16px;padding:5px;box-shadow:0 3px 0 rgba(180,160,140,.16)}
+.tabs button{flex:1;border:0;background:transparent;border-radius:12px;padding:9px 3px;font-size:12px;font-weight:700;
+  color:var(--sub);cursor:pointer;font-family:inherit;transition:.15s;white-space:nowrap}
+.tabs button.on{background:var(--ink);color:#FFF8F0}
+.bead{width:13px;height:13px;border-radius:4px;flex:0 0 auto;
+  box-shadow:inset 0 -2px 0 rgba(0,0,0,.13),inset 0 2px 0 rgba(255,255,255,.5)}
+.hbar{height:10px;border-radius:6px;background:#F3EDE4;overflow:hidden}
+.hbar>i{display:block;height:100%;border-radius:6px;transition:width .4s}
+.dash{border:1.5px dashed #E8DCCB;border-radius:14px;background:transparent}
+.list{border-radius:14px;background:#FAF6F0;padding:9px 11px}
+.chip{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:#F3EDE4;color:#8B7F72}
+.pill{padding:7px 14px;border-radius:20px;font-size:13px;font-weight:700;border:0;cursor:pointer;font-family:inherit;
+  background:#fff;color:var(--sub);box-shadow:0 2px 0 rgba(180,160,140,.16);white-space:nowrap}
+.pill.on{color:#fff;box-shadow:0 2px 0 rgba(0,0,0,.12)}
+.mask{position:fixed;inset:0;background:rgba(48,36,24,.4);display:flex;align-items:center;justify-content:center;
+  padding:14px;z-index:900;overflow:auto}
+.mask.bottom{align-items:flex-end}
+.modal{background:#fff;border-radius:20px;padding:18px;width:100%;max-width:460px;max-height:88vh;overflow:auto;
+  box-shadow:0 12px 40px rgba(60,44,28,.22)}
+@keyframes pop{0%{transform:scale(.9);opacity:0}60%{transform:scale(1.03)}100%{transform:scale(1);opacity:1}}
+.pop{animation:pop .26s cubic-bezier(.4,1.4,.6,1) both}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.shake{animation:shake .3s}
+#toastbox{position:fixed;top:16px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:8px;z-index:999;pointer-events:none}
+.toast{padding:10px 18px;border-radius:14px;color:#fff;font-size:13px;font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+#fly{position:fixed;z-index:999;font-weight:900;font-size:26px;color:var(--orange);text-shadow:0 2px 0 #fff;pointer-events:none}
+table.tb{width:100%;border-collapse:collapse;font-size:12px}
+table.tb th,table.tb td{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left}
+table.tb th{color:var(--sub);font-weight:700;font-size:11px}
+.hm{display:grid;grid-template-columns:repeat(8,1fr);gap:3px}
+.hm i{display:block;padding-bottom:100%;border-radius:3px;background:#F3EDE4}
+.bnav{position:fixed;left:0;right:0;bottom:0;z-index:800;display:flex;gap:4px;max-width:780px;margin:0 auto;
+  background:rgba(255,252,247,.97);border-top:1px solid var(--line);backdrop-filter:blur(10px);
+  padding:6px 8px calc(6px + env(safe-area-inset-bottom))}
+.bnav button{flex:1;border:0;background:transparent;border-radius:14px;padding:6px 2px;cursor:pointer;
+  font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:2px;transition:.15s}
+.bnav button .bi{font-size:19px;line-height:1;filter:grayscale(1) opacity(.5);transition:.15s}
+.bnav button .bt{font-size:10px;font-weight:700;color:var(--sub)}
+.bnav button.on{background:#FFF1E0}
+.bnav button.on .bi{filter:none}
+.bnav button.on .bt{color:var(--orange)}
+#print-area{display:none}
+@media print{
+  body{background:#fff}
+  body>*{display:none!important}
+  #print-area{display:block!important}
+  #print-area .sheet{page-break-after:always}
+}
+@media(max-width:520px){
+  .wrap{padding:10px 10px 90px}
+  .xxl{font-size:22px}.huge{font-size:28px}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toastbox"></div>
+<div id="fly" class="hide">+0</div>
+<div id="modals"></div>
+<div id="print-area"></div>
+
+<script>
+/* ============================================================
+   成长工具箱 · 家庭激励系统  v2.0
+   单文件 · 零外部依赖（可离线双击打开）· localStorage 持久化
+   v2 相对 v1 的增强：
+     1. 去除全部 CDN 依赖，离线可用（自写 CSS + 自绘 SVG 图表）
+     2. 任务/商品采用图形化编辑器（不再用 prompt）
+     3. 新增「存钱目标（愿望单）」
+     4. 新增「梦想账户月息」结算（借鉴 Greenlight / FamZoo）
+     5. 新增「家长承诺账」——契约对等，家长也要守约
+     6. 新增「通胀监控看板」——积分制最常见的真实失败原因
+     7. 新增 打卡热力图 / 周报 / 公约打印 / 卡币打印
+     8. 驳回原因可选模板 + 孩子端可见退回理由
+   ============================================================ */
+
+var STORAGE_KEY = 'growth_kit_v2';
+var APP_VERSION = '2.0';
+
+/* ---------- 基础工具 ---------- */
+function pad2(n){ n = String(n); return n.length < 2 ? '0' + n : n; }
+function todayStr(){ var d = new Date(); return d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate()); }
+function dateStr(offset){
+  var d = new Date(); d.setDate(d.getDate() + offset);
+  return d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate());
+}
+function monthStr(offset){
+  var d = new Date(); d.setDate(1); d.setMonth(d.getMonth() + (offset||0));
+  return d.getFullYear() + '-' + pad2(d.getMonth()+1);
+}
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function $(s){ return document.querySelector(s); }
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+function dateOffsetOf(ds){
+  var t = new Date(ds + 'T00:00:00'); var n = new Date(todayStr() + 'T00:00:00');
+  return Math.round((n - t) / 86400000);
+}
+
+/* ---------- 预置数据 ---------- */
+var CONFIG_DEFAULT = {
+  kidName: '宝贝',
+  pointsPerYuan: 10,
+  beadFundRate: 12,
+  savingsRate: 0.30,
+  dreamInterestRate: 0.01,
+  freeAuditDailyPoints: 12,
+  freeAuditDailyCount: 6,
+  spotCheckRate: 0.15,
+  dualRate: true,
+  parentPin: null
+};
+
+var CATS = {
+  '学业': { color:'#4D96FF', icon:'📘' },
+  '素养': { color:'#9D7CE8', icon:'🎵' },
+  '生活': { color:'#6BCB77', icon:'🏠' },
+  '挑战': { color:'#FF9F43', icon:'⚡' }
+};
+var CAT_ORDER = ['学业','素养','生活','挑战'];
+var FREQ_LABEL = { daily:'每天', weekly:'每周', monthly:'每月', custom:'自定义间隔', once:'只记一次' };
+var FREQ_UNIT  = { daily:'天', weekly:'周', monthly:'月' };
+var MODE_LABEL = { auto:'免审', auto_limit:'免审限额', audit:'需审核' };
+var TRUST_LABEL = { trusted:'已信任', watch:'观察期', audit:'需审核' };
+
+var TASKS_DEFAULT = [
+  {id:'t01',name:'晚托班完成全部学校作业',cat:'学业',points:5,tiers:null,freq:'daily',auditMode:'audit',trustLevel:'trusted',evi:false,desc:''},
+  {id:'t02',name:'作业主动自查 + 交家长检查',cat:'学业',points:3,tiers:null,freq:'daily',auditMode:'audit',trustLevel:'trusted',evi:false,desc:''},
+  {id:'t03',name:'加练（口算 / 字词 / 阅读）',cat:'学业',points:3,tiers:null,freq:'daily',auditMode:'auto_limit',trustLevel:'trusted',evi:false,desc:'20-30 分钟'},
+  {id:'t04',name:'学而思课程',cat:'学业',points:4,tiers:null,freq:'weekly',auditMode:'audit',trustLevel:'trusted',evi:false,desc:'上课日'},
+  {id:'t05',name:'学而思课后作业',cat:'学业',points:3,tiers:null,freq:'weekly',auditMode:'auto_limit',trustLevel:'trusted',evi:false,desc:''},
+  {id:'t06',name:'新概念网课',cat:'学业',points:4,tiers:null,freq:'weekly',auditMode:'audit',trustLevel:'trusted',evi:false,desc:'上课日'},
+  {id:'t07',name:'新概念跟读 / 背诵',cat:'学业',points:3,tiers:null,freq:'weekly',auditMode:'auto_limit',trustLevel:'trusted',evi:false,desc:''},
+  {id:'t08',name:'错题整理',cat:'学业',points:5,tiers:null,freq:'weekly',auditMode:'auto_limit',trustLevel:'trusted',evi:false,desc:''},
+  {id:'t09',name:'琵琶弹奏',cat:'素养',points:5,freq:'daily',auditMode:'audit',trustLevel:'trusted',evi:false,desc:'',
+   tiers:[{label:'30 分钟以上',points:5},{label:'15-30 分钟',points:2}]},
+  {id:'t10',name:'单杠悬吊',cat:'素养',points:3,tiers:null,freq:'daily',auditMode:'auto_limit',trustLevel:'trusted',evi:false,desc:'累计达标 60 秒'},
+  {id:'t11',name:'其他运动（跳绳 / 跑步）',cat:'素养',points:2,tiers:null,freq:'daily',auditMode:'auto',trustLevel:'trusted',evi:false,desc:'15 分钟以上'},
+  {id:'t12',name:'一个人独立睡觉',cat:'生活',points:8,freq:'daily',auditMode:'audit',trustLevel:'trusted',evi:false,desc:'关键行为突破',
+   tiers:[{label:'睡到天亮',points:8},{label:'醒来但没找爸妈',points:4}]},
+  {id:'t13',name:'叠被子',cat:'生活',points:2,tiers:null,freq:'daily',auditMode:'auto',trustLevel:'trusted',evi:false,desc:''},
+  {id:'t14',name:'扫地 / 擦桌',cat:'生活',points:2,tiers:null,freq:'daily',auditMode:'auto',trustLevel:'trusted',evi:false,desc:''},
+  {id:'t15',name:'洗漱 + 整理书包（不用催）',cat:'生活',points:2,tiers:null,freq:'daily',auditMode:'auto',trustLevel:'trusted',evi:false,desc:''},
+  {id:'t16',name:'21:30 前关灯入睡',cat:'生活',points:2,tiers:null,freq:'daily',auditMode:'auto',trustLevel:'trusted',evi:false,desc:''},
+  {id:'t17',name:'主动帮助家人',cat:'挑战',points:3,tiers:null,freq:'weekly',freqTimes:3,auditMode:'auto',trustLevel:'trusted',evi:false,desc:'家长发现即时给予，一周最多 3 次'}
+];
+
+var REWARDS_DEFAULT = [
+  {id:'r01',name:'一张新拼豆图纸（打印版）',tier:'拼豆',price:80,stock:null,walletOption:false,note:'不限次数。选好图纸告诉爸妈，打印出来即可，一次一张。'},
+  {id:'r02',name:'拼豆作品家庭展览 + 拍照',tier:'拼豆',price:50,stock:null,walletOption:false,note:'不限次数。作品完成后随时可以展出，照片会存进家庭相册。'},
+  {id:'r03',name:'和爸妈一起做拼豆 2 小时',tier:'拼豆',price:100,stock:null,walletOption:false,rFreq:'weekly',rTimes:1,note:'每周限一次。需提前约定时间，爸妈那两小时不看手机。'},
+  {id:'r04',name:'拼豆材料包（基础色）',tier:'拼豆',price:200,stock:null,walletOption:false,note:'不限次数，用完即买。基础色是消耗品，缺哪个颜色告诉爸妈。'},
+  {id:'r05',name:'拼豆材料包（指定款）',tier:'拼豆',price:400,stock:null,walletOption:false,rFreq:'weekly',rTimes:1,note:'每周限一次。指定款要凑单买，凑满 99 元一起下单。'},
+  {id:'r06',name:'拼豆工具升级（镊子 / 熨斗 / 模板板）',tier:'拼豆',price:600,stock:null,walletOption:false,rFreq:'monthly',rTimes:1,note:'每月限一次。工具是耐用品，坏了可以理由充分直接换，不算兑换。'},
+  {id:'r07',name:'选今晚的睡前故事',tier:'即时',price:5,stock:null,walletOption:false,rFreq:'daily',rTimes:1,note:'每天限一次。晚上 20:30 前兑换，从故事书里挑一个，爸妈读给你听。'},
+  {id:'r08',name:'听故事额外 30 分钟',tier:'即时',price:10,stock:null,walletOption:false,rFreq:'daily',rTimes:1,note:'每天限一次。最晚到 21:00，第二天要上学时不可用。'},
+  {id:'r09',name:'一份小零食',tier:'即时',price:10,stock:null,walletOption:false,rFreq:'daily',rTimes:1,note:'每天限一次。睡前 1 小时不吃甜食；正餐没吃完当天不可兑换。'},
+  {id:'r10',name:'多看 20 分钟动画片',tier:'即时',price:15,stock:null,walletOption:false,rFreq:'daily',rTimes:1,note:'每天限一次。需先完成当天作业和练琴；单次不超过 20 分钟。'},
+  {id:'r11',name:'多玩 15 分钟自由时间',tier:'即时',price:15,stock:null,walletOption:false,note:'不限次数。可累积使用，但每晚 21:00 是硬底线。'},
+  {id:'r12',name:'多看 30 分钟电视',tier:'即时',price:20,stock:null,walletOption:false,rFreq:'daily',rTimes:1,note:'每天限一次。和「多看 20 分钟动画片」当天不能同时用。'},
+  {id:'r13',name:'周末看一部电影',tier:'短期',price:60,stock:null,walletOption:false,rFreq:'weekly',rTimes:1,note:'每周限一次。周五 18:00 后或周末使用，片长不超过 2 小时。'},
+  {id:'r14',name:'周末公园 / 游乐场半日',tier:'短期',price:100,stock:null,walletOption:false,rFreq:'weekly',rTimes:1,note:'每周限一次。遇下雨顺延到下周，不折现、不叠加。'},
+  {id:'r15',name:'全家外出吃饭（你选餐厅）',tier:'短期',price:120,stock:null,walletOption:false,rFreq:'weekly',rTimes:1,note:'每周限一次。需提前一天告诉爸妈，人均不超过 80 元。'},
+  {id:'r16',name:'周末亲子特别活动',tier:'短期',price:150,stock:null,walletOption:false,rFreq:'weekly',rTimes:1,note:'每周限一次。内容你提方案、爸妈配合，预算 150 元以内。'},
+  {id:'r17',name:'心仪小玩具（50 元内）',tier:'长期',price:400,stock:null,walletOption:false,rFreq:'monthly',rTimes:1,note:'每月限一次。和爸妈一起挑，加进购物车后统一下单。'},
+  {id:'r18',name:'心仪玩具（100-200 元）',tier:'长期',price:800,stock:null,walletOption:false,rFreq:'monthly',rTimes:1,note:'每月限一次。需连续两周无退回记录才可兑换。'},
+  {id:'r19',name:'生日特别礼物',tier:'长期',price:1500,stock:null,walletOption:false,rFreq:'once',note:'整个记录里只能兑换一次。需在生日前 2 周提出，提前商量。'},
+  {id:'r20',name:'主题乐园 / 大型游玩',tier:'长期',price:2000,stock:null,walletOption:false,rFreq:'custom',rDays:90,note:'每 90 天可兑换一次。寒暑假使用，需提前一周定日子。'},
+  {id:'r21',name:'兑换零花钱 5 元',tier:'零花钱',price:50,stock:null,walletOption:true,rFreq:'weekly',rTimes:1,note:'每周限兑换一次。周五晚上统一发放；单身周合计不超过 20 元。'},
+  {id:'r22',name:'兑换零花钱 10 元',tier:'零花钱',price:100,stock:null,walletOption:true,rFreq:'weekly',rTimes:1,note:'每周限兑换一次。周五晚上统一发放；单身周合计不超过 20 元。'},
+  {id:'r23',name:'兑换零花钱 20 元',tier:'零花钱',price:200,stock:null,walletOption:true,rFreq:'weekly',rTimes:1,note:'每周限兑换一次。换 20 元这一档，本周就不能再换 5 元 / 10 元了。'},
+  {id:'r24',name:'决定周末菜单',tier:'特权',price:30,stock:null,walletOption:false,rFreq:'weekly',rTimes:1,note:'每周限一次。周六或周日的一顿正餐，你定菜、爸妈做。'},
+  {id:'r25',name:'选择全家看的电影',tier:'特权',price:40,stock:null,walletOption:false,rFreq:'weekly',rTimes:1,note:'每周限一次。全家一起看，需选合家欢类型。'},
+  {id:'r26',name:'免做一次家务券',tier:'特权',price:40,stock:null,walletOption:false,rFreq:'weekly',rTimes:1,note:'每周限一次。只能免自己分内的家务，不能转让给别人。'},
+  {id:'r27',name:'晚睡券（推迟 30 分钟）',tier:'特权',price:50,stock:null,walletOption:false,rFreq:'weekly',rTimes:1,note:'每周限一次。最晚推迟到 21:30；第二天要上学时不可用。'},
+  {id:'r28',name:'专属陪伴 1 小时',tier:'特权',price:50,stock:null,walletOption:false,note:'不限次数。提前一天约时间，这一小时爸妈只陪你，不看手机。'},
+  {id:'r29',name:'小主人券（决定家庭活动）',tier:'特权',price:80,stock:null,walletOption:false,rFreq:'monthly',rTimes:1,note:'每月限一次。你可以安排一个半天的家庭活动，爸妈配合执行。'}
+];
+
+var TIER_ORDER = ['拼豆','即时','短期','长期','零花钱','特权'];
+var TIER_COLOR = { '拼豆':'#FF8FB1','即时':'#6BCB77','短期':'#4D96FF','长期':'#9D7CE8','零花钱':'#FFC93C','特权':'#FF9F43' };
+var TIER_ICON  = { '拼豆':'🧩','即时':'🍬','短期':'🎡','长期':'🎁','零花钱':'💰','特权':'👑' };
+
+var BADGES_DEFAULT = [
+  {id:'b01',name:'黑夜勇者',icon:'🌙',cond:'首次独立睡觉成功'},
+  {id:'b02',name:'七日之火',icon:'🔥',cond:'连续 7 天有打卡'},
+  {id:'b03',name:'月度全勤',icon:'🏆',cond:'连续 30 天有打卡'},
+  {id:'b04',name:'小小富翁',icon:'💰',cond:'累计获得 1000 分'},
+  {id:'b05',name:'拼豆达人',icon:'🧩',cond:'首次兑换拼豆类奖励'},
+  {id:'b06',name:'储蓄之星',icon:'🎯',cond:'梦想账户达 500 分'},
+  {id:'b07',name:'诚实君子',icon:'✅',cond:'诚信分累计 10 次'},
+  {id:'b08',name:'琵琶初鸣',icon:'🎵',cond:'琵琶打卡累计 30 次'},
+  {id:'b09',name:'理财小能手',icon:'🏦',cond:'获得过梦想账户利息'},
+  {id:'b10',name:'说到做到',icon:'🤝',cond:'完成 5 个存钱目标'}
+];
+function badgeHit(id, db){
+  switch(id){
+    case 'b01': return db.flags.moon === true;
+    case 'b02': return db.account.streakDays >= 7;
+    case 'b03': return db.account.streakDays >= 30;
+    case 'b04': return db.account.totalEarned >= 1000;
+    case 'b05': return db.flags.bead === true;
+    case 'b06': return db.account.dreamBalance >= 500;
+    case 'b07': return db.account.integrityScore >= 10;
+    case 'b08': return db.checkins.filter(function(c){ return c.taskId === 't09' && c.status !== 'rejected'; }).length >= 30;
+    case 'b09': return db.flags.interest === true;
+    case 'b10': return db.wishes.filter(function(w){ return !!w.achievedAt; }).length >= 5;
+  }
+  return false;
+}
+
+var LEVELS = [
+  {name:'青铜学徒', min:0,    emoji:'🟤', color:'#B08968'},
+  {name:'白银行者', min:500,  emoji:'⚪', color:'#9AA5B1'},
+  {name:'黄金达人', min:1000, emoji:'🟡', color:'#FFC93C'},
+  {name:'铂金掌门', min:2000, emoji:'🔷', color:'#4D96FF'},
+  {name:'钻石大师', min:3500, emoji:'💎', color:'#9D7CE8'}
+];
+
+var REJECT_REASONS = ['今天没有完成哦','质量还不够好，再认真一点','时长不够，明天加油','这个是爸妈陪着你做的，不算独立完成','下次可以做得更好'];
+var PLEDGE_DEFAULT = '答应的事一定做到，不做交换条件';
+
+/* ---------- 状态 ---------- */
+var DB = null;
+/* 入口角色：'both' 双端可切换 / 'kid' 孩子端入口 / 'parent' 家长端入口
+   发布时会生成 family/kid/ 与 family/parent/ 两个入口，本行由构建脚本替换 */
+var APP_ROLE = 'parent';
+var UI = { view:'kid', kidTab:'today', parentTab:'audit', shopTier:'拼豆', parentUnlocked:false };
+var TIER_PICK = {};
+
+function freshDB(){
+  return {
+    version: 2,
+    config: JSON.parse(JSON.stringify(CONFIG_DEFAULT)),
+    tasks: JSON.parse(JSON.stringify(TASKS_DEFAULT)),
+    rewards: JSON.parse(JSON.stringify(REWARDS_DEFAULT)),
+    badges: BADGES_DEFAULT.map(function(b){
+      return { id:b.id, name:b.name, icon:b.icon, cond:b.cond, achievedAt:null };
+    }),
+    checkins: [], orders: [], ledger: [], wishes: [], pledges: [],
+    account: {
+      mainBalance:0, beadFund:0, freeWallet:0, dreamBalance:0,
+      totalEarned:0, totalSpent:0, streakDays:0, integrityScore:0
+    },
+    flags: { moon:false, bead:false, interest:false },
+    meta: { createdAt: Date.now(), interestMonth: monthStr(0) }
+  };
+}
+
+function loadDB(){
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw){ DB = freshDB(); saveDB(); return; }
+    DB = JSON.parse(raw);
+    var def = freshDB();
+    if(!DB.config) DB.config = def.config;
+    Object.keys(CONFIG_DEFAULT).forEach(function(k){
+      if(DB.config[k] === undefined || DB.config[k] === null && k !== 'parentPin') DB.config[k] = CONFIG_DEFAULT[k];
+    });
+    if(!DB.tasks)   DB.tasks   = def.tasks;
+    if(!DB.rewards) DB.rewards = def.rewards;
+    if(!DB.badges){
+      DB.badges = def.badges;
+    } else {
+      def.badges.forEach(function(b){
+        if(!DB.badges.some(function(x){ return x.id === b.id; })) DB.badges.push(b);
+      });
+    }
+    if(!DB.checkins) DB.checkins = [];
+    if(!DB.orders)   DB.orders   = [];
+    if(!DB.ledger)   DB.ledger   = [];
+    if(!DB.wishes)   DB.wishes   = [];
+    if(!DB.pledges)  DB.pledges  = [];
+    if(!DB.flags)    DB.flags    = { moon:false, bead:false, interest:false };
+    if(DB.flags.interest === undefined) DB.flags.interest = false;
+    if(!DB.account)  DB.account  = def.account;
+    if(DB.account.freeWallet === undefined) DB.account.freeWallet = 0;
+    if(DB.account.beadFund === undefined)   DB.account.beadFund = 0;
+    if(!DB.meta) DB.meta = { createdAt: Date.now(), interestMonth: monthStr(0) };
+    if(!DB.meta.interestMonth) DB.meta.interestMonth = monthStr(0);
+  } catch(e){
+    console.error(e);
+    DB = freshDB();
+    saveDB();
+  }
+  settleInterest();
+}
+function saveDB(){
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); }
+  catch(e){ toast('保存失败：浏览器存储空间不足','err'); }
+}
+
+/* ---------- 账本与积分引擎 ---------- */
+function ledger(type, points, desc, refId){
+  DB.ledger.unshift({ id:uid(), date:todayStr(), ts:Date.now(), type:type, points:points, desc:desc, refId:refId || null });
+  if(DB.ledger.length > 2000) DB.ledger.length = 2000;
+}
+function calcLevel(totalEarned){
+  var idx = 0;
+  LEVELS.forEach(function(lv,i){ if(totalEarned >= lv.min) idx = i; });
+  return idx;
+}
+function levelProgress(){
+  var idx = calcLevel(DB.account.totalEarned);
+  var cur = LEVELS[idx], next = LEVELS[idx+1];
+  if(!next) return { idx:idx, cur:cur, next:null, pct:100, need:0 };
+  var span = next.min - cur.min;
+  var done = DB.account.totalEarned - cur.min;
+  return { idx:idx, cur:cur, next:next, pct:Math.min(100, Math.round(done / span * 100)), need:next.min - DB.account.totalEarned };
+}
+function creditPoints(points, desc, refId, opts){
+  opts = opts || {};
+  var savings = 0;
+  if(opts.withSavings !== false) savings = Math.floor(points * DB.config.savingsRate);
+  DB.account.mainBalance += (points - savings);
+  DB.account.dreamBalance += savings;
+  DB.account.totalEarned += points;
+  ledger('earn', points, desc, refId);
+  if(savings > 0) ledger('savings', -savings, '强制储蓄转入梦想账户（' + desc + '）', refId);
+  checkBadges();
+  checkWishes();
+}
+function debitPoints(points, desc, refId){
+  DB.account.mainBalance -= points;
+  DB.account.totalSpent += points;
+  ledger('spend', -points, desc, refId);
+}
+function revokeCheckin(c){
+  var pts = c.points;
+  var savings = Math.floor(pts * DB.config.savingsRate);
+  DB.account.mainBalance -= (pts - savings);
+  DB.account.dreamBalance -= savings;
+  DB.account.totalEarned -= pts;
+  c.status = 'revoked';
+  ledger('spend', -pts, '撤销（虚报）：' + c.taskName, c.id);
+}
+
+/* 月度利息结算：梦想账户月息（借鉴 Greenlight / FamZoo 的家长付息机制） */
+function settleInterest(){
+  if(!DB || !DB.config || !DB.meta) return;
+  var rate = Number(DB.config.dreamInterestRate) || 0;
+  var guard = 0;
+  while(DB.meta.interestMonth < monthStr(0) && guard++ < 24){
+    var next = DB.meta.interestMonth;
+    var parts = next.split('-');
+    var d = new Date(Number(parts[0]), Number(parts[1]), 1);
+    DB.meta.interestMonth = d.getFullYear() + '-' + pad2(d.getMonth() + 1);
+    if(rate > 0 && DB.account.dreamBalance > 0){
+      var interest = Math.max(1, Math.round(DB.account.dreamBalance * rate));
+      DB.account.dreamBalance += interest;
+      ledger('bonus', interest, '梦想账户月息结算（' + rate * 100 + '%）', null);
+      DB.flags.interest = true;
+    }
+  }
+  saveDB();
+}
+
+/* ---------- 任务查询 ---------- */
+function taskById(id){ return DB.tasks.filter(function(t){ return t.id === id; })[0]; }
+function rewardById(id){ return DB.rewards.filter(function(r){ return r.id === id; })[0]; }
+function activeTasks(){ return DB.tasks.filter(function(t){ return t.active !== false; }); }
+function activeRewards(){ return DB.rewards.filter(function(r){ return r.active !== false; }); }
+function effectiveAuditMode(t){ return t.trustLevel === 'audit' ? 'audit' : t.auditMode; }
+function weekStart(){
+  var d = new Date();
+  var day = (d.getDay() + 6) % 7;
+  var s = new Date(d); s.setDate(d.getDate() - day);
+  return s.getFullYear() + '-' + pad2(s.getMonth()+1) + '-' + pad2(s.getDate());
+}
+function todayCheckins(){
+  var t = todayStr();
+  return DB.checkins.filter(function(c){ return c.date === t; });
+}
+function autoApprovedToday(){
+  var t = todayStr();
+  return DB.checkins.filter(function(c){ return c.date === t && c.status === 'auto_approved'; });
+}
+/* ---------- 频次与次数上限引擎 ----------
+   规则来源：任务上的 freq / freqTimes / freqDays / noLimit
+     daily   + freqTimes=1 → 一天一次（默认）
+     daily   + freqTimes=2 → 一天最多两次
+     weekly  + freqTimes=3 → 一周最多三次
+     monthly + freqTimes=1 → 一月一次
+     custom  + freqDays=3  → 每 3 天一次
+     once                  → 这辈子只记一次
+     noLimit               → 不限次数
+   ============================================ */
+function freqTimesOf(t){ var n = parseInt(t.freqTimes, 10); return (isNaN(n) || n < 1) ? 1 : n; }
+function freqDaysOf(t){ var n = parseInt(t.freqDays, 10); return (isNaN(n) || n < 2) ? 2 : n; }
+function freqWindowLabel(t){
+  if(t.freq === 'weekly')  return '本周';
+  if(t.freq === 'monthly') return '本月';
+  if(t.freq === 'custom')  return '近' + freqDaysOf(t) + '天';
+  return '今天';
+}
+function freqPeriodStart(t){
+  if(t.freq === 'weekly')  return weekStart();
+  if(t.freq === 'monthly') return monthStr(0) + '-01';
+  if(t.freq === 'custom')  return dateStr(-(freqDaysOf(t) - 1));
+  return todayStr();
+}
+function freqUsed(t){
+  if(t.noLimit) return 0;
+  var ok = function(c){ return c.taskId === t.id && c.status !== 'rejected' && c.status !== 'revoked'; };
+  if(t.freq === 'once') return DB.checkins.filter(ok).length;
+  var s = freqPeriodStart(t);
+  return DB.checkins.filter(function(c){ return ok(c) && c.date >= s; }).length;
+}
+function freqMax(t){
+  if(t.noLimit) return Infinity;
+  if(t.freq === 'once' || t.freq === 'custom') return 1;
+  return freqTimesOf(t);
+}
+function freqLeft(t){ return Math.max(0, freqMax(t) - freqUsed(t)); }
+function freqDone(t){ return freqLeft(t) <= 0; }
+function freqText(t){
+  if(t.noLimit) return '不限次数';
+  if(t.freq === 'once') return '只记一次';
+  if(t.freq === 'custom') return '每 ' + freqDaysOf(t) + ' 天一次';
+  var n = freqTimesOf(t), u = FREQ_UNIT[t.freq] || '天';
+  return n > 1 ? '每' + u + n + '次' : '每' + u + '一次';
+}
+function dailyDone(task){ return freqDone(task); }
+
+/* ---------- 奖品兑换限制引擎 ----------
+   规则来源：商品上的 rFreq / rTimes / rDays / rNoLimit
+   语义与打卡频次一致，但统计对象是订单 DB.orders
+   （被驳回 / 未通过的订单不占额度）
+   ============================================ */
+function rTimesOf(r){ var n = parseInt(r.rTimes, 10); return (isNaN(n) || n < 1) ? 1 : n; }
+function rDaysOf(r){ var n = parseInt(r.rDays, 10); return (isNaN(n) || n < 2) ? 2 : n; }
+function rHasLimit(r){ return !!r.rFreq && !r.rNoLimit; }
+function rWindowLabel(r){
+  if(r.rFreq === 'weekly')  return '本周';
+  if(r.rFreq === 'monthly') return '本月';
+  if(r.rFreq === 'custom')  return '近' + rDaysOf(r) + '天';
+  return '今天';
+}
+function rPeriodStart(r){
+  if(r.rFreq === 'weekly')  return weekStart();
+  if(r.rFreq === 'monthly') return monthStr(0) + '-01';
+  if(r.rFreq === 'custom')  return dateStr(-(rDaysOf(r) - 1));
+  return todayStr();
+}
+function rUsed(r){
+  if(!rHasLimit(r)) return 0;
+  var ok = function(o){ return o.rewardId === r.id && o.status !== 'rejected'; };
+  if(r.rFreq === 'once') return DB.orders.filter(ok).length;
+  var s = rPeriodStart(r);
+  return DB.orders.filter(function(o){ return ok(o) && o.date >= s; }).length;
+}
+function rMax(r){
+  if(!rHasLimit(r)) return Infinity;
+  if(r.rFreq === 'once' || r.rFreq === 'custom') return 1;
+  return rTimesOf(r);
+}
+function rLeft(r){ return Math.max(0, rMax(r) - rUsed(r)); }
+function rDone(r){ return rLeft(r) <= 0; }
+function rLimitText(r){
+  if(!rHasLimit(r)) return '不限次数';
+  if(r.rFreq === 'once') return '只能兑换一次';
+  if(r.rFreq === 'custom') return '每 ' + rDaysOf(r) + ' 天限兑换一次';
+  var n = rTimesOf(r), u = FREQ_UNIT[r.rFreq] || '天';
+  return n > 1 ? '每' + u + '最多兑换 ' + n + ' 次' : '每' + u + '限兑换一次';
+}
+function rDoneMsg(r){
+  if(r.rFreq === 'once') return '「' + r.name + '」只能兑换一次，已经换过啦';
+  return '「' + r.name + '」' + rWindowLabel(r) + '最多兑换 ' + rMax(r) + ' 次，已经用完啦';
+}
+function rNextHint(r){
+  if(r.rFreq === 'once') return '机会已经用掉，不再刷新。';
+  if(r.rFreq === 'custom') return '再等 ' + rDaysOf(r) + ' 天就能重新兑换。';
+  if(r.rFreq === 'weekly') return '下周一自动刷新。';
+  if(r.rFreq === 'monthly') return '下个月 1 号自动刷新。';
+  return '明天自动刷新。';
+}
+function updateStreak(){
+  var days = DB.checkins
+    .filter(function(c){ return c.status === 'approved' || c.status === 'auto_approved'; })
+    .map(function(c){ return c.date; });
+  days = days.filter(function(v,i,a){ return a.indexOf(v) === i; });
+  if(!days.length){ DB.account.streakDays = 0; return; }
+  var streak = 0;
+  for(var i = 0; i < 400; i++){
+    if(days.indexOf(dateStr(-i)) >= 0) streak++;
+    else if(i > 0) break;
+  }
+  DB.account.streakDays = streak;
+}
+function pointsOn(ds){
+  return DB.ledger.filter(function(l){ return l.date === ds && l.type === 'earn'; })
+                  .reduce(function(s,l){ return s + l.points; }, 0);
+}
+
+/* ---------- 打卡 / 审核 ---------- */
+function doCheckIn(task, tierLabel){
+  if(freqLeft(task) <= 0){
+    toast(task.freq === 'once' ? '这项已经完成过啦' : freqWindowLabel(task) + '的次数已经用完啦，下次再来',
+      'warn');
+    return;
+  }
+  var points = task.points;
+  if(task.tiers && tierLabel != null){
+    var t = task.tiers.filter(function(x){ return x.label === tierLabel; })[0];
+    if(t) points = t.points;
+  }
+  var mode = effectiveAuditMode(task);
+  var usedPts = autoApprovedToday().reduce(function(s,c){ return s + c.points; }, 0);
+  var usedCnt = autoApprovedToday().length;
+  var overLimit = (usedPts + points > DB.config.freeAuditDailyPoints) || (usedCnt >= DB.config.freeAuditDailyCount);
+  var status = (mode === 'audit' || overLimit) ? 'pending' : 'auto_approved';
+
+  var rec = {
+    id: uid(), taskId: task.id, taskName: task.name, cat: task.cat,
+    tierLabel: tierLabel || null, points: points,
+    date: todayStr(), ts: Date.now(),
+    status: status, note: '', spotCheckStatus:'none',
+    approvedAt: status === 'auto_approved' ? Date.now() : null
+  };
+  DB.checkins.unshift(rec);
+
+  if(status === 'auto_approved'){
+    if(task.id === 't12') DB.flags.moon = true;
+    updateStreak();
+    creditPoints(points, task.name + (tierLabel ? '（' + tierLabel + '）' : ''), rec.id);
+    saveDB();
+    flyScore(points);
+    toast('+' + points + ' 分！真棒','ok');
+  } else {
+    saveDB();
+    if(overLimit && mode !== 'audit') toast('今天的免审额度用完了，剩下的要等爸妈确认哦','warn');
+    else if(DB.config.spotCheckRate > 0 && Math.random() < 0.3) toast('已提交，等爸妈确认','info');
+    else toast('已提交，等爸妈确认','info');
+  }
+  render();
+}
+function approveCheckIn(id, ok, note){
+  var c = DB.checkins.filter(function(x){ return x.id === id; })[0];
+  if(!c) return;
+  if(ok){
+    if(c.status === 'pending'){
+      c.status = 'approved'; c.approvedAt = Date.now(); c.note = '';
+      if(c.taskId === 't12') DB.flags.moon = true;
+      updateStreak();
+      creditPoints(c.points, c.taskName + (c.tierLabel ? '（' + c.tierLabel + '）' : ''), c.id);
+    }
+  } else {
+    c.status = 'rejected'; c.note = note || '未通过';
+  }
+  saveDB(); render();
+}
+function batchApproveCheckins(ids){
+  var just = [];
+  ids.forEach(function(id){
+    var c = DB.checkins.filter(function(x){ return x.id === id; })[0];
+    if(c && c.status === 'pending'){
+      c.status = 'approved'; c.approvedAt = Date.now(); c.note = '';
+      if(c.taskId === 't12') DB.flags.moon = true;
+      just.push(c);
+    }
+  });
+  updateStreak();
+  just.forEach(function(c){
+    creditPoints(c.points, c.taskName + (c.tierLabel ? '（' + c.tierLabel + '）' : ''), c.id);
+  });
+  saveDB(); render();
+  toast(just.length ? ('已通过 ' + just.length + ' 条') : '没有可处理的记录', just.length ? 'ok' : 'warn');
+}
+function rejectCheckin(id){
+  var c = DB.checkins.filter(function(x){ return x.id === id; })[0];
+  if(!c) return;
+  var body = '<div class="mb8 sm mut">选择或输入退回原因，孩子端会看到这句话</div>' +
+    '<div class="mb10" style="display:flex;flex-wrap:wrap;gap:6px">' +
+    REJECT_REASONS.map(function(r){
+      return '<button class="pill" onclick="this.parentNode.parentNode.querySelector(\'#rej-note\').value=this.textContent;this.parentNode.querySelectorAll(\'.pill\').forEach(function(b){b.classList.remove(\'on\')});this.classList.add(\'on\');this.style.background=\'#FF9F43\'" style="font-size:12px">' + esc(r) + '</button>';
+    }).join('') + '</div>' +
+    '<input id="rej-note" placeholder="退回原因" value="">' +
+    '<div class="row g8 mt12"><button class="btn gh fill" onclick="closeModal()">取消</button>' +
+    '<button class="btn pri fill" onclick="doReject(\'' + id + '\')">确认退回</button></div>';
+  openModal('退回这条打卡', body);
+  setTimeout(function(){ var el = $('#rej-note'); if(el) el.focus(); }, 60);
+}
+function doReject(id){
+  var el = $('#rej-note');
+  var note = el ? el.value.trim() : '';
+  closeModal();
+  approveCheckIn(id, false, note || '未通过');
+  toast('已退回，孩子端可以看到原因','info');
+}
+
+/* ---------- 信任引擎 ---------- */
+function spotCheck(id, result){
+  var c = DB.checkins.filter(function(x){ return x.id === id; })[0];
+  if(!c) return;
+  c.spotCheckStatus = result;
+  var task = taskById(c.taskId);
+  if(result === 'verified'){
+    DB.account.integrityScore += 1;
+    if(DB.account.integrityScore % 10 === 0){
+      creditPoints(20, '诚信奖励（累计 10 次抽查通过）', null, { withSavings:false });
+      toast('诚信分达标！奖励 +20 分','ok');
+    } else {
+      toast('已确认真实，诚信分 +1','ok');
+    }
+  } else {
+    if(task){
+      if(task.trustLevel === 'trusted') task.trustLevel = 'watch';
+      else if(task.trustLevel === 'watch') task.trustLevel = 'audit';
+      toast('「' + task.name + '」已降级为' + TRUST_LABEL[task.trustLevel],'warn');
+    }
+    if(c.status === 'approved' || c.status === 'auto_approved') revokeCheckin(c);
+  }
+  saveDB(); render();
+}
+function setTrust(taskId, level){
+  var t = taskById(taskId);
+  if(!t) return;
+  t.trustLevel = level; saveDB(); render();
+  toast('「' + t.name + '」信任状态已更新','ok');
+}
+function checkBadges(){
+  var got = false;
+  DB.badges.forEach(function(b){
+    if(b.achievedAt) return;
+    if(badgeHit(b.id, DB)){ b.achievedAt = Date.now(); got = true; }
+  });
+  if(got){ saveDB(); setTimeout(function(){ toast('解锁新徽章！去成就墙看看','ok'); }, 400); }
+  return got;
+}
+
+/* ---------- 兑换 ---------- */
+function redeem(reward, wallet, cashAmount){
+  if(rDone(reward)){ toast(rDoneMsg(reward),'warn'); return; }
+  if(DB.account.mainBalance < reward.price){ toast('积分还不够哦，继续加油','warn'); return; }
+  DB.orders.unshift({
+    id: uid(), rewardId: reward.id, rewardName: reward.name, tier: reward.tier,
+    price: reward.price, date: todayStr(), ts: Date.now(), status:'pending',
+    targetWallet: wallet || null, cashAmount: cashAmount || null, deliveredAt: null
+  });
+  saveDB(); render();
+  toast('已提交兑换申请，等爸妈确认','info');
+}
+function approveOrder(id, ok){
+  var o = DB.orders.filter(function(x){ return x.id === id; })[0];
+  if(!o) return;
+  if(!ok){ o.status = 'rejected'; saveDB(); render(); toast('已驳回该兑换','info'); return; }
+  if(DB.account.mainBalance < o.price){ toast('余额不足，无法通过','warn'); return; }
+  debitPoints(o.price, '兑换：' + o.rewardName, o.id);
+  if(o.targetWallet === 'bead_fund'){
+    DB.account.beadFund += (o.cashAmount || 0);
+    ledger('transfer', 0, '转入拼豆基金 ' + o.cashAmount + ' 元', o.id);
+  }
+  if(o.targetWallet === 'free'){
+    DB.account.freeWallet += (o.cashAmount || 0);
+    ledger('transfer', 0, '转入自由钱包 ' + o.cashAmount + ' 元', o.id);
+  }
+  if(o.tier === '拼豆') DB.flags.bead = true;
+  var r = rewardById(o.rewardId);
+  if(r && r.stock != null && r.stock > 0) r.stock -= 1;
+  o.status = 'approved';
+  checkBadges(); saveDB(); render();
+  toast('已通过，等待发放','ok');
+}
+function deliverOrder(id){
+  var o = DB.orders.filter(function(x){ return x.id === id; })[0];
+  if(!o) return;
+  o.status = 'delivered'; o.deliveredAt = Date.now();
+  saveDB(); render();
+  toast('已标记为已发放','ok');
+}
+
+/* ---------- 存钱目标（愿望单） ---------- */
+function checkWishes(){
+  DB.wishes.forEach(function(w){
+    if(!w.achievedAt && DB.account.mainBalance >= w.target){
+      w.achievedAt = Date.now();
+      setTimeout(function(){ toast('存钱目标达成：「' + w.name + '」','ok'); }, 500);
+    }
+  });
+}
+function addWish(){
+  var body = '<label class="fl">我想攒钱买什么？</label>' +
+    '<input id="w-name" placeholder="例如：主题乐园一日游">' +
+    '<div class="mt10"><label class="fl">需要多少分？</label>' +
+    '<input id="w-target" type="number" placeholder="例如 2000"></div>' +
+    '<div class="row g8 mt16"><button class="btn gh fill" onclick="closeModal()">取消</button>' +
+    '<button class="btn pri fill" onclick="saveWish()">加进愿望单</button></div>';
+  openModal('新增存钱目标', body);
+}
+function saveWish(){
+  var name = ($('#w-name') || {}).value || '';
+  var target = parseInt(($('#w-target') || {}).value, 10);
+  if(!name.trim()){ toast('先写个名字吧','warn'); return; }
+  if(isNaN(target) || target <= 0){ toast('目标分要填个正数','warn'); return; }
+  DB.wishes.push({ id:uid(), name:name.trim(), target:target, createdAt:Date.now(), achievedAt:null });
+  saveDB(); closeModal(); render();
+  toast('已加入愿望单，加油攒分','ok');
+}
+function delWish(id){
+  confirmBox('把「' + (DB.wishes.filter(function(w){ return w.id === id; })[0] || {}).name + '」从愿望单移除？', function(){
+    DB.wishes = DB.wishes.filter(function(w){ return w.id !== id; });
+    saveDB(); render();
+  });
+}
+
+/* ---------- 家长承诺账（契约对等） ---------- */
+function addPledge(){
+  var body = '<div class="mb10 sm mut">记录爸妈答应孩子的事，做到后打勾。让孩子看到「规则对大人一样有效」。</div>' +
+    '<label class="fl">爸妈答应的事</label><input id="p-text" placeholder="例如：周日带去游乐场">' +
+    '<div class="mt10"><label class="fl">约定日期</label><input id="p-date" type="date" value="' + todayStr() + '"></div>' +
+    '<div class="row g8 mt16"><button class="btn gh fill" onclick="closeModal()">取消</button>' +
+    '<button class="btn pri fill" onclick="savePledge()">记下来</button></div>';
+  openModal('新增家长承诺', body);
+}
+function savePledge(){
+  var text = ($('#p-text') || {}).value || '';
+  var date = ($('#p-date') || {}).value || todayStr();
+  if(!text.trim()){ toast('写一句吧','warn'); return; }
+  DB.pledges.unshift({ id:uid(), text:text.trim(), date:date, status:'open', createdAt:Date.now() });
+  saveDB(); closeModal(); render();
+  toast('已记录，记得兑现哦','ok');
+}
+function setPledge(id, status){
+  var p = DB.pledges.filter(function(x){ return x.id === id; })[0];
+  if(!p) return;
+  p.status = status; saveDB(); render();
+  toast(status === 'kept' ? '守信 +1' : (status === 'broken' ? '已记录未兑现，把它当面说清楚' : '已重新打开'), status === 'broken' ? 'warn' : 'ok');
+}
+function delPledge(id){
+  DB.pledges = DB.pledges.filter(function(p){ return p.id !== id; });
+  saveDB(); render();
+}
+
+/* ---------- 界面基础件 ---------- */
+function toast(msg, kind){
+  var map = { ok:'#6BCB77', warn:'#FF9F43', info:'#4D96FF', err:'#F4635E' };
+  var box = $('#toastbox');
+  if(!box) return;
+  var el = document.createElement('div');
+  el.className = 'toast pop';
+  el.style.background = map[kind] || map.info;
+  el.textContent = msg;
+  box.appendChild(el);
+  setTimeout(function(){
+    el.style.transition = 'opacity .3s';
+    el.style.opacity = '0';
+    setTimeout(function(){ el.remove(); }, 320);
+  }, 1900);
+}
+function flyScore(points){
+  var el = $('#fly');
+  if(!el) return;
+  el.textContent = '+' + points;
+  el.classList.remove('hide');
+  el.style.top = '42%';
+  el.style.left = '50%';
+  el.style.transform = 'translateX(-50%)';
+  el.style.opacity = '1';
+  el.style.transition = 'none';
+  requestAnimationFrame(function(){
+    el.style.transition = 'all .9s cubic-bezier(.2,.8,.3,1)';
+    el.style.top = '20%';
+    el.style.opacity = '0';
+  });
+  setTimeout(function(){ el.classList.add('hide'); }, 950);
+}
+function openModal(title, bodyHtml, onMount){
+  closeModal();
+  var w = document.createElement('div');
+  w.className = 'mask';
+  w.innerHTML = '<div class="modal pop">' +
+    '<div class="row between mb12"><div class="bd lg">' + esc(title) + '</div>' +
+    '<button class="btn gh tiny" onclick="closeModal()">关闭</button></div>' + bodyHtml + '</div>';
+  w.addEventListener('click', function(e){ if(e.target === w) closeModal(); });
+  $('#modals').appendChild(w);
+  if(onMount) setTimeout(function(){ onMount(w); }, 30);
+}
+function closeModal(){ var m = $('#modals'); if(m) m.innerHTML = ''; }
+function confirmBox(text, onOk){
+  openModal('确认一下',
+    '<div class="nm mb16" style="line-height:1.7;white-space:pre-line">' + esc(text) + '</div>' +
+    '<div class="row g8"><button class="btn gh fill" onclick="closeModal()">取消</button>' +
+    '<button class="btn pri fill" id="cf-ok">确定</button></div>',
+    function(w){ w.querySelector('#cf-ok').onclick = function(){ closeModal(); onOk(); }; });
+}
+
+/* ---------- 自绘 SVG 图表（无外部依赖） ---------- */
+function svgArea(data, labels, color){
+  var W = 700, H = 190, PL = 34, PR = 10, PT = 14, PB = 24;
+  var max = Math.max.apply(null, data.concat([10]));
+  var iw = W - PL - PR, ih = H - PT - PB;
+  var pts = data.map(function(v,i){
+    var x = PL + (data.length <= 1 ? iw / 2 : iw * i / (data.length - 1));
+    var y = PT + ih - (v / max) * ih;
+    return [x, y];
+  });
+  var line = pts.map(function(p,i){ return (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' ');
+  var area = line + ' L' + (PL + iw) + ' ' + (PT + ih) + ' L' + PL + ' ' + (PT + ih) + ' Z';
+  var grid = '';
+  for(var g = 0; g <= 3; g++){
+    var y = PT + ih * g / 3;
+    grid += '<line x1="' + PL + '" y1="' + y.toFixed(1) + '" x2="' + (PL+iw) + '" y2="' + y.toFixed(1) + '" stroke="#F5EFE7"/>' +
+            '<text x="' + (PL-6) + '" y="' + (y+3).toFixed(1) + '" font-size="9" fill="#B4B2A9" text-anchor="end">' + Math.round(max - max*g/3) + '</text>';
+  }
+  var xl = '';
+  labels.forEach(function(l,i){
+    if(i % 5 !== 0 && i !== labels.length - 1) return;
+    var x = PL + iw * i / (labels.length - 1);
+    xl += '<text x="' + x.toFixed(1) + '" y="' + (H-6) + '" font-size="9" fill="#B4B2A9" text-anchor="middle">' + esc(l) + '</text>';
+  });
+  var dots = pts.map(function(p,i){
+    if(data[i] <= 0) return '';
+    return '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="2.6" fill="' + color + '"/>';
+  }).join('');
+  return '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;display:block">' +
+    '<defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">' +
+    '<stop offset="0" stop-color="' + color + '" stop-opacity="0.34"/>' +
+    '<stop offset="1" stop-color="' + color + '" stop-opacity="0"/></linearGradient></defs>' +
+    grid + '<path d="' + area + '" fill="url(#ag)"/>' +
+    '<path d="' + line + '" fill="none" stroke="' + color + '" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>' +
+    dots + xl + '</svg>';
+}
+function svgHBars(items, color, unit, maxVal){
+  var W = 700, rowH = 26, PL = 150, PR = 44;
+  var H = Math.max(items.length * rowH + 10, 40);
+  var max = maxVal != null ? maxVal : Math.max.apply(null, items.map(function(x){ return x.v; }).concat([1]));
+  var iw = W - PL - PR;
+  var out = '';
+  items.forEach(function(it,i){
+    var y = i * rowH + 4;
+    var w = Math.max(2, iw * (it.v / max));
+    var label = it.k.length > 11 ? it.k.slice(0, 11) + '…' : it.k;
+    out += '<text x="' + (PL-8) + '" y="' + (y+13) + '" font-size="10.5" fill="#7A6E60" text-anchor="end">' + esc(label) + '</text>' +
+      '<rect x="' + PL + '" y="' + y + '" width="' + iw + '" height="14" rx="7" fill="#F7F2EA"/>' +
+      '<rect x="' + PL + '" y="' + y + '" width="' + w.toFixed(1) + '" height="14" rx="7" fill="' + color + '"/>' +
+      '<text x="' + (PL + iw + 6) + '" y="' + (y+12) + '" font-size="10.5" fill="#7A6E60">' + it.v + (unit || '') + '</text>';
+  });
+  return '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;display:block">' + out + '</svg>';
+}
+function heatmapHtml(days){
+  var cells = '';
+  days.forEach(function(d){
+    var v = d.v;
+    var bg = '#F3EDE4';
+    if(v > 0 && v <= 8)   bg = '#FFE1BC';
+    if(v > 8 && v <= 18)  bg = '#FFC98A';
+    if(v > 18 && v <= 30) bg = '#FF9F43';
+    if(v > 30)            bg = '#E8801F';
+    cells += '<i title="' + d.d + ' · ' + v + ' 分" style="background:' + bg + '"></i>';
+  });
+  return '<div class="hm">' + cells + '</div>';
+}
+
+/* ---------- 孩子端 · 今日任务 ---------- */
+function taskCard(t, rec){
+  var c = CATS[t.cat] || { color:'#B4B2A9', icon:'📌' };
+  var mode = effectiveAuditMode(t);
+  var left = freqLeft(t), max = freqMax(t);
+  var approved = rec && (rec.status === 'auto_approved' || rec.status === 'approved');
+  var pending  = rec && rec.status === 'pending';
+  var rejected = rec && rec.status === 'rejected';
+  var revoked  = rec && rec.status === 'revoked';
+  var btn = '', tag = '';
+
+  if(pending){
+    btn = '<div class="tc sm bd" style="padding:9px;border-radius:12px;background:#FFF6E5;color:#B8791F">⏳ 等爸妈确认</div>';
+    tag = '<span class="xs mut">待审</span>';
+  } else if(left <= 0){
+    btn = '<div class="tc sm bd" style="padding:9px;border-radius:12px;background:#EAF7EC;color:#4E9E5B">✔ ' +
+          (t.freq === 'once' ? '已完成' : freqWindowLabel(t) + '已完成') +
+          (max !== Infinity && max > 1 ? '（' + freqUsed(t) + '/' + max + '）' : '') + '</div>';
+  } else if(approved){
+    btn = '<button class="btn wide" onclick="onTaskClick(\'' + t.id + '\')" style="background:' + c.color +
+          ';color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.12)">再做一次</button>';
+    tag = '<span class="xs" style="color:#4E9E5B">已完成 +' + rec.points + '</span>';
+  } else {
+    btn = '<button class="btn wide" onclick="onTaskClick(\'' + t.id + '\')" style="background:' + c.color +
+          ';color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.12)">打卡</button>';
+    tag = mode === 'audit' ? '<span class="xs mut">需确认</span>' : '<span class="xs" style="color:#4E9E5B">免审</span>';
+  }
+
+  var freqLine = '<div class="xs mut mt2">' + freqText(t) +
+    (max !== Infinity && max > 1 ? ' · 已 ' + freqUsed(t) + '/' + max + ' 次' : '') + '</div>';
+
+  var noteLine = '';
+  if(rejected)      noteLine = '<div class="xs mt8" style="padding:7px 9px;border-radius:10px;background:#FDECEA;color:#C0453F">↩ 被退回：' + esc(rec.note || '未通过') + '（可以重新打卡）</div>';
+  else if(revoked)  noteLine = '<div class="xs mut mt8">这条记录已被撤销</div>';
+
+  return '<div class="card pad" style="' + (left <= 0 ? 'opacity:.88' : '') + '">' +
+    '<div class="row between g8 mb8" style="align-items:flex-start">' +
+      '<div class="fill">' +
+        '<div class="sm bd" style="line-height:1.35">' + esc(t.name) + '</div>' +
+        (t.desc ? '<div class="xs mut mt2">' + esc(t.desc) + '</div>' : '') +
+        (t.tiers ? '<div class="xs mut mt2">' + t.tiers.map(function(x){ return x.label + ' +' + x.points; }).join(' ／ ') + '</div>' : '') +
+        freqLine +
+      '</div>' +
+      '<div class="tr" style="flex:0 0 auto">' +
+        '<div class="lg xb" style="color:' + c.color + '">+' + t.points + '</div>' + tag +
+      '</div>' +
+    '</div>' + btn + '</div>';
+}
+function viewKidToday(){
+  var done = todayCheckins().filter(function(c){ return c.status !== 'rejected' && c.status !== 'revoked'; });
+  var todayPts = done.reduce(function(s,c){ return s + c.points; }, 0);
+  var maxPts = activeTasks().filter(function(t){ return t.cat !== '挑战' && t.freq !== 'once'; })
+                           .reduce(function(s,t){ return s + t.points; }, 0);
+  var lp = levelProgress();
+  var freeLeft = Math.max(0, DB.config.freeAuditDailyPoints -
+    autoApprovedToday().reduce(function(s,c){ return s + c.points; }, 0));
+  var rejected = todayCheckins().filter(function(c){ return c.status === 'rejected'; });
+
+  var html = '<div class="card padl mb12">' +
+    '<div class="row between mb12" style="align-items:flex-start">' +
+      '<div><div class="xs mut mb2">今天已得</div>' +
+      '<div class="row g4" style="align-items:baseline"><span class="huge xb" style="color:var(--orange)">' + todayPts + '</span>' +
+      '<span class="sm mut">/ ' + maxPts + ' 分</span></div></div>' +
+      '<div class="tr"><div class="xs mut mb2">我的余额</div>' +
+      '<div class="xxl xb">' + DB.account.mainBalance + '<span class="xs mut"> 分</span></div></div>' +
+    '</div>' +
+    '<div class="row g6 mb6">' +
+      '<span>' + lp.cur.emoji + '</span>' +
+      '<span class="xs bd" style="color:' + lp.cur.color + '">' + lp.cur.name + '</span>' +
+      (lp.next ? '<span class="xs mut" style="margin-left:auto">距 ' + lp.next.name + ' 还差 ' + lp.need + ' 分</span>'
+               : '<span class="xs mut" style="margin-left:auto">已是最高等级</span>') +
+    '</div>' +
+    '<div class="hbar"><i style="width:' + lp.pct + '%;background:' + lp.cur.color + '"></i></div>' +
+    '<div class="row g10 mt10 wrapf">' +
+      (DB.account.streakDays > 0 ? '<span class="chip">🔥 连续 ' + DB.account.streakDays + ' 天</span>' : '') +
+      '<span class="chip">今日免审额度剩 ' + freeLeft + ' 分</span>' +
+    '</div></div>';
+
+  if(rejected.length){
+    html += '<div class="card pad mb12" style="background:#FFF7F6">' +
+      '<div class="sm bd mb6" style="color:#C0453F">爸妈的反馈</div>' +
+      rejected.map(function(c){
+        return '<div class="xs mut">· ' + esc(c.taskName) + '：' + esc(c.note || '未通过') + '</div>';
+      }).join('') + '</div>';
+  }
+
+  CAT_ORDER.forEach(function(cat){
+    var list = activeTasks().filter(function(t){ return t.cat === cat; });
+    if(!list.length) return;
+    var c = CATS[cat];
+    var doneCount = list.filter(function(t){ return dailyDone(t); }).length;
+    html += '<div class="mb16"><div class="row g8 mb8" style="padding:0 4px">' +
+      '<span class="bead" style="background:' + c.color + '"></span>' +
+      '<span class="bd">' + c.icon + ' ' + cat + '</span>' +
+      '<span class="xs mut" style="margin-left:auto">' + doneCount + ' / ' + list.length + '</span>' +
+      '</div><div class="grid2">';
+    list.forEach(function(t){
+      var valid = function(x){ return x.taskId === t.id && x.status !== 'rejected' && x.status !== 'revoked'; };
+      var s = freqPeriodStart(t);
+      var rec = null;
+      if(t.freq === 'once'){
+        rec = DB.checkins.filter(valid)[0] || null;
+      } else {
+        rec = DB.checkins.filter(function(x){ return valid(x) && x.date >= s; })[0] || null;
+      }
+      if(!rec){   /* 没有已完成记录 → 退回展示待审 / 被退回 */
+        var pend = DB.checkins.filter(function(x){ return x.taskId === t.id && x.status === 'pending'; })[0];
+        if(pend) rec = pend;
+        else {
+          var rej = DB.checkins.filter(function(x){
+            return x.taskId === t.id && x.status === 'rejected' && (t.freq === 'once' || x.date >= s);
+          })[0];
+          if(rej) rec = rej;
+        }
+      }
+      html += taskCard(t, rec);
+    });
+    html += '</div></div>';
+  });
+
+  var pend = DB.orders.filter(function(o){ return o.status === 'approved'; });
+  if(pend.length){
+    html += '<div class="card pad mb12"><div class="sm bd mb6">待发放 · 记得找爸妈要</div>' +
+      pend.map(function(o){
+        return '<div class="row between list mb4"><span class="sm">' + esc(o.rewardName) + '</span>' +
+          '<button class="btn ok tiny" onclick="deliverOrder(\'' + o.id + '\')">我收到了</button></div>';
+      }).join('') + '</div>';
+  }
+  return html;
+}
+function onTaskClick(taskId){
+  var t = taskById(taskId);
+  if(!t) return;
+  if(freqLeft(t) <= 0){
+    toast(t.freq === 'once' ? '这项已经完成过啦' : freqWindowLabel(t) + '的次数用完了', 'warn');
+    return;
+  }
+  if(t.tiers){ showTierPicker(t); return; }
+  doCheckIn(t, null);
+}
+function showTierPicker(t){
+  var c = CATS[t.cat] || { color:'#B4B2A9' };
+  var body = '<div class="sm mut mb12">选一个今天完成到的情况</div><div class="col g8">' +
+    t.tiers.map(function(x){
+      return '<button class="btn wide" data-lv="' + esc(x.label) + '" ' +
+        'style="justify-content:space-between;padding:14px 16px;background:#fff;border:2px solid ' + c.color + '33">' +
+        '<span class="bd sm">' + esc(x.label) + '</span>' +
+        '<span class="xb" style="color:' + c.color + '">+' + x.points + '</span></button>';
+    }).join('') + '</div>';
+  openModal(t.name, body, function(w){
+    w.querySelectorAll('[data-lv]').forEach(function(b){
+      b.onclick = function(){ var lv = b.getAttribute('data-lv'); closeModal(); doCheckIn(t, lv); };
+    });
+  });
+}
+
+/* ---------- 孩子端 · 积分商城 ---------- */
+function viewKidShop(){
+  var html = '<div class="card pad mb12 row between">' +
+    '<div><div class="xs mut mb2">可用积分</div>' +
+    '<div class="xxl xb" style="color:var(--orange)">' + DB.account.mainBalance + '<span class="xs mut"> 分</span></div></div>' +
+    '<div class="tr"><div class="xs mut mb2">拼豆基金</div>' +
+    '<div class="xl xb" style="color:var(--pink)">' + (DB.account.beadFund || 0) + '<span class="xs mut"> 元</span></div></div></div>';
+
+  var openWishes = DB.wishes.filter(function(w){ return !w.achievedAt; }).sort(function(a,b){
+    return (b.target - DB.account.mainBalance) - (a.target - DB.account.mainBalance);
+  }).reverse();
+  if(openWishes.length){
+    html += '<div class="card pad mb12"><div class="row between mb8"><div class="sm bd">🎯 我的存钱目标</div>' +
+      '<button class="btn gh tiny" onclick="addWish()">+ 新增</button></div>';
+    openWishes.forEach(function(w){
+      var pct = Math.min(100, Math.round(DB.account.mainBalance / w.target * 100));
+      var left = Math.max(0, w.target - DB.account.mainBalance);
+      html += '<div class="mb10">' +
+        '<div class="row between xs mb4"><span class="bd">' + esc(w.name) + '</span>' +
+        '<span class="mut">' + DB.account.mainBalance + ' / ' + w.target + (left ? '（还差 ' + left + '）' : ' 已达到！') + '</span></div>' +
+        '<div class="hbar"><i style="width:' + pct + '%;background:' + (left ? '#FF8FB1' : '#6BCB77') + '"></i></div></div>';
+    });
+    html += '</div>';
+  } else {
+    html += '<button class="btn wide dash mb12" style="padding:14px" onclick="addWish()">🎯 我想要一个大目标，去设个存钱计划</button>';
+  }
+
+  html += '<div class="row g8 mb10" style="overflow-x:auto;padding-bottom:4px">';
+  TIER_ORDER.forEach(function(t){
+    var on = UI.shopTier === t;
+    html += '<button class="pill' + (on ? ' on' : '') + '" onclick="UI.shopTier=\'' + t + '\';render()" ' +
+      (on ? 'style="background:' + TIER_COLOR[t] + '"' : '') + '>' +
+      (t === '拼豆' ? '⭐ 拼豆专区' : TIER_ICON[t] + ' ' + t) + '</button>';
+  });
+  html += '</div>';
+
+  var list = activeRewards().filter(function(r){ return r.tier === UI.shopTier; });
+  if(!list.length){
+    html += '<div class="card pad tc mut sm" style="padding:30px">这一层还没有商品，让爸妈去配置中心加一个吧</div>';
+  } else {
+    html += '<div class="grid2">';
+    list.forEach(function(r){
+      var afford = DB.account.mainBalance >= r.price;
+      var tc = TIER_COLOR[r.tier] || '#B4B2A9';
+      var diff = r.price - DB.account.mainBalance;
+      var soldOut = (r.stock != null && r.stock <= 0);
+      var capped = rDone(r);
+      var rmax = rMax(r), rused = rUsed(r);
+      var pend = DB.orders.filter(function(o){
+        return o.rewardId === r.id && (o.status === 'pending' || o.status === 'approved');
+      }).length;
+      var btnTxt, btnOn = false;
+      if(soldOut){ btnTxt = '补货中'; }
+      else if(capped){ btnTxt = (r.rFreq === 'once') ? '已兑换过' : rWindowLabel(r) + '已兑换'; }
+      else if(!afford){ btnTxt = '还差 ' + diff + ' 分'; }
+      else { btnTxt = pend ? '再兑换一个' : '兑换'; btnOn = true; }
+      var limitLine = rHasLimit(r)
+        ? '<div style="font-size:10px;line-height:1.4;color:' + (capped ? '#C0453F' : '#B8791F') + '">⏱ ' +
+          rLimitText(r) + (rmax !== Infinity && rmax > 1 ? '（' + rused + '/' + rmax + '）' : '') + '</div>'
+        : '';
+      var noteLine = r.note
+        ? '<div style="font-size:10px;line-height:1.4;color:#8A6A34;text-decoration:underline dotted" ' +
+          'onclick="showRewardNote(\'' + r.id + '\')">📋 使用规则</div>'
+        : '';
+      html += '<div class="card pad col" style="gap:6px">' +
+        '<div class="tc" style="border-radius:14px;padding:14px 0;font-size:28px;background:' + tc + '1A">' + (TIER_ICON[r.tier] || '🎁') + '</div>' +
+        '<div class="xs bd fill" style="line-height:1.35">' + esc(r.name) + '</div>' +
+        limitLine + noteLine +
+        '<div class="row g4" style="align-items:baseline"><span class="bd" style="color:' + tc + '">' + r.price + '</span><span class="xs mut">分</span>' +
+        (r.stock != null ? '<span class="xs mut" style="margin-left:auto">' + (soldOut ? '补货中' : '剩 ' + r.stock) + '</span>' : '') + '</div>' +
+        '<button class="btn wide tiny" ' + (btnOn ? 'style="background:' + tc + ';color:#fff"' : '') + ' ' +
+        (btnOn ? 'onclick="onRedeem(\'' + r.id + '\')"' : 'disabled') + '>' + btnTxt + '</button></div>';
+    });
+    html += '</div>';
+  }
+
+  var myOrders = DB.orders.filter(function(o){ return o.status !== 'delivered' && o.status !== 'rejected'; }).slice(0, 8);
+  if(myOrders.length){
+    html += '<div class="card pad mt12"><div class="sm bd mb8">我的兑换单</div>';
+    myOrders.forEach(function(o){
+      var st = o.status === 'pending' ? '<span class="chip" style="background:#FFF6E5;color:#B8791F">等爸妈确认</span>'
+             : '<span class="chip" style="background:#EAF7EC;color:#4E9E5B">待发放</span>';
+      html += '<div class="row between list mb4"><div class="fill"><div class="xs bd trunc">' + esc(o.rewardName) + '</div>' +
+        '<div class="xs mut">' + o.date + ' · ' + o.price + ' 分</div></div>' + st + '</div>';
+    });
+    html += '</div>';
+  }
+  return html;
+}
+function onRedeem(rewardId){
+  var r = rewardById(rewardId);
+  if(!r) return;
+  if(rDone(r)){ toast(rDoneMsg(r),'warn'); return; }
+  if(DB.account.mainBalance < r.price){ toast('积分还不够哦，继续加油','warn'); return; }
+  if(r.walletOption){ showWalletPicker(r); return; }
+  var extra = r.note ? '\n\n【使用规则】' + r.note : '';
+  confirmBox('确定用 ' + r.price + ' 分兑换「' + r.name + '」吗？\n兑换后余额：' +
+    (DB.account.mainBalance - r.price) + ' 分' +
+    (rHasLimit(r) ? '\n兑换额度的使用情况：' + rWindowLabel(r) + ' ' + rUsed(r) + '/' + rMax(r) : '') +
+    extra, function(){ redeem(r); });
+}
+function showRewardNote(r){
+  var body = '<div class="sm bd mb10">' + esc(r.name) + '</div>' +
+    '<div style="background:#FFF6E9;color:#8A6A34;font-size:13px;line-height:1.8;padding:12px 14px;border-radius:12px">' +
+      esc(r.note || '暂无使用规则').replace(/\n/g,'<br>') + '</div>' +
+    (rHasLimit(r)
+      ? '<div class="card pad mt10"><div class="row between"><div><div class="xs mut mb2">兑换频次限制</div>' +
+        '<div class="sm bd">' + rLimitText(r) + '</div></div>' +
+        '<div class="tr"><div class="xs mut mb2">' + rWindowLabel(r) + '已用</div>' +
+        '<div class="sm xb" style="color:' + (rDone(r) ? '#C0453F' : '#4E9E5B') + '">' +
+        rUsed(r) + ' / ' + rMax(r) + '</div></div></div>' +
+        '<div class="xs mut mt8">' + rNextHint(r) + '</div></div>'
+      : '<div class="xs mut mt10">此项不限兑换次数。</div>') +
+    '<button class="btn pri wide mt16" onclick="closeModal()">知道了</button>';
+  openModal('使用规则', body);
+}
+function showWalletPicker(r){
+  var dual = DB.config.dualRate !== false;
+  var freeCash = Math.round(r.price / DB.config.pointsPerYuan);
+  var beadCash = Math.round(r.price / DB.config.pointsPerYuan * (DB.config.beadFundRate / DB.config.pointsPerYuan));
+  if(!dual) beadCash = freeCash;
+  var body = '<div class="sm mut mb12">' + r.price + ' 分 · 请选择转入哪个钱包</div>' +
+    (rHasLimit(r) ? '<div class="xs mb10" style="background:#FFF6E9;color:#8A6A34;padding:8px 11px;border-radius:10px;line-height:1.7">⏱ ' +
+      rLimitText(r) + ' · ' + rWindowLabel(r) + '已用 ' + rUsed(r) + '/' + rMax(r) + '，' + rNextHint(r) + '</div>' : '') +
+    (r.note ? '<div class="xs mb12" style="background:#F4F7FF;color:#4A5B8C;padding:9px 12px;border-radius:10px;line-height:1.75">📋 ' +
+      esc(r.note).replace(/\n/g,'<br>') + '</div>' : '') +
+    '<button class="btn wide" id="w-bead" style="justify-content:space-between;padding:14px 16px;background:#fff;border:2px solid var(--pink);text-align:left">' +
+      '<span><span class="bd sm" style="display:block">🧩 拼豆基金</span><span class="xs mut">只能买拼豆 / 文具 / 书</span></span>' +
+      '<span class="tr"><span class="xl xb" style="color:var(--pink);display:block">' + beadCash + ' 元</span>' +
+      (dual ? '<span class="xs" style="color:var(--pink)">汇率优待</span>' : '') + '</span></button>' +
+    '<button class="btn wide mt8" id="w-free" style="justify-content:space-between;padding:14px 16px;background:#fff;border:2px solid var(--line);text-align:left">' +
+      '<span><span class="bd sm" style="display:block">💳 自由钱包</span><span class="xs mut">用途不限，自由支配</span></span>' +
+      '<span class="xl xb">' + freeCash + ' 元</span></button>';
+  openModal('兑换零花钱', body, function(w){
+    w.querySelector('#w-bead').onclick = function(){ closeModal(); redeem(r, 'bead_fund', beadCash); };
+    w.querySelector('#w-free').onclick = function(){ closeModal(); redeem(r, 'free', freeCash); };
+  });
+}
+
+/* ---------- 孩子端 · 我的账户 ---------- */
+function viewKidAccount(){
+  var a = DB.account;
+  var typeMap = {
+    earn:['收入','#4E9E5B'], spend:['支出','#C0453F'], savings:['储蓄','#4D96FF'],
+    transfer:['转账','#9D7CE8'], bonus:['奖励','#E8801F'], settle:['结算','#B4B2A9']
+  };
+  var html = '<div class="grid2 mb12">' +
+    '<div class="card pad"><div class="xs mut mb2">💰 主账户</div><div class="xxl xb">' + a.mainBalance + '</div>' +
+      '<div class="xs mut">可用积分</div></div>' +
+    '<div class="card pad"><div class="xs mut mb2">🧩 拼豆基金</div><div class="xxl xb" style="color:var(--pink)">' + (a.beadFund || 0) + '</div>' +
+      '<div class="xs mut">元 · 专买拼豆 / 文具 / 书</div></div>' +
+    '<div class="card pad"><div class="xs mut mb2">💳 自由钱包</div><div class="xxl xb" style="color:var(--green)">' + (a.freeWallet || 0) + '</div>' +
+      '<div class="xs mut">元 · 自由支配</div></div>' +
+    '<div class="card pad"><div class="xs mut mb2">🎯 梦想账户</div><div class="xxl xb" style="color:var(--blue)">' + a.dreamBalance + '</div>' +
+      '<div class="xs mut">分 · 锁定大目标，每月生息</div></div>' +
+    '</div>' +
+    '<div class="card pad mb12 grid3 tc">' +
+      '<div><div class="xs mut mb2">累计获得</div><div class="bd" style="color:#4E9E5B">' + a.totalEarned + '</div></div>' +
+      '<div><div class="xs mut mb2">累计消耗</div><div class="bd" style="color:#C0453F">' + a.totalSpent + '</div></div>' +
+      '<div><div class="xs mut mb2">诚信记录</div><div class="bd" style="color:#4D96FF">' + a.integrityScore + ' 次</div></div>' +
+    '</div>';
+
+  if(DB.wishes.length){
+    html += '<div class="card pad mb12"><div class="sm bd mb8">🎯 存钱目标</div>';
+    DB.wishes.slice().sort(function(x,y){ return (!!x.achievedAt) - (!!y.achievedAt); }).forEach(function(w){
+      var pct = Math.min(100, Math.round(DB.account.mainBalance / w.target * 100));
+      html += '<div class="mb10 row between g8" style="align-items:flex-start">' +
+        '<div class="fill"><div class="xs bd">' + esc(w.name) + (w.achievedAt ? ' ✅' : '') + '</div>' +
+        '<div class="hbar mt4"><i style="width:' + pct + '%;background:' + (w.achievedAt ? '#6BCB77' : '#FF8FB1') + '"></i></div></div>' +
+        '<div class="tr xs mut" style="flex:0 0 auto">' + pct + '%<br><span style="font-size:10px">' + w.target + ' 分</span></div>' +
+        '<button class="btn gh tiny" onclick="delWish(\'' + w.id + '\')">✕</button></div>';
+    });
+    html += '</div>';
+  }
+
+  html += '<div class="row between mb8" style="padding:0 4px"><div class="bd sm">收支明细</div>' +
+    '<button class="btn gh tiny" onclick="addWish()">+ 存钱目标</button></div>' +
+    '<div class="card" style="padding:6px;max-height:420px;overflow:auto">';
+  if(!DB.ledger.length) html += '<div class="tc mut sm" style="padding:40px 0">还没有记录，去完成任务吧</div>';
+  DB.ledger.slice(0, 200).forEach(function(l){
+    var m = typeMap[l.type] || [l.type, '#B4B2A9'];
+    html += '<div class="row g10" style="padding:9px 11px;border-bottom:1px solid #FAF4EC">' +
+      '<div class="xs mut" style="width:38px;flex:0 0 auto">' + l.date.slice(5) + '</div>' +
+      '<div class="fill"><div class="xs trunc">' + esc(l.desc) + '</div>' +
+      '<div class="xs" style="font-size:10px;color:' + m[1] + '">' + m[0] + '</div></div>' +
+      '<div class="bd sm" style="color:' + (l.points > 0 ? '#4E9E5B' : '#C0453F') + '">' + (l.points > 0 ? '+' : '') + l.points + '</div></div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+/* ---------- 孩子端 · 成就墙 ---------- */
+function viewKidBadges(){
+  var lp = levelProgress();
+  var got = DB.badges.filter(function(b){ return b.achievedAt; }).length;
+  var days = [];
+  for(var i = 55; i >= 0; i--){
+    days.push({ d: dateStr(-i), v: pointsOn(dateStr(-i)) });
+  }
+  var html = '<div class="card padl mb12 tc">' +
+    '<div style="font-size:52px;line-height:1.1">' + lp.cur.emoji + '</div>' +
+    '<div class="xl xb mb2" style="color:' + lp.cur.color + '">' + lp.cur.name + '</div>' +
+    '<div class="xs mut mb12">累计获得 ' + DB.account.totalEarned + ' 分</div>' +
+    '<div class="hbar" style="height:12px"><i style="width:' + lp.pct + '%;background:' + lp.cur.color + '"></i></div>' +
+    '<div class="xs mut mt8">' + (lp.next ? '距离「' + lp.next.name + '」还差 ' + lp.need + ' 分' : '已达到最高等级 🎉') + '</div></div>' +
+    '<div class="grid2 mb12">' +
+      '<div class="card pad"><div class="xs mut mb2">🔥 连续打卡</div><div class="xxl xb" style="color:var(--orange)">' + DB.account.streakDays + '<span class="xs"> 天</span></div></div>' +
+      '<div class="card pad"><div class="xs mut mb2">✅ 诚信记录</div><div class="xxl xb" style="color:var(--blue)">' + DB.account.integrityScore + '<span class="xs"> 次</span></div>' +
+      '<div class="xs mut">抽查被确认真实</div></div></div>' +
+    '<div class="card pad mb12"><div class="sm bd mb8">近 8 周打卡热度</div>' + heatmapHtml(days) +
+      '<div class="row between xs mut mt8"><span>越深表示那天得分越多</span><span>今天在最右</span></div></div>' +
+    '<div class="row between mb8" style="padding:0 4px"><div class="bd sm">我的徽章</div>' +
+    '<div class="xs mut">' + got + ' / ' + DB.badges.length + '</div></div>' +
+    '<div class="grid2">';
+  DB.badges.forEach(function(b){
+    var on = !!b.achievedAt;
+    html += '<div class="card pad tc" style="opacity:' + (on ? '1' : '.42') + '">' +
+      '<div style="font-size:28px' + (on ? '' : ';filter:grayscale(1)') + '">' + b.icon + '</div>' +
+      '<div class="xs bd mt6 mb2">' + esc(b.name) + '</div>' +
+      '<div class="xs mut" style="line-height:1.35">' + esc(b.cond) + '</div>' +
+      (on ? '<div class="xs mt4" style="color:#4E9E5B">已获得</div>' : '') + '</div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+/* ---------- 家长端 · 审核台 ---------- */
+function viewParentAudit(){
+  var pendC = DB.checkins.filter(function(c){ return c.status === 'pending'; });
+  var pendO = DB.orders.filter(function(o){ return o.status === 'pending'; });
+  var toDeliver = DB.orders.filter(function(o){ return o.status === 'approved'; });
+
+  var html = '<div class="card pad mb12 row between">' +
+    '<div><div class="bd sm">待审打卡</div><div class="xs mut">建议每天 30 秒处理完</div></div>' +
+    '<div class="xxl xb" style="color:' + (pendC.length ? 'var(--orange)' : '#D8D2C8') + '">' + pendC.length + '</div></div>';
+
+  if(pendC.length){
+    html += '<div class="card pad mb12"><div class="row between mb10">' +
+      '<label class="row g6 xs mut"><input type="checkbox" id="chk-all" style="width:auto" onchange="toggleAllCheckins(this.checked)">全选</label>' +
+      '<button class="btn ok tiny" onclick="batchApproveCheckins(Array.prototype.map.call(document.querySelectorAll(\'.ck:checked\'),function(e){return e.getAttribute(\'data-id\')}))">批量通过</button></div>';
+    pendC.slice(0, 80).forEach(function(c){
+      var cc = CATS[c.cat] || { color:'#B4B2A9' };
+      html += '<div class="row g8 list mb4" style="align-items:flex-start">' +
+        '<input type="checkbox" class="ck" data-id="' + c.id + '" style="width:auto;margin-top:3px">' +
+        '<span class="bead" style="background:' + cc.color + ';margin-top:3px"></span>' +
+        '<div class="fill"><div class="xs bd">' + esc(c.taskName) +
+          (c.tierLabel ? ' <span class="mut" style="font-weight:400">（' + esc(c.tierLabel) + '）</span>' : '') + '</div>' +
+        '<div class="xs mut" style="font-size:10px">' + c.date + ' · ' + MODE_LABEL[effectiveAuditMode(taskById(c.taskId) || {})] + '</div></div>' +
+        '<div class="bd sm" style="color:' + cc.color + ';flex:0 0 auto">+' + c.points + '</div>' +
+        '<button class="btn ok tiny" style="flex:0 0 auto" onclick="approveCheckIn(\'' + c.id + '\',true)">✔</button>' +
+        '<button class="btn gh tiny" style="flex:0 0 auto" onclick="rejectCheckin(\'' + c.id + '\')">✕</button></div>';
+    });
+    html += '</div>';
+  } else {
+    html += '<div class="card pad tc mut sm mb12" style="padding:30px">打卡全部处理完了 👍</div>';
+  }
+
+  html += '<div class="card pad mb12 row between">' +
+    '<div class="bd sm">待审兑换</div>' +
+    '<div class="xxl xb" style="color:' + (pendO.length ? 'var(--blue)' : '#D8D2C8') + '">' + pendO.length + '</div></div>';
+  if(pendO.length){
+    html += '<div class="card pad mb12">';
+    pendO.forEach(function(o){
+      var aft = DB.account.mainBalance - o.price;
+      html += '<div class="list mb6">' +
+        '<div class="row between mb4"><div class="xs bd">' + esc(o.rewardName) + '</div>' +
+        '<div class="xs mut">' + o.price + ' 分</div></div>' +
+        '<div class="xs mut mb8" style="font-size:10px">余额 ' + DB.account.mainBalance + ' → ' + aft +
+          (o.cashAmount ? ' · 转入' + (o.targetWallet === 'bead_fund' ? '拼豆基金' : '自由钱包') + ' ' + o.cashAmount + ' 元' : '') + '</div>' +
+        '<div class="row g6"><button class="btn bl fill tiny" onclick="approveOrder(\'' + o.id + '\',true)">通过</button>' +
+        '<button class="btn gh fill tiny" onclick="approveOrder(\'' + o.id + '\',false)">驳回</button></div></div>';
+    });
+    html += '</div>';
+  } else {
+    html += '<div class="card pad tc mut sm mb12" style="padding:24px">没有待审兑换</div>';
+  }
+
+  if(toDeliver.length){
+    html += '<div class="bd sm mb8" style="padding:0 4px">待发放清单</div><div class="card pad">';
+    toDeliver.forEach(function(o){
+      html += '<div class="row g8 list mb4"><div class="fill"><div class="xs bd trunc">' + esc(o.rewardName) + '</div>' +
+        '<div class="xs mut" style="font-size:10px">' + o.date + ' 已通过</div></div>' +
+        '<button class="btn pri tiny" onclick="deliverOrder(\'' + o.id + '\')">已发放</button></div>';
+    });
+    html += '</div>';
+  }
+  return html;
+}
+function toggleAllCheckins(v){
+  document.querySelectorAll('.ck').forEach(function(e){ e.checked = v; });
+}
+
+/* ---------- 家长端 · 信任审计 ---------- */
+function viewParentTrust(){
+  var recs = DB.checkins.filter(function(c){
+    return c.status === 'auto_approved' || c.status === 'approved' || c.spotCheckStatus !== 'none';
+  }).slice(0, 90);
+  var nextIn = 10 - (DB.account.integrityScore % 10);
+  var html = '<div class="card padl mb12">' +
+    '<div class="row between mb10"><div><div class="bd sm">诚信记录</div>' +
+    '<div class="xs mut">每累计 10 次抽查通过，奖励 +20 分</div></div>' +
+    '<div class="xxl xb" style="color:var(--blue)">' + DB.account.integrityScore + '</div></div>' +
+    '<div class="hbar"><i style="width:' + ((DB.account.integrityScore % 10) * 10) + '%;background:#4D96FF"></i></div>' +
+    '<div class="xs mut mt6">距下一次诚信奖励还需 ' + nextIn + ' 次抽查通过</div></div>';
+
+  var openPledges = DB.pledges.filter(function(p){ return p.status === 'open'; });
+  var broken = DB.pledges.filter(function(p){ return p.status === 'broken'; });
+  html += '<div class="card pad mb12"><div class="row between mb8">' +
+    '<div><div class="bd sm">🤝 家长承诺账</div>' +
+    '<div class="xs mut">规则对大人一样有效</div></div>' +
+    '<button class="btn gh tiny" onclick="addPledge()">+ 新增</button></div>';
+  if(!DB.pledges.length){
+    html += '<div class="xs mut">还没有记录。下次答应孩子什么，先记下来——' + esc(PLEDGE_DEFAULT) + '。</div>';
+  } else {
+    DB.pledges.slice(0, 20).forEach(function(p){
+      var tag = p.status === 'kept' ? '<span class="chip" style="background:#EAF7EC;color:#4E9E5B">已兑现</span>'
+              : p.status === 'broken' ? '<span class="chip" style="background:#FDECEA;color:#C0453F">未兑现</span>'
+              : '<span class="chip">待兑现</span>';
+      html += '<div class="row g8 list mb4" style="align-items:flex-start">' +
+        '<div class="fill"><div class="xs bd">' + esc(p.text) + '</div>' +
+        '<div class="xs mut" style="font-size:10px">约定 ' + p.date + '</div></div>' + tag +
+        (p.status === 'open'
+          ? '<button class="btn ok tiny" onclick="setPledge(\'' + p.id + '\',\'kept\')">已做到</button>' +
+            '<button class="btn gh tiny" onclick="setPledge(\'' + p.id + '\',\'broken\')">没做到</button>'
+          : '<button class="btn gh tiny" onclick="setPledge(\'' + p.id + '\',\'open\')">重开</button>') +
+        '<button class="btn gh tiny" onclick="delPledge(\'' + p.id + '\')">✕</button></div>';
+    });
+    if(broken.length) html += '<div class="xs mt8" style="color:#C0453F">有 ' + broken.length + ' 条承诺未兑现，记得跟孩子当面说清楚。</div>';
+  }
+  html += '</div>';
+
+  html += '<div class="bd sm mb8" style="padding:0 4px">任务信任状态</div><div class="card pad mb12">';
+  activeTasks().forEach(function(t){
+    var lv = t.trustLevel || 'trusted';
+    var col = lv === 'trusted' ? ['#EAF7EC','#4E9E5B'] : lv === 'watch' ? ['#FFF6E5','#B8791F'] : ['#FDECEA','#C0453F'];
+    html += '<div class="row g8" style="padding:7px 9px;border-radius:10px;background:' + col[0] + ';margin-bottom:4px">' +
+      '<div class="fill xs bd trunc">' + esc(t.name) + '</div>' +
+      '<span class="xs bd" style="color:' + col[1] + ';flex:0 0 auto">' + TRUST_LABEL[lv] + '</span>' +
+      '<select style="width:auto;font-size:11px;padding:3px 22px 3px 6px" onchange="setTrust(\'' + t.id + '\',this.value)">' +
+      ['trusted','watch','audit'].map(function(k){
+        return '<option value="' + k + '"' + (lv === k ? ' selected' : '') + '>' + TRUST_LABEL[k] + '</option>';
+      }).join('') + '</select></div>';
+  });
+  html += '</div>';
+
+  var none = recs.filter(function(c){ return c.spotCheckStatus === 'none'; });
+  html += '<div class="row between mb8" style="padding:0 4px"><div class="bd sm">抽查记录</div>' +
+    '<div class="xs mut">占免审记录 ' + Math.round(DB.config.spotCheckRate * 100) + '% 建议抽查</div></div>' +
+    '<div class="card" style="padding:6px;max-height:420px;overflow:auto">';
+  if(!recs.length) html += '<div class="tc mut sm" style="padding:30px 0">暂无免审记录</div>';
+  recs.forEach(function(c){
+    var sc = c.spotCheckStatus;
+    var tag = sc === 'verified' ? '<span class="xs bd" style="color:#4E9E5B">已确认真实</span>'
+            : sc === 'false_report' ? '<span class="xs bd" style="color:#C0453F">虚报</span>'
+            : (c.status === 'pending' ? '<span class="xs mut">待审</span>' : '<span class="xs mut">未抽查</span>');
+    html += '<div class="row g8" style="padding:9px 11px;border-bottom:1px solid #FAF4EC">' +
+      '<div class="fill"><div class="xs bd trunc">' + esc(c.taskName) + '</div>' +
+      '<div class="xs mut" style="font-size:10px">' + c.date + ' · +' + c.points + ' 分 · ' + tag + '</div></div>' +
+      (sc === 'none' && c.status !== 'pending'
+        ? '<button class="btn ok tiny" onclick="spotCheck(\'' + c.id + '\',\'verified\')">真实</button>' +
+          '<button class="btn gh tiny" onclick="spotCheck(\'' + c.id + '\',\'false_report\')">虚报</button>'
+        : '') + '</div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+/* ---------- 家长端 · 数据看板 ---------- */
+function rangeSum(days){
+  var earn = 0, spend = 0;
+  for(var i = 0; i < days; i++){
+    var ds = dateStr(-i);
+    DB.ledger.forEach(function(l){
+      if(l.date !== ds) return;
+      if(l.type === 'earn') earn += l.points;
+      if(l.type === 'spend') spend -= l.points;
+    });
+  }
+  return { earn:earn, spend:spend };
+}
+function doneRate(days){
+  var rigid = activeTasks().filter(function(t){ return t.freq === 'daily'; });
+  var total = 0, done = 0;
+  for(var i = 0; i < days; i++){
+    var ds = dateStr(-i);
+    rigid.forEach(function(t){
+      total++;
+      if(DB.checkins.some(function(c){
+        return c.taskId === t.id && c.date === ds && c.status !== 'rejected' && c.status !== 'revoked';
+      })) done++;
+    });
+  }
+  return total ? Math.round(done / total * 100) : 0;
+}
+function inflationReport(){
+  var r14 = rangeSum(14);
+  var cover = r14.spend > 0 ? r14.earn / r14.spend : (r14.earn > 0 ? 99 : 0);
+  var dailySpend = r14.spend / 14;
+  var runway = dailySpend > 0 ? Math.round(DB.account.mainBalance / dailySpend) : null;
+  var avgTask = Math.round(activeTasks().reduce(function(s,t){ return s + t.points; }, 0) / Math.max(1, activeTasks().length));
+  var flags = [];
+  if(cover > 1.6) flags.push('近两周收入是支出的 ' + cover.toFixed(1) + ' 倍，积分在快速堆积');
+  if(runway != null && runway > 60) flags.push('按当前花法，余额够用 ' + runway + ' 天，奖励显得太便宜');
+  if(cover > 0 && cover < 0.6) flags.push('支出明显超过收入，可能定价过高，孩子会失去动力');
+  return { cover:cover, runway:runway, avgTask:avgTask, flags:flags, r14:r14 };
+}
+function viewParentDashboard(){
+  var r30 = rangeSum(30), r7 = rangeSum(7);
+  var inf = inflationReport();
+  var series = [], labels = [];
+  for(var i = 29; i >= 0; i--){
+    series.push(pointsOn(dateStr(-i)));
+    var d = new Date(); d.setDate(d.getDate() - i);
+    labels.push((d.getMonth()+1) + '/' + d.getDate());
+  }
+  var doneItems = activeTasks().filter(function(t){ return t.freq === 'daily'; }).map(function(t){
+    var total = 0, done = 0;
+    for(var j = 0; j < 30; j++){
+      var ds = dateStr(-j); total++;
+      if(DB.checkins.some(function(c){
+        return c.taskId === t.id && c.date === ds && c.status !== 'rejected' && c.status !== 'revoked';
+      })) done++;
+    }
+    return { k:t.name, v:Math.round(done / total * 100) };
+  }).sort(function(a,b){ return a.v - b.v; });
+  var prefMap = {};
+  DB.orders.filter(function(o){ return o.status !== 'rejected'; }).forEach(function(o){
+    prefMap[o.rewardName] = (prefMap[o.rewardName] || 0) + 1;
+  });
+  var prefItems = Object.keys(prefMap).map(function(k){ return { k:k, v:prefMap[k] }; })
+    .sort(function(a,b){ return b.v - a.v; }).slice(0, 6);
+
+  var html = '<div class="grid4 mb12">' +
+    '<div class="card pad"><div class="xs mut mb2">近 30 天收入</div><div class="xl xb" style="color:#4E9E5B">' + r30.earn + '</div></div>' +
+    '<div class="card pad"><div class="xs mut mb2">近 30 天支出</div><div class="xl xb" style="color:#C0453F">' + r30.spend + '</div></div>' +
+    '<div class="card pad"><div class="xs mut mb2">当前余额</div><div class="xl xb" style="color:var(--orange)">' + DB.account.mainBalance + '</div></div>' +
+    '<div class="card pad"><div class="xs mut mb2">近 7 天完成率</div><div class="xl xb" style="color:var(--purple)">' + doneRate(7) + '%</div></div>' +
+    '</div>';
+
+  html += '<div class="card pad mb12"><div class="row between mb8"><div class="bd sm">⚖️ 通胀监控</div>' +
+    '<span class="chip" style="background:' + (inf.flags.length ? '#FFF6E5' : '#EAF7EC') + ';color:' + (inf.flags.length ? '#B8791F' : '#4E9E5B') + '">' +
+    (inf.flags.length ? '建议关注' : '健康') + '</span></div>' +
+    '<div class="grid3 tc mb10">' +
+      '<div><div class="xs mut mb2">收入/支出</div><div class="bd">' + (inf.cover ? inf.cover.toFixed(2) : '—') + '</div></div>' +
+      '<div><div class="xs mut mb2">余额可撑</div><div class="bd">' + (inf.runway == null ? '—' : inf.runway + ' 天') + '</div></div>' +
+      '<div><div class="xs mut mb2">平均任务分</div><div class="bd">' + inf.avgTask + '</div></div></div>' +
+    '<div class="xs mut" style="line-height:1.6">' +
+      (inf.flags.length
+        ? inf.flags.map(function(f){ return '· ' + esc(f); }).join('<br>') + '<br>· 参考动作：提高长期层商品定价、或把低价值任务的分值下调。'
+        : '· 积分进出基本平衡，暂时不用调价。积分制最常见的失败原因不是动机，而是「攒分太快、奖励太便宜」——保持每周看一眼这个比例。') +
+    '</div></div>';
+
+  html += '<div class="card pad mb12"><div class="bd sm mb8">近 30 天积分收入</div>' +
+    svgArea(series, labels, '#FF9F43') + '</div>';
+  html += '<div class="card pad mb12"><div class="bd sm mb8">任务完成率 · 近 30 天（越靠上越低）</div>' +
+    (doneItems.length ? svgHBars(doneItems, '#4D96FF', '%', 100) : '<div class="xs mut">暂无每日任务</div>') + '</div>';
+  html += '<div class="card pad mb12"><div class="bd sm mb8">兑换偏好 TOP6</div>' +
+    (prefItems.length ? svgHBars(prefItems, '#FF8FB1', ' 次') : '<div class="xs mut">还没有兑换记录</div>') + '</div>';
+
+  var daily = activeTasks().filter(function(t){ return t.freq === 'daily'; }).map(function(t){
+    var total = 30, done = 0;
+    for(var j = 0; j < 30; j++){
+      if(DB.checkins.some(function(c){
+        return c.taskId === t.id && c.date === dateStr(-j) && c.status !== 'rejected' && c.status !== 'revoked';
+      })) done++;
+    }
+    return { k:t.name, v:Math.round(done / total * 100) };
+  }).sort(function(a,b){ return b.v - a.v; });
+  var intern = daily.filter(function(x){ return x.v >= 80; });
+  if(daily.length){
+    html += '<div class="card pad"><div class="bd sm mb8">🌱 内化观察（连续 30 天完成率 ≥ 80%）</div>' +
+      (intern.length
+        ? '<div class="xs mut mb8">这些任务可能已经养成，可以和孩子商量「毕业」了——退出机制是这套系统不烂尾的关键。</div>' +
+          intern.map(function(x){
+            return '<div class="row between list mb4"><span class="xs bd">' + esc(x.k) + '</span><span class="xs" style="color:#4E9E5B">' + x.v + '%</span></div>';
+          }).join('')
+        : '<div class="xs mut">还没有任务达到 80% 完成率，先跑满一个月再看。</div>') + '</div>';
+  }
+  return html;
+}
+
+/* ---------- 家长端 · 配置中心 ---------- */
+function cfgField(label, key, val, type, step){
+  return '<div><label class="fl">' + label + '</label>' +
+    '<input type="' + type + '"' + (step ? ' step="' + step + '"' : '') + ' value="' + esc(val) + '" ' +
+    'onchange="setCfg(\'' + key + '\',this.value,this.type)"></div>';
+}
+function viewParentConfig(){
+  var html = '<div class="card pad mb12"><div class="bd sm mb12">规则配置</div>' +
+    '<div class="grid2">' +
+      cfgField('孩子称呼','kidName',DB.config.kidName,'text') +
+      cfgField('基准汇率（分/元）','pointsPerYuan',DB.config.pointsPerYuan,'number') +
+      cfgField('拼豆基金汇率（分/元）','beadFundRate',DB.config.beadFundRate,'number') +
+      cfgField('强制储蓄比例','savingsRate',DB.config.savingsRate,'number','0.05') +
+      cfgField('梦想账户月息','dreamInterestRate',DB.config.dreamInterestRate,'number','0.005') +
+      cfgField('单日免审积分上限','freeAuditDailyPoints',DB.config.freeAuditDailyPoints,'number') +
+      cfgField('单日免审次数上限','freeAuditDailyCount',DB.config.freeAuditDailyCount,'number') +
+      cfgField('抽查比例','spotCheckRate',DB.config.spotCheckRate,'number','0.05') +
+    '</div>' +
+    '<label class="row g6 mt10 xs mut"><input type="checkbox" style="width:auto" ' + (DB.config.dualRate ? 'checked' : '') +
+      ' onchange="setCfg(\'dualRate\',this.checked)">开启双汇率（拼豆基金汇率优待）</label>' +
+    '<div class="row g8 mt12"><button class="btn gh" onclick="changePin()">🔑 修改家长 PIN</button>' +
+    '<button class="btn gh" onclick="settleInterest(true)">🏦 立即结算月息</button></div></div>';
+
+  html += '<div class="card pad mb12"><div class="row between mb10"><div class="bd sm">任务配置 <span class="xs mut">（' +
+    DB.tasks.length + ' 项）</span></div><button class="btn pri tiny" onclick="editTask(null)">+ 新增</button></div>';
+  CAT_ORDER.forEach(function(cat){
+    var list = DB.tasks.filter(function(t){ return t.cat === cat; });
+    if(!list.length) return;
+    html += '<div class="xs mut mb4 mt6">' + CATS[cat].icon + ' ' + cat + '</div>';
+    list.forEach(function(t){
+      html += '<div class="row g8 list mb4">' +
+        '<div class="fill"><div class="xs bd trunc">' + esc(t.name) + '</div>' +
+        '<div class="xs mut" style="font-size:10px">' + freqText(t) + ' · ' + (MODE_LABEL[t.auditMode] || '') +
+          (t.tiers ? ' · ' + t.tiers.length + ' 档' : '') + '</div></div>' +
+        '<span class="xs xb" style="color:var(--orange);flex:0 0 auto">+' + t.points + '</span>' +
+        '<button class="btn gh tiny" onclick="editTask(\'' + t.id + '\')">改</button>' +
+        '<button class="btn gh tiny" onclick="delTask(\'' + t.id + '\')">删</button></div>';
+    });
+  });
+  html += '</div>';
+
+  html += '<div class="card pad mb12"><div class="row between mb10"><div class="bd sm">商城配置 <span class="xs mut">（' +
+    DB.rewards.length + ' 项）</span></div><button class="btn pri tiny" onclick="editReward(null)">+ 新增</button></div>';
+  TIER_ORDER.forEach(function(tier){
+    var list = DB.rewards.filter(function(r){ return r.tier === tier; });
+    if(!list.length) return;
+    html += '<div class="xs mut mb4 mt6">' + TIER_ICON[tier] + ' ' + tier + '</div>';
+    list.forEach(function(r){
+      var meta = [];
+      if(r.stock != null) meta.push('库存 ' + r.stock);
+      if(rHasLimit(r)) meta.push('⏱ ' + rLimitText(r) + '（' + rWindowLabel(r) + '已用 ' + rUsed(r) + '/' + rMax(r) + '）');
+      if(r.note) meta.push('📋 有使用规则');
+      html += '<div class="row g8 list mb4">' +
+        '<div class="fill"><div class="xs bd trunc">' + esc(r.name) + '</div>' +
+        (meta.length ? '<div class="xs mut" style="font-size:10px;line-height:1.5">' + meta.join(' · ') + '</div>' : '') + '</div>' +
+        '<span class="xs xb" style="color:var(--blue);flex:0 0 auto">' + r.price + '</span>' +
+        '<button class="btn gh tiny" onclick="editReward(\'' + r.id + '\')">改</button>' +
+        '<button class="btn gh tiny" onclick="delReward(\'' + r.id + '\')">删</button></div>';
+    });
+  });
+  html += '</div>';
+
+  html += '<div class="card pad mb12"><div class="bd sm mb10">打印与分享</div>' +
+    '<div class="grid2">' +
+    '<button class="btn bl" onclick="printCharter()">📜 家庭公约</button>' +
+    '<button class="btn pk" onclick="printCoins()">🪙 积分卡币</button>' +
+    '<button class="btn ok" onclick="printWeekReport()">📊 本周战报</button>' +
+    '<button class="btn pri" onclick="exportJSON()">💾 导出备份</button>' +
+    '</div>' +
+    '<div class="row g8 mt8"><button class="btn gh fill" onclick="exportCSV()">导出 CSV</button>' +
+    '<label class="btn gh fill" style="margin:0">导入恢复<input type="file" accept=".json" style="display:none" onchange="importJSON(this)"></label></div>' +
+    '<div class="xs mut mt10" style="line-height:1.6">数据保存在本机浏览器，不联网、不上传。建议每周导出一次备份；换设备时用「导出 / 导入」迁移。</div>' +
+    '<button class="btn gh wide mt10" onclick="resetAll()" style="color:#C0453F">重置全部数据</button></div>';
+  return html;
+}
+function setCfg(key, val, type){
+  if(type === 'number' || typeof DB.config[key] === 'number'){
+    val = parseFloat(val);
+    if(isNaN(val)){ toast('请输入数字','warn'); render(); return; }
+  }
+  DB.config[key] = val;
+  saveDB();
+  toast('已保存','ok');
+  if(key === 'kidName' || key === 'dualRate') render();
+}
+function changePin(){
+  openModal('修改家长 PIN',
+    '<label class="fl">新的 4 位数字</label><input id="pin-new2" type="tel" maxlength="4" placeholder="4 位数字">' +
+    '<div class="row g8 mt16"><button class="btn gh fill" onclick="closeModal()">取消</button>' +
+    '<button class="btn pri fill" onclick="savePin()">保存</button></div>');
+}
+function savePin(){
+  var v = ($('#pin-new2') || {}).value || '';
+  if(!/^\d{4}$/.test(v)){ toast('必须是 4 位数字','warn'); return; }
+  DB.config.parentPin = v; saveDB(); closeModal(); toast('PIN 已更新','ok');
+}
+function editTask(id){
+  var t = id ? taskById(id) : null;
+  var isNew = !t;
+  if(isNew) t = { id:uid(), name:'', cat:'生活', points:2, tiers:null, freq:'daily', auditMode:'audit', trustLevel:'watch', evi:false, desc:'', active:true };
+  var tierRows = (t.tiers || []).map(function(x,i){
+    return '<div class="row g6 mb4 trow"><input class="t-l" value="' + esc(x.label) + '" placeholder="档位说明" style="flex:2">' +
+      '<input class="t-p" type="number" value="' + x.points + '" placeholder="分" style="flex:1">' +
+      '<button class="btn gh tiny" onclick="this.parentNode.remove()">✕</button></div>';
+  }).join('');
+  var body =
+    '<label class="fl">任务名称</label><input id="t-name" value="' + esc(t.name) + '" placeholder="例如：琵琶弹奏">' +
+    '<div class="grid2 mt10">' +
+      '<div><label class="fl">分类</label><select id="t-cat">' +
+        CAT_ORDER.map(function(c){ return '<option' + (t.cat === c ? ' selected' : '') + '>' + c + '</option>'; }).join('') +
+      '</select></div>' +
+      '<div><label class="fl">基础分值</label><input id="t-points" type="number" value="' + t.points + '"></div>' +
+    '</div>' +
+    '<div class="grid2 mt10">' +
+      '<div><label class="fl">打卡频次</label><select id="t-freq" onchange="freqFormSync()">' +
+        Object.keys(FREQ_LABEL).map(function(k){ return '<option value="' + k + '"' + (t.freq === k ? ' selected' : '') + '>' + FREQ_LABEL[k] + '</option>'; }).join('') +
+      '</select></div>' +
+      '<div id="t-times-wrap"><label class="fl">每周期最多几次</label>' +
+        '<input id="t-times" type="number" min="1" max="20" value="' + freqTimesOf(t) + '" oninput="freqFormSync()"></div>' +
+    '</div>' +
+    '<div class="grid2 mt10">' +
+      '<div id="t-days-wrap"><label class="fl">间隔天数</label>' +
+        '<input id="t-days" type="number" min="2" max="60" value="' + freqDaysOf(t) + '" oninput="freqFormSync()"></div>' +
+      '<div><label class="fl">审核模式</label><select id="t-mode">' +
+        Object.keys(MODE_LABEL).map(function(k){ return '<option value="' + k + '"' + (t.auditMode === k ? ' selected' : '') + '>' + MODE_LABEL[k] + '</option>'; }).join('') +
+      '</select></div>' +
+    '</div>' +
+    '<div class="row g8 mt10" style="align-items:center">' +
+      '<input type="checkbox" id="t-nolimit" style="width:auto;flex:0 0 auto;min-width:18px;height:18px"' + (t.noLimit ? ' checked' : '') + ' onchange="freqFormSync()">' +
+      '<label for="t-nolimit" class="sm" style="margin:0">不限次数（做完随时能再打卡）</label>' +
+    '</div>' +
+    '<div class="mt8" id="t-hint" style="font-size:12px;line-height:1.7;padding:9px 11px;border-radius:10px;background:#FFF6E9;color:#8A6A34"></div>' +
+    '<div class="mt10"><label class="fl">备注（可留空）</label><input id="t-desc" value="' + esc(t.desc || '') + '" placeholder="例如：20-30 分钟"></div>' +
+    '<div class="mt12"><div class="row between mb6"><label class="fl" style="margin:0">进步档（可留空 = 单一分值）</label>' +
+      '<button class="btn gh tiny" onclick="addTierRow()">+ 加一档</button></div>' +
+      '<div id="t-tiers">' + tierRows + '</div></div>' +
+    '<div class="row g8 mt16"><button class="btn gh fill" onclick="closeModal()">取消</button>' +
+    '<button class="btn pri fill" id="t-save">保存</button></div>';
+  openModal(isNew ? '新增任务' : '编辑任务', body, function(w){
+    freqFormSync();
+    w.querySelector('#t-save').onclick = function(){ saveTaskForm(isNew ? null : t.id); };
+  });
+}
+function freqFormSync(){
+  var f = ($('#t-freq') || {}).value || 'daily';
+  var noLim = !!(($('#t-nolimit') || {}).checked);
+  var isWindow = (f === 'daily' || f === 'weekly' || f === 'monthly');
+  var tw = $('#t-times-wrap'), dw = $('#t-days-wrap');
+  if(tw) tw.style.display = (isWindow && !noLim) ? '' : 'none';
+  if(dw) dw.style.display = (f === 'custom' && !noLim) ? '' : 'none';
+  var hint = $('#t-hint');
+  if(hint){
+    var n = parseInt(($('#t-times') || {}).value, 10);
+    var d = parseInt(($('#t-days') || {}).value, 10);
+    var times = (isNaN(n) || n < 1) ? 1 : n;
+    var days  = (isNaN(d) || d < 2) ? 2 : d;
+    var max = freqMax({ freq:f, freqTimes:times, freqDays:days, noLimit:noLim });
+    var preview = freqText({ freq:f, freqTimes:times, freqDays:days, noLimit:noLim });
+    var tail;
+    if(max === Infinity)   tail = '做完随时能再打卡，不限次数。';
+    else if(f === 'once')  tail = '整个记录里只记一次，打完就锁定。';
+    else if(f === 'custom')tail = '打完之后要再等 ' + days + ' 天才能重新打卡。';
+    else if(f === 'monthly') tail = '本月最多打 ' + max + ' 次卡，到下个月 1 号自动刷新。';
+    else if(f === 'weekly')  tail = '本周最多打 ' + max + ' 次卡，到周一自动刷新。';
+    else                     tail = '今天最多打 ' + max + ' 次卡，到明天自动刷新。';
+    hint.innerHTML = '当前规则：<b>' + preview + '</b><br>' + tail;
+  }
+}
+function addTierRow(){
+  var box = $('#t-tiers');
+  if(!box) return;
+  var d = document.createElement('div');
+  d.className = 'row g6 mb4 trow';
+  d.innerHTML = '<input class="t-l" placeholder="档位说明" style="flex:2">' +
+    '<input class="t-p" type="number" placeholder="分" style="flex:1">' +
+    '<button class="btn gh tiny" onclick="this.parentNode.remove()">✕</button>';
+  box.appendChild(d);
+}
+function saveTaskForm(id){
+  var name = ($('#t-name') || {}).value || '';
+  var points = parseInt(($('#t-points') || {}).value, 10);
+  if(!name.trim()){ toast('任务名称不能为空','warn'); return; }
+  if(isNaN(points) || points < 0){ toast('分值要填个数字','warn'); return; }
+  var tiers = [];
+  document.querySelectorAll('.trow').forEach(function(r){
+    var l = r.querySelector('.t-l').value.trim();
+    var p = parseInt(r.querySelector('.t-p').value, 10);
+    if(l && !isNaN(p)) tiers.push({ label:l, points:p });
+  });
+  var freq = ($('#t-freq') || {}).value || 'daily';
+  var timesRaw = parseInt(($('#t-times') || {}).value, 10);
+  var daysRaw  = parseInt(($('#t-days')  || {}).value, 10);
+  var noLimit  = !!(($('#t-nolimit') || {}).checked);
+  var payload = {
+    name: name.trim(), points: points, tiers: tiers.length ? tiers : null,
+    cat: ($('#t-cat') || {}).value || '生活',
+    freq: freq,
+    freqTimes: (isNaN(timesRaw) || timesRaw < 1) ? 1 : Math.min(20, timesRaw),
+    freqDays:  (isNaN(daysRaw)  || daysRaw  < 2) ? 2 : Math.min(60, daysRaw),
+    noLimit: noLimit,
+    auditMode: ($('#t-mode') || {}).value || 'auto',
+    desc: ($('#t-desc') || {}).value.trim(),
+    active: true
+  };
+  if(id){
+    var t = taskById(id);
+    Object.keys(payload).forEach(function(k){ t[k] = payload[k]; });
+  } else {
+    payload.id = uid(); payload.trustLevel = 'watch'; payload.evi = false;
+    DB.tasks.push(payload);
+  }
+  saveDB(); closeModal(); render();
+  toast(id ? '任务已更新' : '任务已新增','ok');
+}
+function delTask(id){
+  var t = taskById(id);
+  confirmBox('删除任务「' + (t ? t.name : '') + '」？已产生的打卡记录会保留。', function(){
+    DB.tasks = DB.tasks.filter(function(x){ return x.id !== id; });
+    saveDB(); render();
+  });
+}
+function editReward(id){
+  var r = id ? rewardById(id) : null;
+  var isNew = !r;
+  if(isNew) r = { id:uid(), name:'', tier:'即时', price:50, stock:null, walletOption:false, active:true,
+                  rFreq:'daily', rTimes:1, rDays:2, rNoLimit:false, note:'' };
+  /* 老数据（完全没有频次字段）默认「不限次数」，保持原有行为不变；
+     已有限次规则的商品，rNoLimit 缺省必须为 false，否则一保存就会把限制清掉 */
+  if(!r.rFreq){
+    r.rFreq = 'daily';
+    if(r.rNoLimit === undefined) r.rNoLimit = true;
+  } else if(r.rNoLimit === undefined){
+    r.rNoLimit = false;
+  }
+  var freqOpts = Object.keys(FREQ_LABEL).map(function(k){
+    return '<option value="' + k + '"' + (r.rFreq === k ? ' selected' : '') + '>' + FREQ_LABEL[k] + '</option>';
+  }).join('');
+  var body =
+    '<label class="fl">商品名称</label><input id="r-name" value="' + esc(r.name) + '" placeholder="例如：拼豆材料包（基础色）">' +
+    '<div class="grid2 mt10">' +
+      '<div><label class="fl">层级</label><select id="r-tier">' +
+        TIER_ORDER.map(function(t){ return '<option' + (r.tier === t ? ' selected' : '') + '>' + t + '</option>'; }).join('') +
+      '</select></div>' +
+      '<div><label class="fl">积分价格</label><input id="r-price" type="number" value="' + r.price + '"></div>' +
+    '</div>' +
+    '<div class="grid2 mt10">' +
+      '<div><label class="fl">兑换频次</label><select id="r-freq" onchange="rFreqFormSync()">' + freqOpts + '</select></div>' +
+      '<div id="r-times-wrap"><label class="fl">每周期最多几次</label>' +
+        '<input id="r-times" type="number" min="1" max="20" value="' + rTimesOf(r) + '" oninput="rFreqFormSync()"></div>' +
+    '</div>' +
+    '<div class="grid2 mt10">' +
+      '<div id="r-days-wrap"><label class="fl">间隔天数</label>' +
+        '<input id="r-days" type="number" min="2" max="60" value="' + rDaysOf(r) + '" oninput="rFreqFormSync()"></div>' +
+      '<div><label class="fl">库存（留空 = 不限）</label>' +
+        '<input id="r-stock" type="number" value="' + (r.stock == null ? '' : r.stock) + '" placeholder="不限"></div>' +
+    '</div>' +
+    '<div class="row g8 mt10" style="align-items:center">' +
+      '<input type="checkbox" id="r-nolimit" style="width:auto;flex:0 0 auto;min-width:18px;height:18px"' + (r.rNoLimit ? ' checked' : '') + ' onchange="rFreqFormSync()">' +
+      '<label for="r-nolimit" class="sm" style="margin:0">不限次数（随时都能兑换）</label>' +
+    '</div>' +
+    '<div class="mt8" id="r-hint" style="font-size:12px;line-height:1.7;padding:9px 11px;border-radius:10px;background:#FFF6E9;color:#8A6A34"></div>' +
+    '<div class="mt10"><label class="fl">使用规则备注（兑换时会给孩子看）</label>' +
+      '<textarea id="r-note" rows="3" placeholder="例如：每周只能兑换一次，兑换后周末统一发放；兑换电视时间需先完成当天作业。">' + esc(r.note || '') + '</textarea></div>' +
+    '<div class="xs mut mt8">价格参考：50 分 = 5 元。要卖 10 元零花钱，就填 100 分。</div>' +
+    '<div class="row g8 mt16"><button class="btn gh fill" onclick="closeModal()">取消</button>' +
+    '<button class="btn pri fill" id="r-save">保存</button></div>';
+  openModal(isNew ? '新增商品' : '编辑商品', body, function(w){
+    rFreqFormSync();
+    w.querySelector('#r-save').onclick = function(){ saveRewardForm(isNew ? null : r.id); };
+  });
+}
+function rFreqFormSync(){
+  var f = ($('#r-freq') || {}).value || 'daily';
+  var noLim = !!(($('#r-nolimit') || {}).checked);
+  var isWindow = (f === 'daily' || f === 'weekly' || f === 'monthly');
+  var tw = $('#r-times-wrap'), dw = $('#r-days-wrap');
+  if(tw) tw.style.display = (isWindow && !noLim) ? '' : 'none';
+  if(dw) dw.style.display = (f === 'custom' && !noLim) ? '' : 'none';
+  var hint = $('#r-hint');
+  if(!hint) return;
+  var n = parseInt(($('#r-times') || {}).value, 10);
+  var d = parseInt(($('#r-days') || {}).value, 10);
+  var times = (isNaN(n) || n < 1) ? 1 : n;
+  var days  = (isNaN(d) || d < 2) ? 2 : d;
+  var limitText = rLimitText({ rFreq:f, rTimes:times, rDays:days, rNoLimit:noLim });
+  var tail;
+  if(noLim)              tail = '孩子随时都能兑换，不做次数限制。';
+  else if(f === 'once')  tail = '整个记录里只允许兑换一次，换完就锁定。';
+  else if(f === 'custom')tail = '每兑换一次，要再等 ' + days + ' 天才能重新兑换。';
+  else if(f === 'monthly')tail = '本月最多兑换 ' + times + ' 次，到下个月 1 号自动刷新。';
+  else if(f === 'weekly') tail = '本周最多兑换 ' + times + ' 次，到周一自动刷新。';
+  else                    tail = '今天最多兑换 ' + times + ' 次，到明天自动刷新。';
+  hint.innerHTML = '当前规则：<b>' + limitText + '</b><br>' + tail;
+}
+function saveRewardForm(id){
+  var name = ($('#r-name') || {}).value || '';
+  var price = parseInt(($('#r-price') || {}).value, 10);
+  var tier = ($('#r-tier') || {}).value || '即时';
+  var stockRaw = ($('#r-stock') || {}).value;
+  if(!name.trim()){ toast('商品名称不能为空','warn'); return; }
+  if(isNaN(price) || price <= 0){ toast('价格要填个正数','warn'); return; }
+  var stock = (stockRaw === '' || stockRaw == null) ? null : parseInt(stockRaw, 10);
+  var rFreq  = ($('#r-freq') || {}).value || 'daily';
+  var timesRaw = parseInt(($('#r-times') || {}).value, 10);
+  var daysRaw  = parseInt(($('#r-days')  || {}).value, 10);
+  var noLimit  = !!(($('#r-nolimit') || {}).checked);
+  var payload = { name:name.trim(), price:price, tier:tier, stock:isNaN(stock) ? null : stock,
+                  walletOption: tier === '零花钱', active:true,
+                  rFreq:rFreq,
+                  rTimes:(isNaN(timesRaw) || timesRaw < 1) ? 1 : Math.min(20, timesRaw),
+                  rDays: (isNaN(daysRaw)  || daysRaw  < 2) ? 2 : Math.min(60, daysRaw),
+                  rNoLimit:noLimit,
+                  note:($('#r-note') || {}).value.trim() };
+  if(id){
+    var r = rewardById(id);
+    Object.keys(payload).forEach(function(k){ r[k] = payload[k]; });
+  } else {
+    payload.id = uid(); DB.rewards.push(payload);
+  }
+  saveDB(); closeModal(); render();
+  toast(id ? '商品已更新' : '商品已新增','ok');
+}
+function delReward(id){
+  var r = rewardById(id);
+  confirmBox('删除商品「' + (r ? r.name : '') + '」？', function(){
+    DB.rewards = DB.rewards.filter(function(x){ return x.id !== id; });
+    saveDB(); render();
+  });
+}
+function resetAll(){
+  confirmBox('将清空全部数据（积分、打卡、兑换、配置），无法恢复。确定吗？', function(){
+    DB = freshDB(); saveDB(); UI.parentUnlocked = false; UI.view = 'kid'; render();
+    toast('已重置','ok');
+  });
+}
+
+/* ---------- 导入导出 / 打印 ---------- */
+function download(filename, content, mime){
+  var blob = new Blob([content], { type: mime || 'text/plain;charset=utf-8' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
+}
+function exportJSON(){
+  download('成长工具箱_备份_' + todayStr() + '.json', JSON.stringify(DB, null, 2), 'application/json');
+  toast('已导出备份文件','ok');
+}
+function exportCSV(){
+  var rows = [['日期','类型','说明','积分']];
+  DB.ledger.slice().reverse().forEach(function(l){
+    rows.push([l.date, l.type, (l.desc || '').replace(/,/g, '，'), l.points]);
+  });
+  var csv = '\ufeff' + rows.map(function(r){ return r.join(','); }).join('\n');
+  download('成长工具箱_流水_' + todayStr() + '.csv', csv, 'text/csv;charset=utf-8');
+  toast('已导出流水 CSV','ok');
+}
+function importJSON(input){
+  var f = input.files && input.files[0];
+  if(!f) return;
+  var rd = new FileReader();
+  rd.onload = function(e){
+    try {
+      var obj = JSON.parse(e.target.result);
+      if(!obj || !obj.account || !obj.config) throw new Error('bad');
+      DB = obj;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(DB));
+      loadDB();
+      toast('数据已恢复','ok');
+      UI.parentUnlocked = false; render();
+    } catch(err){ toast('文件格式不正确','err'); }
+  };
+  rd.readAsText(f);
+  input.value = '';
+}
+function openPrint(html){
+  var box = $('#print-area');
+  box.innerHTML = html;
+  setTimeout(function(){ window.print(); }, 120);
+}
+function printCharter(){
+  var tasks = '';
+  CAT_ORDER.forEach(function(cat){
+    var list = activeTasks().filter(function(t){ return t.cat === cat; });
+    if(!list.length) return;
+    tasks += '<tr><td colspan="3" style="background:#F7F2EA;font-weight:700">' + cat + '</td></tr>';
+    list.forEach(function(t){
+      tasks += '<tr><td>' + esc(t.name) + (t.desc ? '（' + esc(t.desc) + '）' : '') + '</td>' +
+        '<td>' + (t.tiers ? t.tiers.map(function(x){ return x.label + ' +' + x.points; }).join(' / ') : '+' + t.points) + '</td>' +
+        '<td>' + freqText(t) + ' · ' + (MODE_LABEL[t.auditMode] || '') + '</td></tr>';
+    });
+  });
+  var rewards = '';
+  TIER_ORDER.forEach(function(tier){
+    var list = activeRewards().filter(function(r){ return r.tier === tier; });
+    if(!list.length) return;
+    list.forEach(function(r){
+      rewards += '<tr><td>' + esc(r.name) + '</td><td>' + tier + '</td><td>' + r.price + ' 分</td></tr>';
+    });
+  });
+  var html = '<div class="sheet">' +
+    '<h1 style="text-align:center;font-size:22px;margin:0 0 6px">家庭成长公约</h1>' +
+    '<p style="text-align:center;color:#888;font-size:12px;margin:0 0 18px">' + esc(DB.config.kidName) +
+      ' 与爸爸妈妈共同约定 · ' + todayStr() + '</p>' +
+    '<p style="font-size:13px;line-height:1.8">我们从今天起一起遵守这份约定：完成下面的事情可以挣到积分，' +
+    '积分可以换自己想要的东西。<b>规则一旦定下就不改</b>，除非在每月的家庭会议上大家一起商量修改。</p>' +
+    '<h2 style="font-size:15px;margin:16px 0 6px">一、我能做的事（挣积分）</h2>' +
+    '<table class="tb"><thead><tr><th>任务</th><th>积分</th><th>频率 / 审核</th></tr></thead><tbody>' + tasks + '</tbody></table>' +
+    '<h2 style="font-size:15px;margin:16px 0 6px">二、积分能换什么</h2>' +
+    '<table class="tb"><thead><tr><th>奖励</th><th>层级</th><th>价格</th></tr></thead><tbody>' + rewards + '</tbody></table>' +
+    '<h2 style="font-size:15px;margin:16px 0 6px">三、我们共同的承诺</h2>' +
+    '<p style="font-size:13px;line-height:1.9">1. 爸爸妈妈不拿积分威胁你，也不因为你考试没考好扣你的分。<br>' +
+    '2. 你已经在发自内心喜欢做的事，我们不给它标价。<br>' +
+    '3. 积分不能提前借支，余额不够就先攒着。<br>' +
+    '4. 爸爸妈妈答应你的事，也会记下来，做不到要当面跟你说清楚。<br>' +
+    '5. 每个月最后一天，我们一起看数据、聊规则，把已经养成的习惯「毕业」掉。</p>' +
+    '<div style="margin-top:26px;display:flex;gap:34px;font-size:13px">' +
+    '<div>孩子签名：____________</div><div>爸爸：____________</div><div>妈妈：____________</div></div>' +
+    '<div style="margin-top:14px;font-size:12px;color:#888">日期：____________</div>' +
+    '</div>';
+  openPrint(html);
+}
+function printCoins(){
+  var denoms = [1,2,5,10,20,50,100];
+  var color = { 1:'#6BCB77',2:'#FF9F43',5:'#4D96FF',10:'#9D7CE8',20:'#FF8FB1',50:'#FFC93C',100:'#B08968' };
+  var blocks = '';
+  denoms.forEach(function(d){
+    blocks += '<div style="border-bottom:1px dashed #ccc;padding:10px 0">' +
+      '<div style="font-size:12px;color:#666;margin-bottom:6px">' + d + ' 分面值 · 剪下备用</div>' +
+      '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">';
+    for(var i = 0; i < 12; i++){
+      blocks += '<div style="border:2px solid ' + color[d] + ';border-radius:10px;padding:8px;text-align:center;' +
+        'color:' + color[d] + ';font-weight:900;font-size:15px">' + d + '<div style="font-size:8px;font-weight:400">' +
+        esc(DB.config.kidName) + ' 成长积分</div></div>';
+    }
+    blocks += '</div></div>';
+  });
+  openPrint('<div class="sheet"><h1 style="text-align:center;font-size:20px;margin:0 0 14px">成长积分卡币（可打印）</h1>' + blocks + '</div>');
+}
+function printWeekReport(){
+  var ws = weekStart();
+  var earned = 0, spent = 0, cnt = 0;
+  DB.ledger.forEach(function(l){
+    if(l.date < ws) return;
+    if(l.type === 'earn') earned += l.points;
+    if(l.type === 'spend') spent -= l.points;
+  });
+  cnt = DB.checkins.filter(function(c){
+    return c.date >= ws && c.status !== 'rejected' && c.status !== 'revoked';
+  }).length;
+  var topMap = {};
+  DB.checkins.filter(function(c){ return c.date >= ws && c.status !== 'rejected'; }).forEach(function(c){
+    topMap[c.taskName] = (topMap[c.taskName] || 0) + 1;
+  });
+  var top = Object.keys(topMap).map(function(k){ return { k:k, v:topMap[k] }; })
+    .sort(function(a,b){ return b.v - a.v; }).slice(0, 5);
+  var newBadges = DB.badges.filter(function(b){ return b.achievedAt && dateOffsetOf(new Date(b.achievedAt).toISOString().slice(0,10)) < 7; });
+  var html = '<div class="sheet">' +
+    '<h1 style="text-align:center;font-size:22px;margin:0 0 4px">本周战报</h1>' +
+    '<p style="text-align:center;color:#888;font-size:12px;margin:0 0 20px">' + esc(DB.config.kidName) +
+      ' · ' + ws + ' 起的这一周</p>' +
+    '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px">' +
+      '<div style="flex:1;min-width:110px;background:#FFF8F0;border-radius:12px;padding:12px"><div style="font-size:11px;color:#999">本周挣到</div>' +
+      '<div style="font-size:26px;font-weight:900;color:#FF9F43">' + earned + '</div></div>' +
+      '<div style="flex:1;min-width:110px;background:#FFF8F0;border-radius:12px;padding:12px"><div style="font-size:11px;color:#999">完成任务</div>' +
+      '<div style="font-size:26px;font-weight:900;color:#6BCB77">' + cnt + '</div></div>' +
+      '<div style="flex:1;min-width:110px;background:#FFF8F0;border-radius:12px;padding:12px"><div style="font-size:11px;color:#999">连续打卡</div>' +
+      '<div style="font-size:26px;font-weight:900;color:#4D96FF">' + DB.account.streakDays + '</div></div>' +
+      '<div style="flex:1;min-width:110px;background:#FFF8F0;border-radius:12px;padding:12px"><div style="font-size:11px;color:#999">当前余额</div>' +
+      '<div style="font-size:26px;font-weight:900;color:#9D7CE8">' + DB.account.mainBalance + '</div></div>' +
+    '</div>' +
+    '<h2 style="font-size:15px;margin:0 0 8px">这周做得最多的是</h2>' +
+    (top.length
+      ? '<table class="tb"><thead><tr><th>任务</th><th>次数</th></tr></thead><tbody>' +
+        top.map(function(x){ return '<tr><td>' + esc(x.k) + '</td><td>' + x.v + ' 次</td></tr>'; }).join('') + '</tbody></table>'
+      : '<p style="font-size:13px;color:#888">这周还没有打卡记录，下周一起加油。</p>') +
+    (newBadges.length
+      ? '<h2 style="font-size:15px;margin:18px 0 8px">新解锁的徽章</h2><p style="font-size:20px;letter-spacing:8px">' +
+        newBadges.map(function(b){ return b.icon; }).join('') + '</p>'
+      : '') +
+    '<h2 style="font-size:15px;margin:18px 0 8px">爸爸妈妈想对你说</h2>' +
+    '<p style="font-size:13px;line-height:2.2;color:#555">___________________________________________________<br>' +
+    '___________________________________________________</p>' +
+    '<p style="margin-top:24px;font-size:12px;color:#999">下周目标：' +
+    '__________________________________________</p></div>';
+  openPrint(html);
+}
+
+/* ---------- PIN 门 ---------- */
+function viewPinGate(){
+  if(DB.config.parentPin === null || DB.config.parentPin === undefined){
+    return '<div class="card padl tc">' +
+      '<div style="font-size:38px">🔐</div>' +
+      '<div class="bd mt6 mb2">首次使用，先设置家长端 PIN</div>' +
+      '<div class="xs mut mb16">4 位数字，用于保护审核与配置权限，孩子不会自己通过审核</div>' +
+      '<input id="pin-new" type="tel" maxlength="4" inputmode="numeric" autofocus placeholder="输入 4 位数字" ' +
+      'onkeydown="if(event.key===\'Enter\')setupPin()" ' +
+      'style="text-align:center;font-size:24px;padding:14px;letter-spacing:10px">' +
+      '<button class="btn pri wide mt12" onclick="setupPin()">设置并进入</button></div>';
+  }
+  return '<div class="card padl tc">' +
+    '<div style="font-size:38px">🔐</div>' +
+    '<div class="bd mt6 mb2">家长端</div>' +
+    '<div class="xs mut mb16">请输入 PIN 码</div>' +
+    '<input id="pin-in" type="tel" maxlength="4" inputmode="numeric" autofocus placeholder="4 位数字" ' +
+    'onkeydown="if(event.key===\'Enter\')tryPin()" ' +
+    'style="text-align:center;font-size:24px;padding:14px;letter-spacing:10px">' +
+    '<button class="btn pri wide mt12" onclick="tryPin()">进入</button></div>';
+}
+function setupPin(){
+  var v = ($('#pin-new') || {}).value || '';
+  if(!/^\d{4}$/.test(v)){ toast('请输入 4 位数字','warn'); return; }
+  DB.config.parentPin = v; saveDB(); UI.parentUnlocked = true; render();
+}
+function tryPin(){
+  var el = $('#pin-in');
+  var v = el ? el.value : '';
+  if(v === DB.config.parentPin){ UI.parentUnlocked = true; render(); return; }
+  toast('PIN 码不正确','err');
+  if(el){
+    el.value = '';
+    var card = el.parentNode;
+    if(card){ card.classList.add('shake'); setTimeout(function(){ card.classList.remove('shake'); }, 420); }
+  }
+}
+
+/* ============================================================
+   Shell · 导航 · 主渲染
+   ============================================================ */
+var KID_TABS = [
+  {k:'today',   i:'📅', t:'今日'},
+  {k:'shop',    i:'🎁', t:'商城'},
+  {k:'account', i:'💰', t:'我的'},
+  {k:'badges',  i:'🏅', t:'成就'}
+];
+var PARENT_TABS = [
+  {k:'audit',     i:'✅', t:'审核'},
+  {k:'trust',     i:'🤝', t:'约定'},
+  {k:'dashboard', i:'📊', t:'看板'},
+  {k:'config',    i:'⚙️', t:'设置'}
+];
+
+function switchRole(){
+  if(UI.view === 'kid'){ UI.view = 'parent'; UI.parentUnlocked = false; }
+  else { UI.view = 'kid'; UI.parentUnlocked = false; }
+  closeModal();
+  window.scrollTo(0, 0);
+  render();
+}
+
+function navBar(items, cur, tabVar){
+  return '<div class="bnav">' + items.map(function(it){
+    var on = it.k === cur;
+    return '<button class="' + (on ? 'on' : '') + '" onclick="UI.' + tabVar + '=\'' + it.k + '\';render()">' +
+      '<span class="bi">' + it.i + '</span><span class="bt">' + it.t + '</span></button>';
+  }).join('') + '</div>';
+}
+
+function render(){
+  var app = $('#app');
+  if(!app) return;
+  closeModal();
+
+  /* 家长端未解锁 → PIN 门 */
+  if(UI.view === 'parent' && !UI.parentUnlocked){
+    app.innerHTML = '<div class="wrap">' + viewPinGate() +
+      '<div class="tc mt12"><button class="btn gh tiny" onclick="switchRole()">← 回到孩子端</button></div>' +
+      '</div>';
+    return;
+  }
+
+  var isKid = UI.view === 'kid';
+  var btnLabel = isKid
+    ? (APP_ROLE === 'parent' ? '返回家长端 🔒' : '家长端 🔒')
+    : '孩子端 →';
+  var roleBtn = (APP_ROLE === 'kid')
+    ? '<button class="btn gh tiny" style="white-space:nowrap;flex:0 0 auto;padding:6px 10px" ' +
+      'onclick="switchRole()" title="家长端（需要 PIN）">🔒</button>'
+    : '<button class="btn gh tiny" style="white-space:nowrap;flex:0 0 auto" onclick="switchRole()">' +
+      btnLabel + '</button>';
+  var head = '<div class="row between mb12" style="padding:2px 4px;align-items:flex-start">' +
+      '<div><div class="bd lg">' +
+        (isKid ? '🌟 ' + esc(DB.config.kidName || '宝贝') + '的成长工具箱' : '🛠 家长管理台') +
+      '</div><div class="xs mut mt4">' + todayStr() +
+        (isKid ? ' · 今天也要加油呀' : ' · 审核 · 约定 · 看板 · 设置') + '</div></div>' +
+      roleBtn + '</div>';
+
+  var body, nav;
+  if(isKid){
+    body = UI.kidTab === 'shop'    ? viewKidShop() :
+           UI.kidTab === 'account' ? viewKidAccount() :
+           UI.kidTab === 'badges'  ? viewKidBadges()  : viewKidToday();
+    nav = navBar(KID_TABS, UI.kidTab, 'kidTab');
+  } else {
+    body = UI.parentTab === 'trust'     ? viewParentTrust() :
+           UI.parentTab === 'dashboard' ? viewParentDashboard() :
+           UI.parentTab === 'config'    ? viewParentConfig()    : viewParentAudit();
+    nav = navBar(PARENT_TABS, UI.parentTab, 'parentTab');
+  }
+
+  app.innerHTML = '<div class="wrap">' + head + body + '</div>' + nav;
+}
+
+/* ============================================================
+   启动
+   ============================================================ */
+function boot(){
+  loadDB();
+  /* 按入口角色决定起始视图：家长端入口直接进 PIN 门，孩子端入口直接进打卡页 */
+  if(APP_ROLE === 'parent'){ UI.view = 'parent'; UI.parentUnlocked = false; }
+  else { UI.view = 'kid'; UI.kidTab = UI.kidTab || 'today'; }
+  updateStreak();
+  checkBadges();
+  render();
+  // 首次使用提示（家长端入口不提示，孩子端入口也不提示，交给家长端链接）
+  if(!DB.config.parentPin && APP_ROLE === 'both'){
+    setTimeout(function(){ toast('第一次用？先点右上角「家长端」设个 PIN 码','info'); }, 900);
+  }
+}
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', boot);
+} else {
+  boot();
+}
+</script>
+</body>
+</html>

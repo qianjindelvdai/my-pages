@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#F5A524">
+<!-- 这个页面迭代频繁，禁止浏览器/CDN 复用过旧版本（曾出现"改完看到的是上一版"） -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>成长工具箱 · 星星人主题 · 家庭激励系统 v2</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -304,7 +308,16 @@ var DB = null;
 /* 入口角色：'both' 双端可切换 / 'kid' 孩子端入口 / 'parent' 家长端入口
    发布时会生成 family/kid/ 与 family/parent/ 两个入口，本行由构建脚本替换 */
 var APP_ROLE = 'parent';
-var UI = { view:'kid', kidTab:'today', parentTab:'audit', shopTier:'拼豆', parentUnlocked:false };
+var UI = {
+  view:'kid', kidTab:'today', parentTab:'audit', shopTier:'拼豆', parentUnlocked:false,
+  /* 登录门（打开页面的第一屏）：
+     'checking' 正在确认云端登录状态 / 'login' 停在登录页 / 'envoff' 此打开方式不支持云同步 / false 进应用 */
+  gate: false,
+  /* 登录前点了打卡 → 先存着，登录成功后自动接着完成 */
+  pendingCheckin: null,
+  /* 本次打开是否已经为「没开云同步」拦过一次打卡（只拦第一次，之后轻提示） */
+  syncAsked: false
+};
 var TIER_PICK = {};
 
 function freshDB(){
@@ -1093,8 +1106,16 @@ function onTaskClick(taskId){
     toast(t.freq === 'once' ? '这项已经完成过啦' : freqWindowLabel(t) + '的次数用完了', 'warn');
     return;
   }
-  if(t.tiers){ showTierPicker(t); return; }
-  doCheckIn(t, null);
+  var go = function(){
+    if(t.tiers){ showTierPicker(t); return; }
+    doCheckIn(t, null);
+  };
+  /* 云端没开 → 先说清楚这次不会同步，再打卡 */
+  if(syncGuardNeeded()){
+    if(!UI.syncAsked){ syncGuardDialog(go); return; }
+    toast('这次打卡没同步到云端（「我的」里可开启）', 'warn');
+  }
+  go();
 }
 function showTierPicker(t){
   var c = CATS[t.cat] || { color:'#B9B0A2' };
@@ -1305,14 +1326,17 @@ function viewKidAccount(){
   html += '</div>';
 
   /* 云端同步状态：孩子端也放一个入口，方便家长在这台设备上登录一次 */
-  var csCls, csLine;
+  var csCls, csLine, csBg = 'border:1px solid #E9E2D3;background:#FDF7EC';
   if(CS.state === 'on' && CS.user){ csCls = 'color:#3B8A5A'; csLine = '☁️ 云端同步已开启 · 点这里查看'; }
-  else if(CS.state === 'login'){    csCls = 'color:#3E7BB8'; csLine = '☁️ 还没开启云端同步 · 点这里开启'; }
+  else if(CS.state === 'login'){    csCls = 'color:#9A6B14';
+                                    csLine = '☁️ 云端同步未开启 · 点这里登录（打卡才会同步到爸妈手机）';
+                                    csBg = 'border:1px solid #F6E2B8;background:#FFF6E6'; }
   else if(CS.state === 'off'){      csCls = 'color:#A0917C'; csLine = '💾 本机保存（此打开方式不支持云同步）'; }
-  else if(CS.state === 'err'){      csCls = 'color:#C0453F'; csLine = '⚠️ 云端连接异常 · 点这里查看'; }
+  else if(CS.state === 'err'){      csCls = 'color:#C0453F'; csLine = '⚠️ 云端连接异常 · 点这里查看';
+                                    csBg = 'border:1px solid #F3D2CF;background:#FDEDEC'; }
   else {                            csCls = 'color:#A0917C'; csLine = '☁️ 正在检查云端…'; }
   html += '<button onclick="openAccount()" style="display:block;width:100%;margin-top:2px;padding:12px;' +
-          'border-radius:12px;border:1px solid #E9E2D3;background:#FDF7EC;font-size:12.5px;' + csCls + '">' + csLine + '</button>';
+          'border-radius:12px;font-size:12.5px;' + csBg + ';' + csCls + '">' + csLine + '</button>';
   return html;
 }
 
@@ -2133,8 +2157,12 @@ function checkSyncHash(){
   var code = h.slice(i + 6);
   try{ history.replaceState(null, '', location.pathname + location.search); }catch(e){}
   setTimeout(function(){
-    toast('检测到同步数据，请确认导入', 'info');
-    doSyncImport(code);
+    /* 登录门还在「检查中」时先等它落定，否则确认框会被下一次 render 关掉 */
+    (function waitForGate(n){
+      if(UI.gate === 'checking' && n > 0){ setTimeout(function(){ waitForGate(n - 1); }, 400); return; }
+      toast('检测到同步数据，请确认导入', 'info');
+      doSyncImport(code);
+    })(12);
   }, 900);
 }
 
@@ -2254,6 +2282,19 @@ function cloudBoot(){
     CS.msg = (e && e.message) || '连接云端失败';
     CS.state = 'err';
   }).then(function(){
+    /* 登录门还开着 → 由云端状态决定是放行还是留在登录页 */
+    if(UI.gate){
+      var autoOn = (CS.state === 'on');
+      if(autoOn) UI.gate = false;                     /* 已登录：自动跳过 */
+      else UI.gate = 'login';                         /* 未登录 / 异常：留在登录页 */
+      render();
+      if(autoOn){
+        /* 直接进应用时说明原因：不是"没让我登录"，是这台设备已经记住你了 */
+        toast('已自动登录 ' + (CS.email || '本家庭账号') + '，云端同步已开启', 'ok');
+        runPendingCheckin();
+      }
+      return;
+    }
     if(UI.view === 'parent') render();
   });
 }
@@ -2423,6 +2464,165 @@ function cloudNow(){
   cloudPush(true).then(function(){ return cloudPull(); }).then(function(){
     toast('已是最新', 'ok');
   });
+}
+
+/* ============================================================
+   登录门 + 打卡同步检查
+   为什么要它：两台设备各记各的，孩子的打卡爸爸妈妈看不到，审核和积分全对不上。
+   所以打开页面先过一屏登录页，确认云端同步真开着，再进应用。
+     · 已登录      → 自动跳过，直接进应用
+     · 未登录      → 停在登录页；也可以「先不登录，只在本机使用」
+     · 地址不支持  → 只说明原因 + 本机使用（登录本来就不可用，不装作能登）
+   ============================================================ */
+function syncReady(){ return CS.state === 'on' && !!CS.user; }
+/* 云同步「能开但没开」才值得提醒；envoff（本地文件打开）登录本来就不可用，不反复打扰 */
+function syncGuardNeeded(){ return CS.state !== 'off' && !syncReady(); }
+function gatePubUrl(){
+  var role = (APP_ROLE === 'parent') ? 'parent/' : (APP_ROLE === 'kid' ? 'kid/' : '');
+  return CLOUD.endpoint + '/' + role;
+}
+function viewGate(){
+  /* envoff 那一屏要说明「同步不了」，副标题就别再承诺同步，免得前后打架 */
+  var sub = (UI.gate === 'envoff')
+    ? '这个应用靠云端同步，才能两台设备共用一份数据'
+    : '登录一次，孩子打卡就自动同步到爸爸妈妈的手机<br>两台设备共用一份数据，不用再手动搬';
+  var head = '<div class="mb16 tc">' + starMascot(56) +
+    '<div class="xl xb mt10">家庭成长工具箱</div>' +
+    '<div class="xs mut mt6" style="line-height:1.75">' + sub + '</div></div>';
+
+  if(UI.gate === 'checking'){
+    return '<div class="wrap">' + head +
+      '<div class="dash tc mut sm" style="padding:26px 14px">☁️ 正在检查云端登录状态…</div>' +
+      '<div id="gt-esc" class="tc mt16 hide"><button class="btn gh tiny" onclick="gateSkip()">一直连不上？先本机使用</button></div>' +
+      '</div>';
+  }
+
+  if(UI.gate === 'envoff'){
+    return '<div class="wrap">' + head +
+      '<div class="card pad mb12" style="background:#FFF6E6;border:1px solid #F6E2B8">' +
+        '<div class="sm bd mb6">当前打开方式不支持云同步</div>' +
+        '<div class="xs mut" style="line-height:1.85">云同步要联网登录，只能用<b>正式发布地址</b>打开，比如：<br>' +
+          '<span style="word-break:break-all;color:#8C7E68">' + esc(gatePubUrl()) + '</span><br>' +
+          '现在打开的是本地文件或非发布地址，登录连不上，所以这次只能本机使用。</div>' +
+      '</div>' +
+      '<button class="btn pri wide" style="padding:13px" onclick="gateSkip()">继续本机使用</button>' +
+      '<div class="xs mut tc mt12" style="line-height:1.75">功能都在，只是打卡不会同步到另一台设备，<br>两台设备各记各的。</div>' +
+      '</div>';
+  }
+
+  var errBox = (CS.state === 'err')
+    ? '<div class="card pad mb12" style="background:#FDEDEC;border:1px solid #F3D2CF">' +
+        '<div class="xs bd" style="color:#C0453F">云端连接异常</div>' +
+        '<div class="xs mut mt4" style="line-height:1.75">' + esc(CS.msg || '未知原因') +
+        '<br>可以重试，也可以先本机使用，本机数据不会丢。</div></div>'
+    : '';
+
+  return '<div class="wrap">' + head + errBox +
+    '<div class="card padl">' +
+      '<div class="grid2 mb12">' +
+        '<button class="btn pri" id="ac-t1">密码登录</button>' +
+        '<button class="btn gh" id="ac-t2">邮箱验证码</button>' +
+      '</div>' +
+      '<div id="ac-body"></div>' +
+    '</div>' +
+    '<div class="tc mt12"><button class="btn gh tiny" onclick="gateSkip()">先不登录，只在本机使用 →</button></div>' +
+    (CS.state === 'err' ? '<div class="tc mt8"><button class="btn gh tiny" onclick="gateRetry()">重试连接云端</button></div>' : '') +
+    '<div class="xs mut tc mt12" style="line-height:1.75">同一个邮箱全家共用，数据只在你自己的家庭账号里。</div>' +
+    '</div>';
+}
+/* 登录表单复用 #ac-* 这套 id，doSignIn / doSendOtp / doVerifyOtp 原样可用 */
+function gateMount(){
+  var w = $('#app');
+  if(!w) return;
+  var t1 = w.querySelector('#ac-t1'), t2 = w.querySelector('#ac-t2'), body = w.querySelector('#ac-body');
+  if(!t1 || !t2 || !body) return;
+  function tab(on){
+    t1.className = 'btn ' + (on === 1 ? 'pri' : 'gh');
+    t2.className = 'btn ' + (on === 2 ? 'pri' : 'gh');
+  }
+  function viewLogin(){
+    tab(1);
+    body.innerHTML =
+      '<label class="fl">邮箱</label><input id="ac-em" type="email" placeholder="name@example.com" autocomplete="username">' +
+      '<label class="fl mt8">密码</label><input id="ac-pw" type="password" placeholder="密码" autocomplete="current-password" ' +
+        'onkeydown="if(event.key===\'Enter\')doSignIn()">' +
+      '<button class="btn pri wide mt12" style="padding:12px" id="ac-go">登录并开启云端同步</button>' +
+      '<button class="btn gh wide mt8" id="ac-fg">忘记密码</button>';
+    body.querySelector('#ac-go').onclick = doSignIn;
+    body.querySelector('#ac-fg').onclick = viewFind;
+  }
+  function viewOtp(){
+    tab(2);
+    body.innerHTML =
+      '<label class="fl">邮箱</label><input id="ac-em" type="email" placeholder="name@example.com">' +
+      '<button class="btn bl wide mt8" id="ac-send">发送验证码</button>' +
+      '<label class="fl mt8">验证码</label><input id="ac-cd" type="tel" maxlength="6" placeholder="6 位数字">' +
+      '<label class="fl mt8">密码（新账号时设置，老账号可留空）</label><input id="ac-pw" type="password" placeholder="至少 6 位">' +
+      '<button class="btn pri wide mt12" style="padding:12px" id="ac-go">登录 / 注册并开启同步</button>' +
+      '<div class="xs mut mt8" style="line-height:1.7">没有账号也可以：验证通过后自动为你建家庭账号。</div>';
+    body.querySelector('#ac-send').onclick = doSendOtp;
+    body.querySelector('#ac-go').onclick = doVerifyOtp;
+  }
+  function viewFind(){
+    body.innerHTML =
+      '<label class="fl">注册邮箱</label><input id="ac-em" type="email" placeholder="name@example.com">' +
+      '<button class="btn bl wide mt8" id="ac-send">发送重置码</button>' +
+      '<label class="fl mt8">邮箱里的重置码</label><input id="ac-cd" type="tel" maxlength="6" placeholder="6 位数字">' +
+      '<label class="fl mt8">新密码</label><input id="ac-pw" type="password" placeholder="至少 6 位">' +
+      '<button class="btn pri wide mt12" id="ac-go">重设密码</button>' +
+      '<button class="btn gh wide mt8" id="ac-bk">返回登录</button>';
+    body.querySelector('#ac-send').onclick = doResetSend;
+    body.querySelector('#ac-go').onclick = doReset;
+    body.querySelector('#ac-bk').onclick = viewLogin;
+  }
+  t1.onclick = viewLogin;
+  t2.onclick = viewOtp;
+  viewLogin();
+}
+function gateSkip(){
+  UI.gate = false;
+  render();
+  runPendingCheckin();
+}
+function gateRetry(){
+  CS.state = 'idle'; CS.msg = '';
+  UI.gate = 'checking';
+  render();
+  cloudBoot();
+}
+/* 登录前点的那个打卡，登录成功后接着完成 */
+function runPendingCheckin(){
+  var p = UI.pendingCheckin;
+  UI.pendingCheckin = null;
+  if(p) setTimeout(p, 200);
+}
+/* 打卡前的同步检查：云端没开就别让这次打卡悄悄只留在本机。
+   每次打开页面只拦第一次，之后用轻提示——孩子连着勾几项，不该被反复打断。 */
+function syncGuardDialog(go){
+  openModal('还没开启云端同步',
+    '<div class="card pad mb12" style="background:#FFF8E8;border:1px solid #F6E2B8">' +
+      '<div class="sm bd mb4">这次打卡只存在这台设备</div>' +
+      '<div class="xs mut" style="line-height:1.8">爸爸妈妈的手机看不到这条，审核和积分会对不上。<br>登录一次就好，之后每次打卡都会自动同步。</div>' +
+    '</div>' +
+    '<div class="row g8"><button class="btn gh fill" id="sg-later">先这样打卡</button>' +
+    '<button class="btn pri fill" id="sg-now">去登录</button></div>' +
+    '<div class="xs mut tc mt10">同一个邮箱全家共用，登录只需一次</div>',
+    function(w){
+      w.querySelector('#sg-later').onclick = function(){
+        closeModal();
+        UI.syncAsked = true;
+        toast('这次打卡没同步到云端', 'warn');
+        go();
+      };
+      w.querySelector('#sg-now').onclick = function(){
+        closeModal();
+        UI.pendingCheckin = go;      /* 登录成功后自动接着打卡 */
+        UI.syncAsked = true;
+        UI.gate = 'login';
+        window.scrollTo(0, 0);
+        render();
+      };
+    });
 }
 
 /* ---- 账号面板 ---- */
@@ -2606,6 +2806,7 @@ function afterLogin(sess){
   }).then(function(){
     CS.state = 'on';
     CS.rev = 0; CS.rowId = null;
+    UI.gate = false;                     /* 登录成功 → 收起登录页，进应用 */
     return cloudPull();
   }).then(function(){
     cloudTick();
@@ -2614,6 +2815,7 @@ function afterLogin(sess){
     if(CS.state === 'err') toast('已登录，但首次同步失败：' + (CS.msg || '未知原因'), 'err');
     else toast('云端同步已开启', 'ok');
     render();
+    runPendingCheckin();                 /* 登录前点的那个打卡，接着完成 */
   });
 }
 function doSignOut(){
@@ -2622,6 +2824,9 @@ function doSignOut(){
     CS.rev = 0; CS.rowId = null;
     if(CS.timer){ clearInterval(CS.timer); CS.timer = null; }
     closeModal();
+    /* 退出后回登录页：同步没开着就别接着记账了 */
+    UI.gate = cloudEnvOK() ? 'login' : false;
+    UI.syncAsked = false;
     toast('已退出，数据仍保留在本机', 'info');
     render();
   }).catch(function(e){ toast(authErr(e), 'err'); });
@@ -2870,6 +3075,22 @@ function render(){
   if(!app) return;
   closeModal();
 
+  /* 登录门：打开页面先过这一屏，确认云端同步真的开着 */
+  if(UI.gate){
+    app.innerHTML = viewGate();
+    if(UI.gate === 'checking'){
+      /* 检查超过 6 秒还没结果 → 给一条退路，免得卡在这屏出不去 */
+      setTimeout(function(){
+        var esc2 = $('#gt-esc');
+        if(esc2 && UI.gate === 'checking') esc2.classList.remove('hide');
+      }, 6000);
+    } else {
+      gateMount();
+    }
+    window.scrollTo(0, 0);
+    return;
+  }
+
   /* 家长端未解锁 → PIN 门 */
   if(UI.view === 'parent' && !UI.parentUnlocked){
     app.innerHTML = '<div class="wrap">' + viewPinGate() +
@@ -2921,6 +3142,8 @@ function boot(){
   else { UI.view = 'kid'; UI.kidTab = UI.kidTab || 'today'; }
   updateStreak();
   checkBadges();
+  /* 打开先过登录门：能同步的地址先查登录状态，不能同步的地址直接说明原因 */
+  UI.gate = cloudEnvOK() ? 'checking' : 'envoff';
   render();
   // 首次使用提示（家长端入口不提示，孩子端入口也不提示，交给家长端链接）
   if(!DB.config.parentPin && APP_ROLE === 'both'){

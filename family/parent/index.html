@@ -184,6 +184,15 @@ table.tb th{color:var(--sub);font-weight:700;font-size:11px}
 .cstage-meta{color:#D3CBE9;font-size:12px;margin-top:15px;line-height:1.8}
 .cstage-hint{color:#8B84A6;font-size:11px;margin-top:9px}
 
+/* ---------- 价目与出率（抽卡台内可展开） ---------- */
+.crate{margin-top:12px;border-top:1px dashed #EFE1C7;padding-top:9px}
+.crate-h{cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent}
+.crate-t{font-size:10px;color:#A79E8C;letter-spacing:.4px;margin:10px 0 2px}
+.crate-r{display:flex;justify-content:space-between;align-items:center;gap:10px;
+  font-size:12px;color:#5F5748;line-height:1.5;padding:5px 0;border-bottom:1px solid #FBF3E3}
+.crate-r:last-child{border-bottom:0}
+.crate-r .chip{font-size:10px;padding:1px 6px;border-radius:6px;font-weight:800}
+
 /* ==CARDS_CSS_END== */
 </style>
 </head>
@@ -3553,11 +3562,10 @@ function viewKidCards(){
       '<button class="btn ' + (can10.ok ? 'dk' : 'gh') + ' fill" style="padding:14px" ' +
         (can10.ok ? '' : 'disabled ') + 'onclick="onCardDraw(10)">十连<br><span class="xs">' + cardCostN() + ' 分</span></button>' +
     '</div>' +
-    '<div class="xs mut mt10" style="line-height:1.75">' +
-      '· 十连必出 1 张 SR 以上<br>' +
-      '· 累计 ' + CARD_SSR_PITY + ' 抽未出传说，下一抽直接给传说<br>' +
-      '· 抽到重复卡自动转 ✨ 星尘，星尘可指定兑换任意一张卡' +
+    '<div class="xs mut mt10" style="line-height:1.7">' +
+      '十连必出 1 张 SR 以上 · 重复卡转 ✨ 星尘，可兑换指定卡' +
     '</div>' +
+    cardRateBlock() +
   '</div>';
 
   var newOnes = [];
@@ -3583,6 +3591,67 @@ function cardTabs(cur){
   return '<div class="tabs mt12">' + items.map(function(it){
     return '<button class="' + (cur === it[0] ? 'on' : '') + '" onclick="UI.cardTab=\'' + it[0] + '\';render()">' + it[1] + '</button>';
   }).join('') + '</div>';
+}
+
+/* ---------- 价目与出率（价格全部读 config，家长端改价后这里同步变） ---------- */
+function cardRateOpen(){ return UI.cardRate !== false; }   /* 未设置过 → 默认展开 */
+function toggleCardRate(){ UI.cardRate = !cardRateOpen(); render(); }
+
+/* 万分比 → 百分比文本，去掉多余的 .00 */
+function cardPct(rate){ return parseFloat((rate / 100).toFixed(2)) + '%'; }
+
+function cardRateBlock(){
+  var open = cardRateOpen();
+  var head = '<div class="row between crate-h" onclick="toggleCardRate()">' +
+    '<span class="bd sm">💴 价目与出率</span>' +
+    '<span class="xs mut">' + (open ? '收起 ▲' : '展开 ▼') + '</span></div>';
+  if(!open) return '<div class="crate">' + head + '</div>';
+
+  var p1 = cardCost1(), p10 = cardCostN(), saved = p1 * 10 - p10;
+  var priceRows = [
+    ['单抽一次', p1 + ' 分'],
+    ['十连（10 张）', p10 + ' 分' + (saved > 0 ? '<span class="mut">　省 ' + saved + ' 分</span>' : '')],
+    ['每日免费', cardFreeMax() > 0 ? (cardFreeMax() + ' 次 / 天') : '已关闭']
+  ];
+
+  var byRarity = {};
+  CARD_POOL.forEach(function(c){ byRarity[c.rarity] = (byRarity[c.rarity] || 0) + 1; });
+  var poolLine = CARD_RARITY_ORDER.map(function(r){
+    return CARD_RARITY[r].short + ' ' + (byRarity[r] || 0) + ' 张';
+  }).join(' · ');
+
+  var rateRows = CARD_RARITY_ORDER.map(function(r){
+    var R = CARD_RARITY[r];
+    return ['<span class="chip" style="background:' + R.color + ';color:#fff">' + R.short + '</span>' +
+            '<span class="mut"> ' + R.name + '</span>',
+            cardPct(R.rate)];
+  });
+
+  var dustRows = CARD_RARITY_ORDER.map(function(r){
+    var R = CARD_RARITY[r];
+    return ['重复 ' + R.short + ' 转星尘', '+' + R.dust + ' ✨'];
+  });
+  var exRows = CARD_RARITY_ORDER.map(function(r){
+    var R = CARD_RARITY[r];
+    return ['兑换 1 张 ' + R.short, R.exchange + ' ✨'];
+  });
+
+  function tbl(rows){
+    return rows.map(function(x){
+      return '<div class="crate-r"><span>' + x[0] + '</span><span class="bd tr">' + x[1] + '</span></div>';
+    }).join('');
+  }
+
+  return '<div class="crate">' + head +
+    '<div class="crate-t">积分价目</div>' + tbl(priceRows) +
+    '<div class="crate-t">各档出率（共 ' + CARD_POOL.length + ' 张：' + poolLine + '）</div>' + tbl(rateRows) +
+    '<div class="crate-t">星尘（✨）规则</div>' + tbl(dustRows) + tbl(exRows) +
+    '<div class="xs mut" style="line-height:1.7;margin-top:9px">' +
+      '· 十连必出 1 张 SR 以上<br>' +
+      '· 累计 ' + CARD_SSR_PITY + ' 抽未出传说，下一抽必出传说<br>' +
+      '· 抽卡直接扣积分并记入账本，家长端可随时关闭或调价' +
+    '</div>' +
+  '</div>';
 }
 
 function viewKidDex(){

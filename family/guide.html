@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>家庭成长工具箱 · 两家人开号指引</title>
+<style>
+  :root{
+    --orange:#F5A524; --orange-d:#E08E0B; --night:#453E6B; --cream:#FFFBF2;
+    --ink:#3D3730; --mut:#8C8272; --line:#F0E4CE; --green:#4E9E5B; --warn:#C0453F;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    margin:0; background:var(--cream); color:var(--ink);
+    font:16px/1.75 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'><g fill='%23F5A524' fill-opacity='0.13'><path d='M14 8l1.6 3.4L19 13l-3.4 1.6L14 18l-1.6-3.4L9 13l3.4-1.6z'/><path d='M42 30l1.2 2.6L46 34l-2.8 1.2L42 38l-1.2-2.8L38 34l2.8-1.4z'/></g></svg>");
+  }
+  .wrap{max-width:640px;margin:0 auto;padding:20px 16px 56px}
+  .hero{text-align:center;padding:12px 0 6px}
+  .hero h1{font-size:23px;margin:12px 0 6px;letter-spacing:.5px}
+  .hero p{margin:0;color:var(--mut);font-size:13.5px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 16px 14px;margin:14px 0;box-shadow:0 3px 0 rgba(240,228,206,.75)}
+  .card h2{font-size:16.5px;margin:0 0 4px;display:flex;align-items:center;gap:8px}
+  .card h2 .n{display:inline-flex;width:24px;height:24px;border-radius:50%;background:var(--orange);color:#fff;font-size:13px;align-items:center;justify-content:center;flex:none;font-weight:700}
+  .card .sub{margin:0 0 10px;color:var(--mut);font-size:13px;padding-left:32px}
+  ol.steps{margin:6px 0 0;padding-left:0;list-style:none;counter-reset:s}
+  ol.steps>li{counter-increment:s;position:relative;padding:0 0 14px 34px;font-size:15px}
+  ol.steps>li:last-child{padding-bottom:0}
+  ol.steps>li::before{content:counter(s);position:absolute;left:0;top:2px;width:22px;height:22px;border-radius:50%;background:#FFF3DC;color:var(--orange-d);font-size:12.5px;font-weight:700;display:flex;align-items:center;justify-content:center;border:1px solid #F6E2B8}
+  ol.steps>li::after{content:"";position:absolute;left:10.5px;top:26px;bottom:2px;width:1px;background:var(--line)}
+  ol.steps>li:last-child::after{display:none}
+  b{color:var(--night)}
+  a.lnk{display:block;margin:8px 0 0;padding:11px 14px;background:#FFF3DC;border:1px solid #F6E2B8;border-radius:11px;color:var(--orange-d);text-decoration:none;font-size:14px;word-break:break-all;font-weight:600}
+  a.lnk:active{background:#FBE8C4}
+  a.lnk span{display:block;color:var(--mut);font-weight:400;font-size:12px;margin-top:2px}
+  .tip{font-size:13px;color:var(--mut);background:#FAF6EC;border-radius:10px;padding:10px 12px;margin-top:10px;line-height:1.8}
+  .warnbox{background:#FDEDEC;border:1px solid #F3D2CF}
+  .warnbox b{color:var(--warn)}
+  .okbox{background:#EDF6EE;border:1px solid #CFE7D3}
+  .okbox b{color:var(--green)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+  .mini{background:#FAF6EC;border-radius:11px;padding:10px 11px;font-size:13px;line-height:1.7}
+  .mini b{display:block;font-size:14px;margin-bottom:2px}
+  details{border-top:1px solid var(--line);padding:11px 0 3px;font-size:14.5px}
+  details:first-of-type{border-top:0}
+  summary{cursor:pointer;font-weight:600;color:var(--night);list-style:none}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"＋";color:var(--orange);margin-right:7px;font-weight:700}
+  details[open] summary::before{content:"−"}
+  details p{margin:8px 0 4px;color:var(--mut);font-size:13.5px;line-height:1.85}
+  details p b{color:var(--ink)}
+  .foot{text-align:center;color:var(--mut);font-size:12px;margin-top:22px;line-height:1.9}
+  .kbd{display:inline-block;background:#FFF3DC;border:1px solid #F6E2B8;border-radius:6px;padding:1px 7px;font-size:13px;color:var(--orange-d);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <svg width="54" height="54" viewBox="0 0 54 54" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD466"/><stop offset="1" stop-color="#F5A524"/></linearGradient></defs><path d="M27 4l6.2 13.2L47 19.3 36.8 29.4l2.5 14.6L27 36.9 14.7 44l2.5-14.6L7 19.3l13.8-2.1z" fill="url(#g)"/><circle cx="21.5" cy="24" r="1.9" fill="#453E6B"/><circle cx="32.5" cy="24" r="1.9" fill="#453E6B"/><path d="M22.5 30.5c1.4 1.7 7.6 1.7 9 0" stroke="#453E6B" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+    <h1>两家人开号指引</h1>
+    <p>每家一个邮箱 = 一个家庭账号<br>大人小孩共用它，各自点不同入口</p>
+  </div>
+
+  <div class="card okbox">
+    <h2>一句话说明</h2>
+    <p class="sub" style="padding-left:0;margin-bottom:0">两家各用自己的邮箱开号，<b>数据完全隔离</b>，互相看不到对方的东西。开号不用改任何设置，两三分钟一家。</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="n">1</span>每家先备好两样东西</h2>
+    <p class="sub">不用装 App，浏览器打开就是</p>
+    <div class="grid2">
+      <div class="mini"><b>一个邮箱</b>能收验证码即可。两家必须<b>用不同邮箱</b>。</div>
+      <div class="mini"><b>各自的设备</b>家长用自己手机，孩子用他自己的设备。</div>
+    </div>
+    <div class="tip">孩子的设备没有邮箱也没关系 —— 用的是<b>家长那个邮箱</b>，验证码发到家长手机上。</div>
+  </div>
+
+  <div class="card">
+    <h2><span class="n">2</span>家长先开号（约 2 分钟）</h2>
+    <p class="sub">开号的同时把密码一起设上，孩子那边就省事了</p>
+    <ol class="steps">
+      <li>手机上打开下面这个<b>家长端</b>链接：
+        <a class="lnk" href="https://growth-kit.app.workbuddy.host/parent/" target="_blank" rel="noopener">https://growth-kit.app.workbuddy.host/parent/
+          <span>家长端 · 审核打卡、改任务和商品</span></a>
+      </li>
+      <li>会先看到登录页，点上面第二个页签 <span class="kbd">邮箱验证码</span>。</li>
+      <li>填家长的邮箱 → 点 <span class="kbd">发送验证码</span> → 去邮箱里看那 6 位数字（找"验证码"字样的邮件）。</li>
+      <li>回到页面填验证码；下面的<b>密码</b>栏填一个 <b>6 位以上</b>的密码。<br>
+        新账号这一栏就是"顺手设密码"，一定要填，孩子设备之后就用它登录。</li>
+      <li>点 <span class="kbd">登录 / 注册并开启同步</span>，账号就建好了，同时云端同步自动打开。</li>
+      <li>进去后会让你<b>设一个 4 位家长 PIN</b>，这个别用 <span class="kbd">1234</span> 或孩子生日 ——
+        它是防止孩子自己进家长端给自己通过审核的。</li>
+    </ol>
+    <div class="tip">没收到验证码：先看垃圾邮件；等 60 秒再点一次；确认邮箱地址没打错。</div>
+  </div>
+
+  <div class="card">
+    <h2><span class="n">3</span>孩子设备登录（约 1 分钟）</h2>
+    <p class="sub">用上一个密码登录，不用再等验证码</p>
+    <ol class="steps">
+      <li>孩子的设备打开<b>孩子端</b>链接：
+        <a class="lnk" href="https://growth-kit.app.workbuddy.host/kid/" target="_blank" rel="noopener">https://growth-kit.app.workbuddy.host/kid/
+          <span>孩子端 · 打卡、看积分、抽卡</span></a>
+      </li>
+      <li>登录页选第一个页签 <span class="kbd">密码登录</span>，填<b>家长那个邮箱</b> + 第 2 步设的密码。</li>
+      <li>登录一次就行 —— 以后打开网页直接进，不用每次输。</li>
+    </ol>
+    <div class="tip">孩子是看不到家长端的：家长端进去要 4 位 PIN，孩子没有就进不去。</div>
+  </div>
+
+  <div class="card">
+    <h2><span class="n">4</span>第二家重复一遍</h2>
+    <p class="sub">只换一样东西：邮箱</p>
+    <div class="tip">把这份指引转给另一家的家长，他照着第 2、3 步做就行。
+      两家的任务清单、积分、卡牌各是各的，孩子之间也互相看不到。</div>
+  </div>
+
+  <div class="card warnbox">
+    <h2>⚠️ 三条别踩的坑</h2>
+    <ol class="steps" style="margin-top:8px">
+      <li><b>两家不要用同一个邮箱。</b>邮箱就是"家"的身份，用同一个等于两家人共用一本账，
+        会互相看到对方的打卡和积分。</li>
+      <li><b>不要在同一台设备上先后登两家。</b>一台设备只认一个家庭。
+        同一台手机先登 A 家再登 B 家，两边的记录会混在一起。
+        正确做法：一家一套设备（家长手机 + 孩子设备）。</li>
+      <li><b>两家都用同一个网址、同一个网页。</b>不需要为第二家另外发布一份，
+        只要开号时邮箱不同，数据就是分开的。</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>常见问题</h2>
+    <details><summary>孩子不愿意用自己的设备登，能不能家长手机上看孩子端？</summary>
+      <p>可以。同一台手机上，家长端和孩子端是两个链接，用同一个邮箱都登得上。
+        但注意别在这台手机上再登另外一家。</p></details>
+    <details><summary>换手机 / 换了设备怎么办？</summary>
+      <p>新设备打开同一个网址，用同一个邮箱登录，数据会从云端自动拉回来，不用手动搬。
+        前提是登录了 —— 未登录时数据只存在本机。</p></details>
+    <details><summary>忘了家长端 PIN 怎么办？</summary>
+      <p>PIN 存在数据里，家长自己在家长端设置页可以改。
+        彻底忘了的话，重新设一个新的即可（原 PIN 不会造成数据丢失）。</p></details>
+    <details><summary>忘了密码怎么办？</summary>
+      <p>登录页点 <span class="kbd">忘记密码</span> → 填注册邮箱 → 收 6 位重置码 → 填新密码 → 重设。
+        邮箱能收验证码就能救回来。</p></details>
+    <details><summary>孩子打卡了，家长手机上什么时候能看到？</summary>
+      <p>几秒钟。两端都登录后是自动同步的，不需要手动刷新。</p></details>
+    <details><summary>完全没网的时候还能用吗？</summary>
+      <p>能。网页打开后离线照常打卡记分，联网后会自动补同步。</p></details>
+    <details><summary>打卡、兑换的记录会丢吗？</summary>
+      <p>不会。本机有一份完整缓存，云端还有一份，两边都登录着就是双保险。</p></details>
+  </div>
+
+  <div class="foot">
+    家庭成长工具箱 · 两家开号指引<br>
+    © 2026 前进的履带
+  </div>
+
+</div>
+</body>
+</html>

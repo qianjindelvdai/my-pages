@@ -193,6 +193,32 @@ table.tb th{color:var(--sub);font-weight:700;font-size:11px}
 .crate-r:last-child{border-bottom:0}
 .crate-r .chip{font-size:10px;padding:1px 6px;border-radius:6px;font-weight:800}
 
+/* ---------- 玩点 1：卡牌头像 ---------- */
+.mascot.avatar-card{box-shadow:0 0 0 2px rgba(245,165,36,.55)}
+.ccard.on{border-color:#4E9E5B;box-shadow:0 0 0 1px #4E9E5B,0 3px 10px rgba(78,158,91,.25)}
+.avgrid{max-height:56vh;overflow:auto;padding:2px}
+
+/* ---------- 玩点 2：今日之星 ---------- */
+.dstar{background:linear-gradient(135deg,#FFFBF2 0%,#FFF3DC 100%);
+  border:1px solid #F5E3BF;position:relative;overflow:hidden}
+.dstar::after{content:'✨';position:absolute;right:10px;top:6px;font-size:40px;opacity:.13}
+
+/* ---------- 玩点 3：系列收集 ---------- */
+.sercard.done{background:linear-gradient(160deg,#FFFDF6 0%,#F3FBEF 100%);border-color:#CFE8C9}
+.sericon{width:34px;height:34px;border-radius:11px;background:#FFF3DC;display:flex;align-items:center;
+  justify-content:center;font-size:18px;flex:0 0 auto}
+.cgrid-mini{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.cgrid-mini .ccard{padding:3px 3px 4px;border-radius:11px}
+.cgrid-mini .ccard .cname{font-size:9px;margin-top:3px}
+.cgrid-mini .ccard .crar{display:none}
+.cgrid-mini .ccard .cr{font-size:7px;padding:0 4px;top:3px;left:3px}
+.cgrid-mini .ccard .cimg .cq b{width:22px;height:22px;font-size:12px}
+.cstage-series{margin-top:11px;color:#FFD35C;font-size:13px;font-weight:800;line-height:1.7}
+.cstage-series .xs{color:#D3CBE9;font-weight:400}
+
+/* ---------- 传说层：未解锁的专属特权 ---------- */
+.card.lockeddeal{opacity:.74;background:#FBF6EC;border:1px dashed #E6DECD}
+
 /* ==CARDS_CSS_END== */
 </style>
 </head>
@@ -261,6 +287,9 @@ var CONFIG_DEFAULT = {
   cardCost: 20,
   cardCost10: 180,
   cardFreeDaily: 1,
+  /* 用重复卡抵扣商城特权（2026-09-26 新增）：开关 + 最多抵商品价的百分比 */
+  cardDeductOn: true,
+  cardDeductPct: 50,
   parentPin: null
 };
 
@@ -327,12 +356,17 @@ var REWARDS_DEFAULT = [
   {id:'r26',name:'免做一次家务券',tier:'特权',price:40,stock:null,walletOption:false,rFreq:'weekly',rTimes:1,note:'每周限一次。只能免自己分内的家务，不能转让给别人。'},
   {id:'r27',name:'晚睡券（推迟 30 分钟）',tier:'特权',price:50,stock:null,walletOption:false,rFreq:'weekly',rTimes:1,note:'每周限一次。最晚推迟到 21:30；第二天要上学时不可用。'},
   {id:'r28',name:'专属陪伴 1 小时',tier:'特权',price:50,stock:null,walletOption:false,note:'不限次数。提前一天约时间，这一小时爸妈只陪你，不看手机。'},
-  {id:'r29',name:'小主人券（决定家庭活动）',tier:'特权',price:80,stock:null,walletOption:false,rFreq:'monthly',rTimes:1,note:'每月限一次。你可以安排一个半天的家庭活动，爸妈配合执行。'}
+  {id:'r29',name:'小主人券（决定家庭活动）',tier:'特权',price:80,stock:null,walletOption:false,rFreq:'monthly',rTimes:1,note:'每月限一次。你可以安排一个半天的家庭活动，爸妈配合执行。'},
+  /* 传说层（2026-09-26 新增）：只有拥有对应 SSR 卡才能兑换，卡是钥匙、不消耗 */
+  {id:'r30',name:'破云日出计划（一起去等一次日出）',tier:'传说',price:120,stock:null,walletOption:false,needCard:'c52',rFreq:'monthly',rTimes:1,note:'每月限一次。拥有传说卡「破云而出」才能兑换。需要早起一次，爸妈陪你等日出，当天不算迟到。'},
+  {id:'r31',name:'书店自由一小时（自己挑一本带回家）',tier:'传说',price:150,stock:null,walletOption:false,needCard:'c62',rFreq:'monthly',rTimes:1,note:'每月限一次。拥有传说卡「绘本围城」才能兑换。在书店里由你挑一本，不限类别，预算内直接买。'},
+  {id:'r32',name:'全家郊游半日（你定地方）',tier:'传说',price:200,stock:null,walletOption:false,needCard:'c66',rFreq:'monthly',rTimes:1,note:'每月限一次。拥有传说卡「镜湖星语」才能兑换。地点由你提方案，爸妈配合，车程 1 小时内。'},
+  {id:'r33',name:'星空夜谈（聊到自然睡）',tier:'传说',price:100,stock:null,walletOption:false,needCard:'c68',rFreq:'weekly',rTimes:1,note:'每周限一次。拥有传说卡「星河兰影」才能兑换。可以问任何想问的问题，爸妈认真回答，不催睡觉。'}
 ];
 
-var TIER_ORDER = ['拼豆','即时','短期','长期','零花钱','特权'];
-var TIER_COLOR = { '拼豆':'#FF9DBB','即时':'#63C871','短期':'#5B8DEF','长期':'#8A7BE0','零花钱':'#FFC93C','特权':'#F5A524' };
-var TIER_ICON  = { '拼豆':'🧩','即时':'🍬','短期':'🎡','长期':'🎁','零花钱':'💰','特权':'👑' };
+var TIER_ORDER = ['拼豆','即时','短期','长期','零花钱','特权','传说'];
+var TIER_COLOR = { '拼豆':'#FF9DBB','即时':'#63C871','短期':'#5B8DEF','长期':'#8A7BE0','零花钱':'#FFC93C','特权':'#F5A524','传说':'#E0881B' };
+var TIER_ICON  = { '拼豆':'🧩','即时':'🍬','短期':'🎡','长期':'🎁','零花钱':'💰','特权':'👑','传说':'🌟' };
 
 var BADGES_DEFAULT = [
   {id:'b01',name:'黑夜勇者',icon:'🌙',cond:'首次独立睡觉成功'},
@@ -348,7 +382,9 @@ var BADGES_DEFAULT = [
   {id:'b11',name:'初次开卡',icon:'🎴',cond:'第一次抽卡'},
   {id:'b12',name:'卡牌收藏家',icon:'📖',cond:'图鉴集齐 20 张'},
   {id:'b13',name:'图鉴大师',icon:'🏆',cond:'集齐全部 70 张卡'},
-  {id:'b14',name:'传说猎手',icon:'🌟',cond:'抽到一张传说卡'}
+  {id:'b14',name:'传说猎手',icon:'🌟',cond:'抽到一张传说卡'},
+  {id:'b15',name:'系列收藏家',icon:'🧩',cond:'集齐 3 个卡牌系列'},
+  {id:'b16',name:'送礼小天使',icon:'🎁',cond:'送一张卡给爸妈'}
 ];
 function badgeHit(id, db){
   switch(id){
@@ -368,6 +404,8 @@ function badgeHit(id, db){
     case 'b14': return !!(db.cards && Object.keys(db.cards.own || {}).some(function(id){
                   var c = cardById(id); return c && c.rarity === 'SSR';
                 }));
+    case 'b15': return !!(db.cards && Object.keys(db.cards.seriesGot || {}).length >= 3);
+    case 'b16': return !!(db.cards && (db.cards.gifts || []).length > 0);
   }
   return false;
 }
@@ -413,7 +451,13 @@ function freshDB(){
     }),
     checkins: [], orders: [], ledger: [], wishes: [], pledges: [],
     /* 抽卡（2026-09-24）：own = 卡 id → 拥有数量；dust = 星尘；sinceSSR = 距上次传说的抽数 */
-    cards: { own:{}, dust:0, draws:0, sinceSSR:0, freeDate:'', freeUsed:0, log:[] },
+    cards: {
+      own:{}, dust:0, draws:0, sinceSSR:0, freeDate:'', freeUsed:0, log:[],
+      avatar:'',            /* 玩点1：当头像的卡 id */
+      dailyStar:null,       /* 玩点2：今日之星 { date, id } */
+      seriesGot:{},         /* 玩点3：已集齐的系列 */
+      gifts:[]              /* 玩点6：送给爸妈的卡 */
+    },
     account: {
       /* beadFund 已停用（2026-09-19 取消拼豆基金），恒为 0，保留字段兼容旧数据 */
       mainBalance:0, beadFund:0, freeWallet:0, dreamBalance:0,
@@ -447,8 +491,20 @@ function migrateDB(){
     DB.account.beadFund = 0;
   }
   DB.meta.beadFundMerged = true;
+  /* 补齐后加的默认商品（2026-09-26 加的「传说」层 4 个专属特权）。
+     只补缺失的 id，不动家长改过的任何商品 */
+  if(Array.isArray(DB.rewards)){
+    var haveR = {};
+    DB.rewards.forEach(function(r){ if(r && r.id) haveR[r.id] = true; });
+    REWARDS_DEFAULT.forEach(function(r){
+      if(!haveR[r.id]) DB.rewards.push(JSON.parse(JSON.stringify(r)));
+    });
+  }
   /* 抽卡数据结构补齐（云端拉取会整体替换 DB，所以这里也必须兜一遍） */
-  if(!DB.cards) DB.cards = { own:{}, dust:0, draws:0, sinceSSR:0, freeDate:'', freeUsed:0, log:[] };
+  if(!DB.cards) DB.cards = {
+    own:{}, dust:0, draws:0, sinceSSR:0, freeDate:'', freeUsed:0, log:[],
+    avatar:'', dailyStar:null, seriesGot:{}, gifts:[]
+  };
   var cd = DB.cards;
   if(!cd.own || typeof cd.own !== 'object') cd.own = {};
   if(typeof cd.dust !== 'number')    cd.dust = 0;
@@ -457,6 +513,10 @@ function migrateDB(){
   if(typeof cd.freeDate !== 'string') cd.freeDate = '';
   if(typeof cd.freeUsed !== 'number') cd.freeUsed = 0;
   if(!Array.isArray(cd.log)) cd.log = [];
+  /* 2026-09-26 新增字段（玩点 1/2/3/6） */
+  if(typeof cd.avatar !== 'string') cd.avatar = '';
+  if(!cd.seriesGot || typeof cd.seriesGot !== 'object' || Array.isArray(cd.seriesGot)) cd.seriesGot = {};
+  if(!Array.isArray(cd.gifts)) cd.gifts = [];
 }
 function loadDB(){
   try {
@@ -843,23 +903,40 @@ function checkBadges(){
 }
 
 /* ---------- 兑换 ---------- */
-function redeem(reward, wallet, cashAmount){
+/* deduct = { value, byId, count } 或 null：用重复卡抵扣（2026-09-26 新增）
+   卡在「提交兑换」这一刻就扣掉；若家长驳回，approveOrder 会把卡退回 */
+function redeem(reward, wallet, cashAmount, deduct){
   if(rDone(reward)){ toast(rDoneMsg(reward),'warn'); return; }
-  if(DB.account.mainBalance < reward.price){ toast('积分还不够哦，继续加油','warn'); return; }
+  var cut = (deduct && deduct.value > 0) ? deduct.value : 0;
+  var pay = Math.max(0, reward.price - cut);
+  if(DB.account.mainBalance < pay){ toast('积分还不够哦，继续加油','warn'); return; }
+  if(cut > 0) applyCardDeduct(deduct.byId);
   DB.orders.unshift({
     id: uid(), rewardId: reward.id, rewardName: reward.name, tier: reward.tier,
-    price: reward.price, date: todayStr(), ts: Date.now(), status:'pending',
+    price: reward.price, payPrice: pay, deductCards: cut > 0 ? deduct.byId : null, deductValue: cut,
+    date: todayStr(), ts: Date.now(), status:'pending',
     targetWallet: wallet || null, cashAmount: cashAmount || null, deliveredAt: null
   });
   saveDB(); render();
-  toast('已提交兑换申请，等爸妈确认','info');
+  toast(cut > 0
+    ? ('已提交兑换申请（用卡抵了 ' + cut + ' 分，实扣 ' + pay + '），等爸妈确认')
+    : '已提交兑换申请，等爸妈确认','info');
 }
 function approveOrder(id, ok){
   var o = DB.orders.filter(function(x){ return x.id === id; })[0];
   if(!o) return;
-  if(!ok){ o.status = 'rejected'; saveDB(); render(); toast('已驳回该兑换','info'); return; }
-  if(DB.account.mainBalance < o.price){ toast('余额不足，无法通过','warn'); return; }
-  debitPoints(o.price, '兑换：' + o.rewardName, o.id);
+  if(!ok){
+    o.status = 'rejected';
+    /* 用卡抵扣过的，把卡退给孩子 */
+    if(o.deductCards && o.deductValue > 0){
+      refundCardDeduct(o.deductCards);
+      ledger('transfer', 0, '兑换被驳回，退回抵扣用的 ' + o.deductValue + ' 分重复卡', o.id);
+    }
+    saveDB(); render(); toast('已驳回该兑换','info'); return;
+  }
+  var pay = (typeof o.payPrice === 'number') ? o.payPrice : o.price;
+  if(DB.account.mainBalance < pay){ toast('余额不足，无法通过','warn'); return; }
+  debitPoints(pay, '兑换：' + o.rewardName, o.id);
   /* 零花钱统一进「零花钱」余额；旧订单里残留的 bead_fund 通道一并兼容 */
   if(o.targetWallet === 'free' || o.targetWallet === 'bead_fund'){
     var cashIn = o.cashAmount || 0;
@@ -1271,14 +1348,24 @@ function viewKidShop(){
   }
 
   var list = activeRewards().filter(function(r){ return r.tier === UI.shopTier; });
+  if(UI.shopTier === '传说'){
+    html += '<div class="xs mb10" style="background:#FFF6E9;color:#8A6629;padding:8px 11px;border-radius:10px;line-height:1.75">' +
+      '🌟 传说特权：每张传说卡是一把「钥匙」—— 拥有它才能兑换，兑换时卡片不会被消耗</div>';
+  }
   if(!list.length){
     html += '<div class="card pad tc mut sm" style="padding:30px">这一层还没有商品，让爸妈去配置中心加一个吧</div>';
   } else {
     html += '<div class="grid2">';
     list.forEach(function(r){
-      var afford = DB.account.mainBalance >= r.price;
       var tc = TIER_COLOR[r.tier] || '#B9B0A2';
-      var diff = r.price - DB.account.mainBalance;
+      /* 传说层：需要先拥有指定的 SSR 卡 */
+      var needCard = r.needCard ? cardById(r.needCard) : null;
+      var cardLocked = !!(needCard && cardOwned(needCard.id) === 0);
+      /* 可用重复卡抵扣多少（只影响「够不够分」的判定，不改原价展示） */
+      var plan = cardDeductPlanFor(r);
+      var pay = Math.max(0, r.price - plan.value);
+      var afford = DB.account.mainBalance >= pay;
+      var diff = pay - DB.account.mainBalance;
       var soldOut = (r.stock != null && r.stock <= 0);
       var capped = rDone(r);
       var rmax = rMax(r), rused = rUsed(r);
@@ -1286,7 +1373,8 @@ function viewKidShop(){
         return o.rewardId === r.id && (o.status === 'pending' || o.status === 'approved');
       }).length;
       var btnTxt, btnOn = false;
-      if(soldOut){ btnTxt = '补货中'; }
+      if(cardLocked){ btnTxt = '需要「' + needCard.name + '」卡'; }
+      else if(soldOut){ btnTxt = '补货中'; }
       else if(capped){ btnTxt = (r.rFreq === 'once') ? '已兑换过' : rWindowLabel(r) + '已兑换'; }
       else if(!afford){ btnTxt = '还差 ' + diff + ' 分'; }
       else { btnTxt = pend ? '再兑换一个' : '兑换'; btnOn = true; }
@@ -1298,11 +1386,22 @@ function viewKidShop(){
         ? '<div style="font-size:10px;line-height:1.4;color:#8A6629;text-decoration:underline dotted" ' +
           'onclick="showRewardNote(\'' + r.id + '\')">📋 使用规则</div>'
         : '';
-      html += '<div class="card pad col" style="gap:6px">' +
-        '<div class="tc" style="border-radius:14px;padding:14px 0;font-size:28px;background:' + tc + '1A">' + (TIER_ICON[r.tier] || '🎁') + '</div>' +
+      var dedLine = (!cardLocked && plan.value > 0)
+        ? '<div style="font-size:10px;line-height:1.4;color:#6E5AA8">🎴 可用重复卡抵 ' + plan.value + ' 分</div>'
+        : '';
+      var lockLine = cardLocked
+        ? '<div style="font-size:10px;line-height:1.4;color:#A0917C">🔒 抽到「' + needCard.name + '」后解锁</div>'
+        : '';
+      html += '<div class="card pad col' + (cardLocked ? ' lockeddeal' : '') + '" style="gap:6px">' +
+        '<div class="tc" style="border-radius:14px;padding:14px 0;font-size:28px;background:' + tc + '1A">' +
+          (needCard
+            ? '<img src="' + CARD_IMG[needCard.id] + '" alt="" style="width:44px;height:44px;border-radius:11px;object-fit:cover;' +
+              (cardLocked ? 'filter:grayscale(1) opacity(.4)' : '') + '">'
+            : (TIER_ICON[r.tier] || '🎁')) + '</div>' +
         '<div class="xs bd fill" style="line-height:1.35">' + esc(r.name) + '</div>' +
-        limitLine + noteLine +
+        lockLine + limitLine + noteLine + dedLine +
         '<div class="row g4" style="align-items:baseline"><span class="bd" style="color:' + tc + '">' + r.price + '</span><span class="xs mut">分</span>' +
+        (plan.value > 0 && !cardLocked ? '<span class="xs mut">→ 实付 ' + pay + '</span>' : '') +
         (r.stock != null ? '<span class="xs mut" style="margin-left:auto">' + (soldOut ? '补货中' : '剩 ' + r.stock) + '</span>' : '') + '</div>' +
         '<button class="btn wide tiny" ' + (btnOn ? 'style="background:' + tc + ';color:#fff"' : '') + ' ' +
         (btnOn ? 'onclick="onRedeem(\'' + r.id + '\')"' : 'disabled') + '>' + btnTxt + '</button></div>';
@@ -1317,7 +1416,10 @@ function viewKidShop(){
       var st = o.status === 'pending' ? '<span class="chip" style="background:#FFF6E5;color:#B47C10">等爸妈确认</span>'
              : '<span class="chip" style="background:#EAF7EC;color:#4E9E5B">待发放</span>';
       html += '<div class="row between list mb4"><div class="fill"><div class="xs bd trunc">' + esc(o.rewardName) + '</div>' +
-        '<div class="xs mut">' + o.date + ' · ' + o.price + ' 分</div></div>' + st + '</div>';
+        '<div class="xs mut">' + o.date + ' · ' +
+        (((typeof o.payPrice === 'number') && o.payPrice !== o.price)
+          ? ('实扣 ' + o.payPrice + ' 分（卡抵 ' + o.deductValue + '）')
+          : (o.price + ' 分')) + '</div></div>' + st + '</div>';
     });
     html += '</div>';
   }
@@ -1327,13 +1429,57 @@ function onRedeem(rewardId){
   var r = rewardById(rewardId);
   if(!r) return;
   if(rDone(r)){ toast(rDoneMsg(r),'warn'); return; }
-  if(DB.account.mainBalance < r.price){ toast('积分还不够哦，继续加油','warn'); return; }
+  /* 传说层：卡片是「钥匙」，必须已经拥有 */
+  if(r.needCard && cardOwned(r.needCard) === 0){
+    var nc = cardById(r.needCard);
+    toast('需要先拥有传说卡「' + (nc ? nc.name : r.needCard) + '」','warn');
+    return;
+  }
+  var plan = cardDeductPlanFor(r);
+  var pay = Math.max(0, r.price - plan.value);
+  if(DB.account.mainBalance < pay){ toast('积分还不够哦，继续加油','warn'); return; }
   if(r.walletOption){ showCashConfirm(r); return; }
+  /* 有重复卡可抵 → 让孩子自己选「留着收藏」还是「马上用掉」 */
+  if(plan.value > 0){ showRedeemDeduct(r, plan); return; }
   var extra = r.note ? '\n\n【使用规则】' + r.note : '';
   confirmBox('确定用 ' + r.price + ' 分兑换「' + r.name + '」吗？\n兑换后余额：' +
     (DB.account.mainBalance - r.price) + ' 分' +
     (rHasLimit(r) ? '\n兑换额度的使用情况：' + rWindowLabel(r) + ' ' + rUsed(r) + '/' + rMax(r) : '') +
     extra, function(){ redeem(r); });
+}
+
+/* 用重复卡抵扣的确认框：两条路让孩子自己选（玩法 4 的关键就是「取舍」） */
+function showRedeemDeduct(r, plan){
+  var pay = r.price - plan.value;
+  var rows = Object.keys(plan.byId).map(function(id){
+    var c = cardById(id);
+    if(!c) return '';
+    return '<div class="row between xs mb4"><span class="mut">' + esc(c.name) +
+      '（' + CARD_RARITY[c.rarity].short + '）</span><span class="bd">×' + plan.byId[id] + ' 张</span></div>';
+  }).join('');
+  var body =
+    '<div class="sm bd mb10">' + esc(r.name) + '</div>' +
+    '<div class="card pad mb10" style="background:#FDF7EC">' +
+      '<div class="row between sm mb4"><span class="mut">原价</span><span class="bd">' + r.price + ' 分</span></div>' +
+      '<div class="row between sm mb4"><span class="mut">重复卡抵扣</span><span class="bd" style="color:#6E5AA8">- ' + plan.value + ' 分</span></div>' +
+      '<div class="row between bd" style="border-top:1px dashed #EFE1C7;padding-top:6px">' +
+        '<span>实付</span><span style="color:var(--orange)">' + pay + ' 分</span></div>' +
+    '</div>' +
+    '<div class="xs mut mb4">要动用的重复卡（每张仍给你留 1 张收藏）</div>' +
+    '<div class="card pad mb10" style="background:#FAF7FF">' + (rows || '<span class="xs mut">—</span>') +
+      '<div class="xs mut mt8" style="line-height:1.6">已按「最多抵 ' + cardDeductMaxPct() +
+      '%」封顶，超出的部分不计入。</div></div>' +
+    '<div class="xs mut mb10" style="line-height:1.6">你目前的积分：' + DB.account.mainBalance + ' 分' +
+      '（不用卡就要花 ' + r.price + ' 分）' +
+      (r.note ? '<br>📋 ' + esc(r.note) : '') + '</div>' +
+    '<div class="row g8"><button class="btn gh fill" id="rd-no">不用卡 · 扣 ' + r.price + ' 分</button>' +
+    '<button class="btn pri fill" id="rd-yes">用卡抵 · 扣 ' + pay + ' 分</button></div>' +
+    '<button class="btn gh wide mt8" id="rd-cancel">再想想</button>';
+  openModal('用重复卡抵扣？', body, function(w){
+    w.querySelector('#rd-cancel').onclick = closeModal;
+    w.querySelector('#rd-no').onclick = function(){ closeModal(); redeem(r, null, null, null); };
+    w.querySelector('#rd-yes').onclick = function(){ closeModal(); redeem(r, null, null, plan); };
+  });
 }
 function showRewardNote(r){
   var body = '<div class="sm bd mb10">' + esc(r.name) + '</div>' +
@@ -1377,7 +1523,14 @@ function viewKidAccount(){
     earn:['收入','#4E9E5B'], spend:['支出','#C0453F'], savings:['储蓄','#5B8DEF'],
     transfer:['转账','#8A7BE0'], bonus:['奖励','#D98E12'], settle:['结算','#B9B0A2']
   };
-  var html = '<div class="grid2 mb12">' +
+  var html = '<div class="card pad mb12"><div class="row g12" style="align-items:center">' +
+      '<div style="flex:0 0 auto" onclick="pickAvatar()">' + kidAvatarHtml(62) + '</div>' +
+      '<div class="fill"><div class="xs mut mb2">我的头像</div>' +
+        '<div class="bd">' + (cardAvatarImg().card ? esc(cardAvatarImg().card.name) : '默认星星人') + '</div>' +
+        '<div class="xs mut mt4">' + (cardAvatarImg().card ? '用图鉴里的卡当头像' : '抽到喜欢的卡就能换') + '</div></div>' +
+      '<button class="btn gh tiny" style="flex:0 0 auto" onclick="pickAvatar()">换头像</button>' +
+    '</div></div>' +
+    '<div class="grid2 mb12">' +
     '<div class="card pad"><div class="xs mut mb2">💰 主账户</div><div class="xxl xb">' + a.mainBalance + '</div>' +
       '<div class="xs mut">可用积分</div></div>' +
     '<div class="card pad"><div class="xs mut mb2">💳 零花钱</div><div class="xxl xb" style="color:var(--green)">' + (a.freeWallet || 0) + '</div>' +
@@ -1424,7 +1577,9 @@ function viewKidAccount(){
     '<div class="row between" style="align-items:center"><div>' +
       '<div class="xs mut mb2">🎴 星星人图鉴</div>' +
       '<div class="bd">已收集 ' + cardUniqueCount() + ' / ' + CARD_POOL.length + ' 张' +
-      ' · ✨ ' + cardsDB().dust + ' 星尘</div></div>' +
+      ' · ✨ ' + cardsDB().dust + ' 星尘</div>' +
+      '<div class="xs mut mt2">系列 ' + cardSeriesTotalDone() + ' / ' + CARD_SERIES.length + ' 组集齐' +
+        (cardTitles().length ? ' · 称号 ' + cardTitles().length + ' 个' : '') + '</div></div>' +
       '<span class="bd" style="color:var(--orange)">' + cardCompletionPct() + '%</span></div>' +
     '<div class="hbar mt8"><i style="width:' + cardCompletionPct() + '%;background:linear-gradient(90deg,#F5A524,#8A7BE0)"></i></div>' +
   '</button>';
@@ -1485,7 +1640,18 @@ function viewParentAudit(){
   var pendO = DB.orders.filter(function(o){ return o.status === 'pending'; });
   var toDeliver = DB.orders.filter(function(o){ return o.status === 'approved'; });
 
-  var html = '<div class="card pad mb12 row between">' +
+  var giftsNew = (typeof cardGiftsNew === 'function') ? cardGiftsNew() : [];
+  var html = '';
+  if(giftsNew.length){
+    html += '<button onclick="showGiftList()" class="card pad mb12" style="display:block;width:100%;text-align:left;' +
+      'border:1px solid #F6E2B8;background:#FFF6E6">' +
+      '<div class="row between" style="align-items:center"><div>' +
+        '<div class="bd sm">🎁 孩子送你的卡（' + giftsNew.length + ' 张）</div>' +
+        '<div class="xs mut mt4">' + esc(giftsNew[0].name) +
+        (giftsNew.length > 1 ? (' 等 ' + giftsNew.length + ' 张') : '') + ' · 点开看看，可以顺手回礼</div>' +
+      '</div><span class="bd" style="color:#B47C10">去看看 →</span></div></button>';
+  }
+  html += '<div class="card pad mb12 row between">' +
     '<div><div class="bd sm">待审打卡</div><div class="xs mut">建议每天 30 秒处理完</div></div>' +
     '<div class="xxl xb" style="color:' + (pendC.length ? 'var(--orange)' : '#DCD4C5') + '">' + pendC.length + '</div></div>';
 
@@ -1516,11 +1682,13 @@ function viewParentAudit(){
   if(pendO.length){
     html += '<div class="card pad mb12">';
     pendO.forEach(function(o){
-      var aft = DB.account.mainBalance - o.price;
+      var pay = (typeof o.payPrice === 'number') ? o.payPrice : o.price;
+      var aft = DB.account.mainBalance - pay;
+      var ded = (o.deductValue > 0) ? ' · 🎴 重复卡抵 ' + o.deductValue + ' 分（已扣卡）' : '';
       html += '<div class="list mb6">' +
         '<div class="row between mb4"><div class="xs bd">' + esc(o.rewardName) + '</div>' +
-        '<div class="xs mut">' + o.price + ' 分</div></div>' +
-        '<div class="xs mut mb8" style="font-size:10px">余额 ' + DB.account.mainBalance + ' → ' + aft +
+        '<div class="xs mut">' + (o.deductValue > 0 ? ('<s>' + o.price + '</s> ' + pay) : o.price) + ' 分</div></div>' +
+        '<div class="xs mut mb8" style="font-size:10px">余额 ' + DB.account.mainBalance + ' → ' + aft + ded +
           (o.cashAmount ? ' · 到账零花钱 ' + o.cashAmount + ' 元' : '') + '</div>' +
         '<div class="row g6"><button class="btn bl fill tiny" onclick="approveOrder(\'' + o.id + '\',true)">通过</button>' +
         '<button class="btn gh fill tiny" onclick="approveOrder(\'' + o.id + '\',false)">驳回</button></div></div>';
@@ -1534,7 +1702,9 @@ function viewParentAudit(){
     html += '<div class="bd sm mb8" style="padding:0 4px">待发放清单</div><div class="card pad">';
     toDeliver.forEach(function(o){
       html += '<div class="row g8 list mb4"><div class="fill"><div class="xs bd trunc">' + esc(o.rewardName) + '</div>' +
-        '<div class="xs mut" style="font-size:10px">' + o.date + ' 已通过</div></div>' +
+        '<div class="xs mut" style="font-size:10px">' + o.date + ' 已通过 · 实扣 ' +
+          (((typeof o.payPrice === 'number') && o.payPrice !== o.price) ? (o.payPrice + ' 分（卡抵 ' + o.deductValue + '）')
+                                                                       : (o.price + ' 分')) + '</div></div>' +
         '<button class="btn pri tiny" onclick="deliverOrder(\'' + o.id + '\')">已发放</button></div>';
     });
     html += '</div>';
@@ -3145,11 +3315,12 @@ function tryPin(){
    5. 抽卡是即时生效（不像商城要走审核），所以：流水留痕 + 家长可关。
    ============================================================ */
 
+/* value = 卡值（用来抵扣商城特权）；dust = 重复转星尘；exchange = 星尘兑换价 */
 var CARD_RARITY = {
-  N:  { short:'N',   name:'普通', color:'#B9B0A2', rate:5800, dust:3,   exchange:30,   stars:1 },
-  R:  { short:'R',   name:'稀有', color:'#5B8DEF', rate:3000, dust:8,   exchange:100,  stars:2 },
-  SR: { short:'SR',  name:'史诗', color:'#8A7BE0', rate:1000, dust:20,  exchange:300,  stars:3 },
-  SSR:{ short:'SSR', name:'传说', color:'#F5A524', rate:200,  dust:60,  exchange:1000, stars:4 }
+  N:  { short:'N',   name:'普通', color:'#B9B0A2', rate:5800, dust:3,   exchange:30,   value:5,   stars:1 },
+  R:  { short:'R',   name:'稀有', color:'#5B8DEF', rate:3000, dust:8,   exchange:100,  value:15,  stars:2 },
+  SR: { short:'SR',  name:'史诗', color:'#8A7BE0', rate:1000, dust:20,  exchange:300,  value:40,  stars:3 },
+  SSR:{ short:'SSR', name:'传说', color:'#F5A524', rate:200,  dust:60,  exchange:1000, value:100, stars:4 }
 };
 var CARD_RARITY_ORDER = ['N','R','SR','SSR'];
 var CARD_SSR_PITY = 60;   /* 累计多少抽必出 SSR */
@@ -3234,6 +3405,53 @@ CARD_POOL.forEach(function(c){
 var CARD_MAP = {};
 CARD_POOL.forEach(function(c){ CARD_MAP[c.id] = c; });
 
+/* ---------- 系列（玩点 3）：把 70 张分成 7 个小目标 ----------
+   集齐「70 张」太遥远，等于没有目标；分成 7 组、每组 10 张，
+   孩子每凑齐一组就有一笔星尘 + 一个称号，进度看得见。 */
+var CARD_SERIES = [
+  { id:'s1', name:'窗台上的夜',   icon:'🌙', from:1,  to:10, dust:40,  title:'守夜人' },
+  { id:'s2', name:'云上白日梦',   icon:'☁️', from:11, to:20, dust:40,  title:'云端旅人' },
+  { id:'s3', name:'毛绒软语',     icon:'🧸', from:21, to:30, dust:40,  title:'毛绒伙伴' },
+  { id:'s4', name:'发明家的帽檐', icon:'🎩', from:31, to:40, dust:50,  title:'小发明家' },
+  { id:'s5', name:'一起过的日子', icon:'🎂', from:41, to:50, dust:50,  title:'记日子的人' },
+  { id:'s6', name:'书页与灯',     icon:'📖', from:51, to:60, dust:60,  title:'夜读星' },
+  { id:'s7', name:'星海与花影',   icon:'🌸', from:61, to:70, dust:80,  title:'星海归人' }
+];
+CARD_SERIES.forEach(function(s){
+  s.members = CARD_POOL.filter(function(c){ return c.n >= s.from && c.n <= s.to; });
+});
+function cardSeriesById(id){
+  return CARD_SERIES.filter(function(s){ return s.id === id; })[0] || null;
+}
+function cardSeriesOf(card){
+  return CARD_SERIES.filter(function(s){ return card.n >= s.from && card.n <= s.to; })[0] || null;
+}
+function cardSeriesCount(s){
+  return s.members.filter(function(c){ return cardOwned(c.id) > 0; }).length;
+}
+function cardSeriesDone(s){ return cardSeriesCount(s) === s.members.length; }
+function cardSeriesGot(s){ return !!cardsDB().seriesGot[s.id]; }
+function cardSeriesTotalDone(){
+  return CARD_SERIES.filter(function(s){ return cardSeriesDone(s); }).length;
+}
+/* 集齐一组 → 自动发星尘（不必手动领，孩子不会忘） */
+function checkCardSeries(){
+  var got = [], c = cardsDB();
+  CARD_SERIES.forEach(function(s){
+    if(cardSeriesDone(s) && !c.seriesGot[s.id]){
+      c.seriesGot[s.id] = Date.now();
+      c.dust += s.dust;
+      ledger('bonus', 0, '集齐系列「' + s.name + '」→ 星尘 +' + s.dust + '，称号「' + s.title + '」', null);
+      got.push(s);
+    }
+  });
+  return got;
+}
+/* 集齐系列后拿到的称号（纯展示，不需要单独存） */
+function cardTitles(){
+  return CARD_SERIES.filter(function(s){ return cardSeriesGot(s); }).map(function(s){ return s.title; });
+}
+
 /* 星尘兑换价：按稀有度取，写在 CARD_RARITY 里 */
 function cardExchangeCost(card){ return CARD_RARITY[card.rarity].exchange; }
 function cardDustValue(card){ return CARD_RARITY[card.rarity].dust; }
@@ -3243,7 +3461,17 @@ function cardPoolOf(rarity){ return CARD_POOL.filter(function(c){ return c.rarit
 
 /* ---------- 数据层 ---------- */
 function cardBlank(){
-  return { own:{}, dust:0, draws:0, sinceSSR:0, freeDate:'', freeUsed:0, log:[] };
+  return {
+    own:{}, dust:0, draws:0, sinceSSR:0, freeDate:'', freeUsed:0, log:[],
+    /* 玩点 1：拿拥有的某张卡当头像（空 = 用默认星星人） */
+    avatar:'',
+    /* 玩点 2：今日之星 { date, id } —— 每天翻一张已拥有的卡 */
+    dailyStar:null,
+    /* 玩点 3：已集齐的系列 { seriesId: ts } */
+    seriesGot:{},
+    /* 玩点 6：送给爸妈的卡 [{ id, cardId, name, rarity, date, ts, status, reward }] */
+    gifts:[]
+  };
 }
 function cardsDB(){
   if(!DB.cards) DB.cards = cardBlank();
@@ -3255,6 +3483,9 @@ function cardsDB(){
   if(typeof c.freeDate !== 'string') c.freeDate = '';
   if(typeof c.freeUsed !== 'number') c.freeUsed = 0;
   if(!Array.isArray(c.log)) c.log = [];
+  if(typeof c.avatar !== 'string') c.avatar = '';
+  if(!c.seriesGot || typeof c.seriesGot !== 'object') c.seriesGot = {};
+  if(!Array.isArray(c.gifts)) c.gifts = [];
   return c;
 }
 function cardOwned(id){ return cardsDB().own[id] || 0; }
@@ -3284,6 +3515,211 @@ function cardCompletionPct(){
 function cardOwnerLabel(card){
   var n = cardOwned(card.id);
   return n > 0 ? ('×' + n) : '未获得';
+}
+
+/* ============================================================
+   玩点 1：拿卡当头像
+   ============================================================ */
+function cardAvatarId(){ return cardsDB().avatar || ''; }
+/* 头像图：有设定卡且确实拥有 → 用卡面；否则退回默认星星人 */
+function cardAvatarImg(){
+  var id = cardAvatarId();
+  var card = id ? cardById(id) : null;
+  if(card && cardOwned(card.id) > 0) return { src: CARD_IMG[card.id], card: card };
+  return { src: STAR_MASCOT_IMG, card: null };
+}
+function kidAvatarHtml(size){
+  var s = size || 36;
+  var a = cardAvatarImg();
+  return '<span class="mascot avatar' + (a.card ? ' avatar-card' : '') + '" ' +
+    'style="width:' + s + 'px;height:' + s + 'px"' +
+    (a.card ? ' title="' + esc(a.card.name) + '"' : '') + '>' +
+    '<img src="' + a.src + '" alt="星星人" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block">' +
+    '</span>';
+}
+function onSetAvatar(id){
+  if(id && cardOwned(id) === 0){ toast('这张还没获得，先抽到它','warn'); return; }
+  cardsDB().avatar = id || '';
+  saveDB(); closeModal(); render();
+  toast(id ? ('头像已换成「' + cardById(id).name + '」') : '头像已换回默认星星人', 'ok');
+}
+function pickAvatar(){
+  var owned = CARD_POOL.filter(function(c){ return cardOwned(c.id) > 0; });
+  if(!owned.length){
+    toast('还没有卡可以当头像，先去抽一张','warn'); return;
+  }
+  var body = '<div class="xs mut mb10" style="line-height:1.7">选一张已拥有的卡当头像 —— 会同时出现在页头、「我的」页和家长 PIN 页。</div>' +
+    '<div class="cgrid cgrid-3 avgrid">' +
+      '<div class="ccard' + (cardAvatarId() ? '' : ' on') + '" onclick="onSetAvatar(\'\')">' +
+        '<div class="cimg"><img src="' + STAR_MASCOT_IMG + '" alt="默认"></div>' +
+        '<div class="cname">默认星星人</div><div class="crar">未换头</div></div>' +
+      owned.map(function(c){
+        var r = CARD_RARITY[c.rarity];
+        return '<div class="ccard' + (cardAvatarId() === c.id ? ' on' : '') + '" style="--rc:' + r.color +
+               '" onclick="onSetAvatar(\'' + c.id + '\')">' +
+          '<div class="cimg"><img src="' + CARD_IMG[c.id] + '" alt="' + esc(c.name) + '" loading="lazy">' +
+          (cardAvatarId() === c.id ? '<span class="ctag" style="background:#4E9E5B">当前</span>' : '') + '</div>' +
+          '<div class="cname">' + esc(c.name) + '</div><div class="crar">' + r.name + '</div></div>';
+      }).join('') +
+    '</div>' +
+    '<button class="btn gh wide mt12" onclick="closeModal()">关闭</button>';
+  openModal('换头像', body);
+}
+
+/* ============================================================
+   玩点 2：今日之星（每天翻一张已拥有的卡，带它那句文案）
+   ============================================================ */
+function cardDailyStar(){
+  var two = cardsDB();
+  if(!CARD_POOL.some(function(c){ return cardOwned(c.id) > 0; })) return null;
+  if(two.dailyStar && two.dailyStar.date === todayStr() && two.dailyStar.id){
+    var hit = cardById(two.dailyStar.id);
+    if(hit && cardOwned(hit.id) > 0) return hit;
+  }
+  return null;   /* 由 ensureDailyStar() 落库，避免 render 里写库 */
+}
+/* 用日期做种子 —— 同一天任何时候打开都是同一张，且不依赖 Math.random */
+function cardDailyStarPick(){
+  var owned = CARD_POOL.filter(function(c){ return cardOwned(c.id) > 0; });
+  if(!owned.length) return null;
+  var t = todayStr(), seed = 7;
+  for(var i = 0; i < t.length; i++) seed = (seed * 31 + t.charCodeAt(i)) % 1000003;
+  return owned[(seed + owned.length) % owned.length];
+}
+function ensureDailyStar(){
+  var two = cardsDB();
+  if(!CARD_POOL.some(function(c){ return cardOwned(c.id) > 0; })) return;
+  if(two.dailyStar && two.dailyStar.date === todayStr() && two.dailyStar.id) return;
+  var pick = cardDailyStarPick();
+  if(!pick) return;
+  two.dailyStar = { date: todayStr(), id: pick.id };
+  saveDB();
+}
+
+/* ============================================================
+   玩点 4：卡值 & 用重复卡抵扣商城特权
+   ============================================================ */
+function cardValueOf(card){ return CARD_RARITY[card.rarity].value; }
+function cardDeductMaxPct(){
+  var n = parseInt(DB.config.cardDeductPct, 10);
+  return (isNaN(n) || n < 0) ? 0 : Math.min(100, n);
+}
+function cardDeductOn(){ return DB.config.cardDeductOn !== false; }
+/* 可以拿来抵的重复卡（同一张至少留 1 张收藏） */
+function cardSpareList(){
+  var own = cardsDB().own, list = [];
+  CARD_POOL.forEach(function(c){
+    var spare = (own[c.id] || 0) - 1;
+    for(var i = 0; i < spare; i++) list.push(c);
+  });
+  return list;
+}
+/* 计算方案（不改数据）：value = 实际抵扣分，byId = 卡 id → 消耗张数 */
+function cardDeductPlan(price){
+  var plan = { value:0, byId:{}, count:0, max:0, ok:false };
+  if(!cardDeductOn() || price <= 0) return plan;
+  var max = Math.floor(price * cardDeductMaxPct() / 100);
+  plan.max = max;
+  if(max <= 0) return plan;
+  var pool = cardSpareList().sort(function(a, b){ return cardValueOf(b) - cardValueOf(a); });
+  var used = [], value = 0, i;
+  for(i = 0; i < pool.length; i++){
+    if(value >= max) break;
+    used.push(pool[i]);
+    value += cardValueOf(pool[i]);
+  }
+  if(!used.length) return plan;
+  if(value > max) value = max;      /* 不超额抵扣 */
+  used.forEach(function(c){ plan.byId[c.id] = (plan.byId[c.id] || 0) + 1; });
+  plan.value = value;
+  plan.count = used.length;
+  plan.ok = value > 0;
+  return plan;
+}
+/* 卡值抵扣只对「权益类」商品生效；零花钱是真金白银，不能拿卡抵 */
+function cardDeductPlanFor(r){
+  if(!r || r.tier === '零花钱') return { value:0, byId:{}, count:0, max:0, ok:false };
+  return cardDeductPlan(r.price);
+}
+/* 真扣卡（提交兑换时调用） */
+function applyCardDeduct(byId){
+  var own = cardsDB().own, names = [];
+  Object.keys(byId || {}).forEach(function(id){
+    var n = byId[id];
+    own[id] = Math.max(0, (own[id] || 0) - n);
+    if(own[id] === 0) delete own[id];
+    var c = cardById(id);
+    if(c) names.push(c.name + '×' + n);
+  });
+  if(names.length) ledger('transfer', 0, '用重复卡抵扣兑换：' + names.join('、'), null);
+  return names;
+}
+/* 家长驳回 → 把卡退回去 */
+function refundCardDeduct(byId){
+  var own = cardsDB().own;
+  Object.keys(byId || {}).forEach(function(id){ own[id] = (own[id] || 0) + byId[id]; });
+}
+
+/* ============================================================
+   玩点 6：送一张重复卡给爸妈
+   ============================================================ */
+function onGiftCard(id){
+  var card = cardById(id);
+  if(!card) return;
+  var own = cardOwned(id);
+  if(own < 2){ toast('这张只有 1 张，留着收藏吧','warn'); return; }
+  confirmBox('把「' + card.name + '」送一份给爸妈？\n\n你还有 ' + (own - 1) +
+    ' 张，图鉴不会丢。爸妈收到会看到这张卡，可以给你回礼。', function(){
+    cardsDB().own[id] = own - 1;
+    if(cardsDB().own[id] === 0) delete cardsDB().own[id];
+    cardsDB().gifts.unshift({
+      id: uid(), cardId: id, name: card.name, rarity: card.rarity,
+      date: todayStr(), ts: Date.now(), status: 'new', reward: 0
+    });
+    ledger('transfer', 0, '送了一张「' + card.name + '」给爸妈', null);
+    checkBadges(); saveDB(); closeModal(); render();
+    toast('已送出 🎁 爸妈那边会收到提示','ok');
+  });
+}
+function cardGiftsNew(){
+  return cardsDB().gifts.filter(function(g){ return g.status === 'new'; });
+}
+function onGiftTake(gid){
+  var g = cardsDB().gifts.filter(function(x){ return x.id === gid; })[0];
+  if(!g) return;
+  g.status = 'seen';
+  saveDB(); render();
+  toast('已收下「' + g.name + '」','ok');
+}
+function onGiftReward(gid, pts){
+  var g = cardsDB().gifts.filter(function(x){ return x.id === gid; })[0];
+  if(!g) return;
+  confirmBox('给孩子回礼 ' + pts + ' 分？\n（因为 TA 送你「' + g.name + '」）', function(){
+    g.status = 'seen';
+    g.reward = (g.reward || 0) + pts;
+    creditPoints(pts, '收到你送的「' + g.name + '」回礼', null, { withSavings:false });
+    saveDB(); render();
+    toast('已回礼 ' + pts + ' 分','ok');
+  });
+}
+function showGiftList(){
+  var gifts = cardsDB().gifts;
+  var body = gifts.length ? '<div class="xs mut mb10" style="line-height:1.7">孩子主动送你的卡。可以「收下」，也可以顺手回礼几分。</div>' +
+      gifts.slice(0, 60).map(function(g){
+        var r = CARD_RARITY[g.rarity] || CARD_RARITY.N;
+        return '<div class="row g10" style="padding:9px 0;border-bottom:1px solid #FDF6EA;align-items:center">' +
+          '<img src="' + CARD_IMG[g.cardId] + '" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex:0 0 auto" alt="">' +
+          '<div class="fill"><div class="xs bd trunc">' + esc(g.name) + '</div>' +
+            '<div class="xs mut" style="font-size:10px">' + g.date + ' · ' + r.name +
+            (g.reward ? ' · 已回礼 ' + g.reward + ' 分' : '') + '</div></div>' +
+          (g.status === 'new'
+            ? '<button class="btn gh tiny" onclick="onGiftTake(\'' + g.id + '\')">收下</button>' +
+              '<button class="btn pri tiny" onclick="onGiftReward(\'' + g.id + '\',10)">回礼 10</button>'
+            : '<span class="xs mut" style="flex:0 0 auto">已收下</span>') +
+          '</div>';
+      }).join('') + '</div>'
+    : '<div class="tc mut sm" style="padding:26px">孩子还没送过卡。TA 抽到重复卡时可以送你们一张。</div>';
+  openModal('🎁 孩子送我的卡', body);
 }
 
 /* ---------- 抽卡核心 ---------- */
@@ -3353,8 +3789,9 @@ function cardRunDraw(count, useFree){
     ledger('spend', 0, '抽卡 · 今日免费一抽', null);
   }
   checkBadges();
+  var seriesGot = checkCardSeries();
   return { picks: picks, flags: flags, news: news.length, dups: dups.length, dust: dustGain,
-           price: price, free: !!useFree };
+           price: price, free: !!useFree, series: seriesGot };
 }
 
 function cardCanDraw(count){
@@ -3397,10 +3834,16 @@ function onCardExchange(id){
     c.log.unshift({ ts:Date.now(), date:todayStr(), id:card.id, name:card.name,
                     rarity:card.rarity, dup:true, src:'exchange' });
     checkBadges();
+    var seriesGot = checkCardSeries();
     saveDB(); closeModal();
     if(DB.ledger) ledger('transfer', 0, '星尘兑换「' + card.name + '」（-' + cost + ' 星尘）', null);
     saveDB(); render();
-    toast('兑换成功 · ' + card.name, 'ok');
+    if(seriesGot.length){
+      toast('集齐系列「' + seriesGot.map(function(s){ return s.name; }).join('、') +
+        '」✨+' + seriesGot.reduce(function(a, s){ return a + s.dust; }, 0) + ' 星尘', 'ok');
+    } else {
+      toast('兑换成功 · ' + card.name, 'ok');
+    }
   });
 }
 
@@ -3467,6 +3910,11 @@ function showCardStage(res){
         (res.dust > 0 ? ' · 重复卡转星尘 +' + res.dust : '') +
         ' · 星尘 ' + cardsDB().dust +
       '</div>' +
+      (res.series && res.series.length
+        ? '<div class="cstage-series">🎉 集齐系列「' + res.series.map(function(s){
+            return s.name + '」<span class="xs">（+' + s.dust + ' 星尘 · 称号「' + s.title + '」）</span>';
+          }).join('、') + '</div>'
+        : '') +
       '<div class="row g8" style="justify-content:center;margin-top:14px">' +
         (one ? '' : '<button class="btn gh" onclick="stageAgain(10)">再抽十连</button>') +
         '<button class="btn pri" onclick="closeCardStage()">收下</button>' +
@@ -3497,6 +3945,8 @@ function showCardDetail(id){
   var n = cardOwned(card.id);
   var cost = cardExchangeCost(card);
   var canEx = cardsDB().dust >= cost;
+  var ser = cardSeriesOf(card);
+  var avatarOn = cardAvatarId() === card.id;
   var body =
     '<div class="row g12 mb12" style="align-items:flex-start">' +
       '<div style="width:132px;flex:0 0 auto">' + cardFace(card, { locked: n === 0 }) + '</div>' +
@@ -3512,21 +3962,32 @@ function showCardDetail(id){
     '</div>' +
     '<div class="card pad" style="background:#FDF7EC">' +
       '<div class="row between xs mb4"><span class="mut">抽到重复时转星尘</span><span class="bd">+' + cardDustValue(card) + '</span></div>' +
-      '<div class="row between xs"><span class="mut">用星尘直接兑换</span><span class="bd">' + cost + ' 星尘</span></div>' +
+      '<div class="row between xs mb4"><span class="mut">用星尘直接兑换</span><span class="bd">' + cost + ' 星尘</span></div>' +
+      '<div class="row between xs mb4"><span class="mut">卡值（可抵商城特权）</span><span class="bd">' + cardValueOf(card) + ' 分</span></div>' +
+      '<div class="row between xs"><span class="mut">所属系列</span><span class="bd">' +
+        (ser ? (ser.icon + ' ' + ser.name) : '—') + '</span></div>' +
     '</div>' +
+    (n > 1
+      ? '<button class="btn ' + (avatarOn ? 'ok' : 'bl') + ' wide mt10" onclick="onGiftCard(\'' + card.id + '\')">' +
+        '🎁 送一张给爸妈（你还多 ' + (n - 1) + ' 张）</button>'
+      : '') +
     '<div class="row g8 mt12">' +
-      '<button class="btn gh fill" onclick="closeModal()">关闭</button>' +
+      '<button class="btn ' + (avatarOn ? 'ok' : 'gh') + ' fill" onclick="' +
+        (avatarOn ? 'closeModal()' : ('onSetAvatar(\'' + card.id + '\')')) + '">' +
+        (avatarOn ? '✓ 当前头像' : '👤 设为头像') + '</button>' +
       '<button class="btn ' + (canEx ? 'pri' : 'gh') + ' fill"' + (canEx ? '' : ' disabled') +
         ' onclick="onCardExchange(\'' + card.id + '\')">' +
         (canEx ? ('用 ' + cost + ' 星尘兑换') : ('星尘还差 ' + (cost - cardsDB().dust))) + '</button>' +
-    '</div>';
+    '</div>' +
+    '<button class="btn gh wide mt8" onclick="closeModal()">关闭</button>';
   openModal('卡片详情', body);
 }
 
-/* ---------- 孩子端 · 抽卡 / 图鉴 / 记录 ---------- */
+/* ---------- 孩子端 · 抽卡 / 图鉴 / 系列 / 记录 ---------- */
 function viewKidCards(){
-  if(UI.cardTab === 'dex')  return viewKidDex();
-  if(UI.cardTab === 'log')  return viewKidCardLog();
+  if(UI.cardTab === 'dex')    return viewKidDex();
+  if(UI.cardTab === 'series') return viewKidSeries();
+  if(UI.cardTab === 'log')    return viewKidCardLog();
   var c = cardsDB();
   var freeLeft = cardFreeLeft(), freeMax = cardFreeMax();
   var pity = cardPityLeft();
@@ -3534,7 +3995,25 @@ function viewKidCards(){
   var price1 = freeLeft > 0 ? '免费' : (cardCost1() + ' 分');
   var off = !cardOn();
 
-  var html = '<div class="card pad mb12">' +
+  ensureDailyStar();
+  var star = cardDailyStar();
+  var starHtml = star
+    ? '<div class="card pad mb12 dstar">' +
+        '<div class="row between mb8" style="align-items:center">' +
+          '<div class="bd sm">✨ 今日之星</div>' +
+          '<span class="xs mut">每天翻一张 · 明天会换</span></div>' +
+        '<div class="row g12" style="align-items:center">' +
+          '<div style="width:84px;flex:0 0 auto" onclick="showCardDetail(\'' + star.id + '\')">' +
+            cardFace(star, { noCount: true }) + '</div>' +
+          '<div class="fill"><div class="bd">' + esc(star.name) + '</div>' +
+            '<div class="xs mut mt6" style="line-height:1.7">' + esc(star.flavor) + '</div>' +
+            '<div class="xs mt8" style="color:#B47C10">' + CARD_RARITY[star.rarity].short + ' · ' +
+              CARD_RARITY[star.rarity].name + ' · 卡值 ' + cardValueOf(star) + '</div></div>' +
+        '</div>' +
+      '</div>'
+    : '';
+
+  var html = starHtml + '<div class="card pad mb12">' +
     '<div class="row between" style="align-items:flex-start">' +
       '<div><div class="xs mut mb2">可用积分</div>' +
         '<div class="xxl xb" style="color:var(--orange)">' + DB.account.mainBalance + '<span class="xs mut"> 分</span></div></div>' +
@@ -3587,10 +4066,44 @@ function viewKidCards(){
 }
 
 function cardTabs(cur){
-  var items = [['draw','🎴 抽卡'],['dex','📖 图鉴'],['log','🧾 记录']];
+  var items = [['draw','🎴 抽卡'],['dex','📖 图鉴'],['series','🎯 系列'],['log','🧾 记录']];
   return '<div class="tabs mt12">' + items.map(function(it){
     return '<button class="' + (cur === it[0] ? 'on' : '') + '" onclick="UI.cardTab=\'' + it[0] + '\';render()">' + it[1] + '</button>';
   }).join('') + '</div>';
+}
+
+/* ---------- 孩子端 · 系列收集（玩点 3） ---------- */
+function viewKidSeries(){
+  var done = cardSeriesTotalDone();
+  var html = '<div class="card pad mb12"><div class="row between mb8">' +
+      '<div class="bd">🎯 系列收集</div>' +
+      '<span class="xs mut">' + done + ' / ' + CARD_SERIES.length + ' 组集齐</span></div>' +
+    '<div class="xs mut" style="line-height:1.75">每 10 张一个系列，凑齐一组就送星尘和一个称号 —— ' +
+      '比「集齐 70 张」容易够得着。</div></div>';
+
+  CARD_SERIES.forEach(function(s){
+    var cnt = cardSeriesCount(s), isDone = cardSeriesDone(s), got = cardSeriesGot(s);
+    var pct = Math.round(cnt / s.members.length * 100);
+    html += '<div class="card pad mb10 sercard' + (isDone ? ' done' : '') + '">' +
+      '<div class="row between mb8" style="align-items:center">' +
+        '<div class="row g8" style="align-items:center;min-width:0">' +
+          '<span class="sericon">' + s.icon + '</span>' +
+          '<div style="min-width:0"><div class="bd sm trunc">' + esc(s.name) + '</div>' +
+          '<div class="xs mut">' + (isDone ? ('已集齐 · 称号「' + s.title + '」') : (cnt + ' / ' + s.members.length + ' 张')) + '</div></div>' +
+        '</div>' +
+        (isDone ? '<span class="chip" style="background:#EAF7EC;color:#4E9E5B;flex:0 0 auto">✓ 已集齐</span>'
+                : '<span class="xs xb" style="color:#8A7BE0;flex:0 0 auto">+' + s.dust + ' ✨</span>') +
+      '</div>' +
+      '<div class="hbar mb8"><i style="width:' + pct + '%;background:linear-gradient(90deg,#F5A524,#8A7BE0)"></i></div>' +
+      '<div class="cgrid cgrid-mini">' + s.members.map(function(card){
+        return cardFace(card, { locked: cardOwned(card.id) === 0, noCount: true,
+                                tap: 'showCardDetail(\'' + card.id + '\')' });
+      }).join('') + '</div>' +
+      (isDone && got ? '' : '') +
+    '</div>';
+  });
+  html += cardTabs('series');
+  return html;
 }
 
 /* ---------- 价目与出率（价格全部读 config，家长端改价后这里同步变） ---------- */
@@ -3635,6 +4148,11 @@ function cardRateBlock(){
     var R = CARD_RARITY[r];
     return ['兑换 1 张 ' + R.short, R.exchange + ' ✨'];
   });
+  var valRows = CARD_RARITY_ORDER.map(function(r){
+    var R = CARD_RARITY[r];
+    return ['<span class="chip" style="background:' + R.color + ';color:#fff">' + R.short + '</span>' +
+            '<span class="mut"> 卡值</span>', R.value + ' 分'];
+  });
 
   function tbl(rows){
     return rows.map(function(x){
@@ -3642,13 +4160,24 @@ function cardRateBlock(){
     }).join('');
   }
 
+  var dedOn = cardDeductOn() && cardDeductMaxPct() > 0;
+  var dedLine = dedOn
+    ? '· 重复卡还能当钱用：兑换商城特权时最多抵 ' + cardDeductMaxPct() + '%（只花重复的，图鉴不丢）'
+    : '· （家长已关闭「用卡抵扣」）';
+
   return '<div class="crate">' + head +
     '<div class="crate-t">积分价目</div>' + tbl(priceRows) +
     '<div class="crate-t">各档出率（共 ' + CARD_POOL.length + ' 张：' + poolLine + '）</div>' + tbl(rateRows) +
+    '<div class="crate-t">卡值（换商城特权时可抵分）</div>' + tbl(valRows) + tbl(dedOn ? [
+      ['抵扣上限', '商品价的 ' + cardDeductMaxPct() + '%'],
+      ['用哪些卡', '只动重复的（每张至少留 1 张）']
+    ] : [['当前状态', '家长已关闭']]) +
     '<div class="crate-t">星尘（✨）规则</div>' + tbl(dustRows) + tbl(exRows) +
     '<div class="xs mut" style="line-height:1.7;margin-top:9px">' +
       '· 十连必出 1 张 SR 以上<br>' +
       '· 累计 ' + CARD_SSR_PITY + ' 抽未出传说，下一抽必出传说<br>' +
+      '· 每 10 张一个系列，集齐一组送星尘 + 称号<br>' +
+      dedLine + '<br>' +
       '· 抽卡直接扣积分并记入账本，家长端可随时关闭或调价' +
     '</div>' +
   '</div>';
@@ -3663,7 +4192,13 @@ function viewKidDex(){
 
   var html = '<div class="card pad mb12"><div class="row between mb8"><div class="bd">📖 我的图鉴</div>' +
     '<span class="xs mut">' + cardUniqueCount() + ' / ' + CARD_POOL.length + ' 张 · ✨' + cardsDB().dust + '</span></div>' +
-    '<div class="hbar"><i style="width:' + cardCompletionPct() + '%;background:linear-gradient(90deg,#F5A524,#8A7BE0)"></i></div></div>';
+    '<div class="hbar"><i style="width:' + cardCompletionPct() + '%;background:linear-gradient(90deg,#F5A524,#8A7BE0)"></i></div>' +
+    '<div class="row between mt8"><span class="xs mut">系列 ' + cardSeriesTotalDone() + ' / ' + CARD_SERIES.length + ' 组集齐</span>' +
+    '<button class="btn gh tiny" onclick="UI.cardTab=\'series\';render()">看系列 →</button></div>' +
+    (cardTitles().length
+      ? '<div class="xs mt8" style="color:#B47C10">🏅 已获得称号：' + cardTitles().map(function(t){ return esc(t); }).join('、') + '</div>'
+      : '') +
+  '</div>';
 
   var chips = [['all','全部'],['own','已获得'],['miss','未获得']].concat(
     CARD_RARITY_ORDER.map(function(r){ return [r, r + ' ' + CARD_RARITY[r].name]; }));
@@ -3724,14 +4259,28 @@ function viewParentCards(){
       '<div><div class="xs mut">图鉴进度</div><div class="bd">' + cardUniqueCount() + '/' + CARD_POOL.length + '</div></div>' +
       '<div><div class="xs mut">抽卡累计消耗</div><div class="bd" style="color:#C0453F">' + spent + ' 分</div></div>' +
     '</div>' +
+    '<div class="row between mb8"><div class="bd sm">用重复卡抵扣特权</div>' +
+      '<button class="btn ' + (cardDeductOn() ? 'ok' : 'gh') + ' tiny" onclick="toggleCardDeduct()">' +
+      (cardDeductOn() ? '已开启' : '已关闭') + '</button></div>' +
+    '<div class="grid2 mb10" style="align-items:end">' +
+      '<div><label class="fl">最多抵扣（商品价的 %）</label>' +
+        '<input type="number" value="' + cardDeductMaxPct() + '" onchange="setCfg(\'cardDeductPct\',this.value,this.type)"></div>' +
+      '<div class="xs mut" style="line-height:1.6;padding-bottom:6px">只消耗重复的卡，每张至少给孩子留 1 张收藏。</div>' +
+    '</div>' +
     '<div class="grid2">' +
       '<button class="btn gh" onclick="showCardLogParent()">🧾 抽卡明细</button>' +
-      '<button class="btn gh" onclick="UI.view=\'kid\';UI.kidTab=\'cards\';UI.cardTab=\'dex\';render()">📖 看图鉴</button>' +
+      '<button class="btn gh" onclick="showGiftList()">🎁 孩子送我的卡' + (cardGiftsNew().length ? '（' + cardGiftsNew().length + '）' : '') + '</button>' +
     '</div>' +
+    '<button class="btn gh wide mt8" onclick="UI.view=\'kid\';UI.kidTab=\'cards\';UI.cardTab=\'dex\';render()">📖 看图鉴</button>' +
     '<div class="xs mut mt10" style="line-height:1.7">抽卡是即时生效的（不走审核），每笔都会记进收支明细。' +
       '想控制节奏就把每日免费次数调小、或直接把功能关掉。</div>' +
   '</div>';
   return html;
+}
+function toggleCardDeduct(){
+  DB.config.cardDeductOn = !cardDeductOn();
+  saveDB(); render();
+  toast(DB.config.cardDeductOn ? '可以用重复卡抵扣特权了' : '已关闭用卡抵扣', DB.config.cardDeductOn ? 'ok' : 'warn');
 }
 function toggleCardOn(){
   DB.config.cardOn = !cardOn();
@@ -3838,7 +4387,7 @@ function render(){
     : '<button class="btn gh tiny" style="white-space:nowrap;flex:0 0 auto" onclick="switchRole()">' +
       btnLabel + '</button>';
   var head = '<div class="row between mb12" style="padding:2px 4px;align-items:flex-start;gap:10px">' +
-      '<div class="row g8" style="align-items:center;min-width:0">' + starMascot(isKid ? 40 : 34) +
+      '<div class="row g8" style="align-items:center;min-width:0">' + (isKid ? kidAvatarHtml(40) : starMascot(34)) +
       '<div style="min-width:0"><div class="bd lg">' +
         (isKid ? esc(DB.config.kidName || '宝贝') + '的成长工具箱' : '家长管理台') +
       '</div><div class="xs mut mt4">' + todayStr() +

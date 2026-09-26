@@ -436,7 +436,9 @@ var UI = {
   /* 登录前点了打卡 → 先存着，登录成功后自动接着完成 */
   pendingCheckin: null,
   /* 本次打开是否已经为「没开云同步」拦过一次打卡（只拦第一次，之后轻提示） */
-  syncAsked: false
+  syncAsked: false,
+  /* 管理员入口（/admin/）的子页签：invites 邀请码 / families 家庭账号 */
+  adminTab: 'invites'
 };
 var TIER_PICK = {};
 
@@ -2458,7 +2460,11 @@ var CS = {
   api: null, auth: null, db: null, user: null,
   rowId: null, rev: 0, state: 'idle',
   pushing: false, timer: null, lastAt: 0, msg: '',
-  otpId: '', otpExist: false, dev: '', busy: false, email: '', resetStart: null
+  otpId: '', otpExist: false, dev: '', busy: false, email: '', resetStart: null,
+  /* 邀请码（2026-09-26）：access = 这个账号的家庭档案行（有 = 已被邀请码激活） */
+  access: null, inviteErr: '', inviteBusy: false,
+  /* 管理员页 */
+  adm: null, admLoading: false, admInvites: null, admFamilies: null, admState: null, admMsg: ''
 };
 
 function cloudEnvOK(){
@@ -2535,6 +2541,22 @@ function cloudFillProfile(){
   }).catch(function(){});
 }
 
+/* ---------- 邀请码 / 家庭档案（2026-09-26） ----------
+   一个邮箱 = 一个家庭账号。注册完还不算「能用」：必须拿邀请码换一条家庭档案
+   （family_access），否则云端一行数据都读不到、也写不进（服务端 RLS 强制）。
+   读自己的档案行靠 RLS（只返回自己那行），拿不到 = 还没被邀请码激活。 */
+function cloudLoadAccess(){
+  if(!CS.db || !CS.user) return Promise.resolve(null);
+  return CS.db.from('family_access').select('owner_id, family_name, email, is_admin').limit(1)
+    .then(function(res){
+      if(res.error) throw res.error;
+      var rows = res.data || [];
+      CS.access = rows[0] || null;
+      CS.adm = CS.access ? !!CS.access.is_admin : null;
+      return CS.access;
+    });
+}
+
 function cloudBoot(){
   if(CS.state !== 'idle') return;
   if(!cloudEnvOK()){ CS.state = 'off'; return; }
@@ -2551,27 +2573,38 @@ function cloudBoot(){
       CS.email = sessionEmail(s);
       CS.state = 'on';
       cloudFillProfile();
-      return cloudPull().then(function(){ cloudTick(); });
+      /* 已登录也要先确认这个账号被邀请码激活过；没激活就不往下同步 */
+      return cloudLoadAccess().then(function(acc){
+        if(acc) return cloudPull().then(function(){ cloudTick(); });
+      });
     }
     CS.state = 'login';
   }).catch(function(e){
     CS.msg = (e && e.message) || '连接云端失败';
     CS.state = 'err';
   }).then(function(){
-    /* 登录门还开着 → 由云端状态决定是放行还是留在登录页 */
+    /* 登录门还开着 → 由「云端状态 + 有没有被激活」决定放行 / 留登录页 / 去邀请码页 */
     if(UI.gate){
-      var autoOn = (CS.state === 'on');
-      if(autoOn) UI.gate = false;                     /* 已登录：自动跳过 */
-      else UI.gate = 'login';                         /* 未登录 / 异常：留在登录页 */
-      render();
-      if(autoOn){
+      if(CS.state === 'on' && CS.access){
+        UI.gate = false;                               /* 已登录且已激活：自动跳过 */
+        render();
         /* 直接进应用时说明原因：不是"没让我登录"，是这台设备已经记住你了 */
-        toast('已自动登录 ' + (CS.email || '本家庭账号') + '，云端同步已开启', 'ok');
+        toast('已自动登录 ' + (CS.email || '本家庭账号') +
+              (CS.access.family_name ? '（' + CS.access.family_name + '）' : '') + '，云端同步已开启', 'ok');
         runPendingCheckin();
+        return;
       }
+      if(CS.state === 'on'){
+        UI.gate = 'invite';                            /* 登录了，但还没被邀请码激活 */
+        CS.inviteErr = '';
+        render();
+        return;
+      }
+      UI.gate = 'login';                               /* 未登录 / 异常：留在登录页 */
+      render();
       return;
     }
-    if(UI.view === 'parent') render();
+    if(UI.view === 'parent' || UI.view === 'admin') render();
   });
 }
 
@@ -2761,7 +2794,9 @@ function viewGate(){
   /* envoff 那一屏要说明「同步不了」，副标题就别再承诺同步，免得前后打架 */
   var sub = (UI.gate === 'envoff')
     ? '这个应用靠云端同步，才能两台设备共用一份数据'
-    : '登录一次，孩子打卡就自动同步到爸爸妈妈的手机<br>两台设备共用一份数据，不用再手动搬';
+    : (UI.gate === 'invite')
+      ? '还差一步：用管理员给的邀请码把这个账号开通<br>开通后数据才会存到云端，两台设备才能共用'
+      : '登录一次，孩子打卡就自动同步到爸爸妈妈的手机<br>两台设备共用一份数据，不用再手动搬';
   var head = '<div class="mb16 tc">' + starMascot(56) +
     '<div class="xl xb mt10">家庭成长工具箱</div>' +
     '<div class="xs mut mt6" style="line-height:1.75">' + sub + '</div></div>';
@@ -2783,6 +2818,31 @@ function viewGate(){
       '</div>' +
       '<button class="btn pri wide" style="padding:13px" onclick="gateSkip()">继续本机使用</button>' +
       '<div class="xs mut tc mt12" style="line-height:1.75">功能都在，只是打卡不会同步到另一台设备，<br>两台设备各记各的。</div>' +
+      '</div>';
+  }
+
+  /* 登录上了，但这个账号还没有「家庭档案」= 没被邀请码激活过 */
+  if(UI.gate === 'invite'){
+    return '<div class="wrap">' + head +
+      '<div class="card padl">' +
+        '<div class="bd mb4">还差一个邀请码</div>' +
+        '<div class="xs mut mb12" style="line-height:1.85">' +
+          '这个账号已经注册好了，但还没有被邀请。' +
+          '把管理员给你的邀请码填进来，验证通过就能用了。<br>' +
+          '当前账号：<b>' + esc(CS.email || '已登录') + '</b></div>' +
+        '<label class="fl">邀请码</label>' +
+        '<input id="iv-code" type="text" placeholder="例如 K7M2-9QFX" autocomplete="off" autocapitalize="characters" ' +
+          'style="text-align:center;font-size:20px;letter-spacing:3px;text-transform:uppercase" ' +
+          'onkeydown="if(event.key===\'Enter\')doRedeem()">' +
+        (CS.inviteErr
+          ? '<div class="xs mt8" style="color:#C0453F;line-height:1.7">' + esc(CS.inviteErr) + '</div>'
+          : '') +
+        '<button class="btn pri wide mt12" style="padding:12px" onclick="doRedeem()">' +
+          (CS.inviteBusy ? '正在验证…' : '验证并开通') + '</button>' +
+        '<div class="xs mut mt10" style="line-height:1.75">一个邀请码只能开通一个家庭账号，' +
+          '大小写和中间的横线都不影响。<br>没有邀请码？找管理员要一个。</div>' +
+      '</div>' +
+      '<div class="tc mt12"><button class="btn gh tiny" onclick="doSignOut()">换一个账号登录 →</button></div>' +
       '</div>';
   }
 
@@ -2865,6 +2925,46 @@ function gateRetry(){
   UI.gate = 'checking';
   render();
   cloudBoot();
+}
+/* 用邀请码开通：换一条家庭档案（family_access）。
+   校验与消耗在服务端函数里做（SECURITY DEFINER，单条 UPDATE 原子消耗），
+   前端只能提交，改不了规则。 */
+function doRedeem(){
+  if(CS.inviteBusy) return;
+  var el = $('#iv-code');
+  var code = el ? String(el.value || '').trim() : '';
+  if(!code){ CS.inviteErr = '先把邀请码填上'; render(); return; }
+  if(!CS.db || typeof CS.db.rpc !== 'function'){
+    CS.inviteErr = '云端没连上，等网络好了再试，或找管理员';
+    render();
+    return;
+  }
+  CS.inviteBusy = true; CS.inviteErr = '';
+  render();
+  CS.db.rpc('redeem_invite', { p_code: code, p_email: CS.email || '' })
+    .then(function(res){
+      if(res && res.error) throw res.error;
+      var r = res ? res.data : null;
+      if(typeof r === 'string'){ try { r = JSON.parse(r); } catch(e){} }
+      if(Object.prototype.toString.call(r) === '[object Array]') r = r[0];
+      if(!r || !r.ok) throw new Error((r && r.error) || '邀请码没通过，检查一下字母和数字');
+      CS.access = { family_name: r.name || '', is_admin: !!r.admin };
+      CS.adm = !!r.admin;
+      UI.gate = false;
+      CS.inviteBusy = false;
+      toast('已开通：' + (r.name || '家庭账号') + '，云端同步已开启', 'ok');
+      render();
+      cloudPull().then(function(){ cloudTick(); runPendingCheckin(); });
+    })
+    .catch(function(e){
+      var m = (e && (e.message || e.msg)) || '';
+      /* 服务端返回的中文直接用；英文/技术错误换成能看懂的话 */
+      CS.inviteErr = /[\u4e00-\u9fa5]/.test(m) ? m : '邀请码没通过，检查一下字母和数字有没有看错';
+      CS.inviteBusy = false;
+      render();
+      var box = $('#iv-code');
+      if(box) box.value = '';
+    });
 }
 /* 登录前点的那个打卡，登录成功后接着完成 */
 function runPendingCheckin(){
@@ -3082,16 +3182,33 @@ function afterLogin(sess){
   }).then(function(){
     CS.state = 'on';
     CS.rev = 0; CS.rowId = null;
-    UI.gate = false;                     /* 登录成功 → 收起登录页，进应用 */
-    return cloudPull();
-  }).then(function(){
-    cloudTick();
-    cloudFillProfile();
-    closeModal();
-    if(CS.state === 'err') toast('已登录，但首次同步失败：' + (CS.msg || '未知原因'), 'err');
-    else toast('云端同步已开启', 'ok');
+    return cloudLoadAccess();
+  }).then(function(acc){
+    if(!acc){
+      /* 登录成功，但还没被邀请码激活 → 停在邀请码页，先不碰云端数据 */
+      UI.gate = 'invite';
+      CS.inviteErr = '';
+      CS.inviteBusy = false;
+      closeModal();
+      render();
+      return;
+    }
+    UI.gate = false;                     /* 已激活 → 收起登录页，进应用 */
+    return cloudPull().then(function(){
+      cloudTick();
+      cloudFillProfile();
+      closeModal();
+      CS.inviteBusy = false;
+      if(CS.state === 'err') toast('已登录，但首次同步失败：' + (CS.msg || '未知原因'), 'err');
+      else toast('云端同步已开启' + (acc.family_name ? '（' + acc.family_name + '）' : ''), 'ok');
+      render();
+      runPendingCheckin();               /* 登录前点的那个打卡，接着完成 */
+    });
+  }).catch(function(e){
+    CS.inviteBusy = false;
+    UI.gate = 'login';
     render();
-    runPendingCheckin();                 /* 登录前点的那个打卡，接着完成 */
+    toast(authErr(e), 'err');
   });
 }
 function doSignOut(){
@@ -4369,6 +4486,27 @@ function render(){
     return;
   }
 
+  /* 管理员入口：不走孩子端 / 家长端那一套 */
+  if(APP_ROLE === 'admin'){
+    if(CS.adm === false){
+      app.innerHTML = '<div class="wrap"><div class="card padl tc">' + starMascot(52) +
+        '<div class="bd mt6 mb4">这个账号不是管理员</div>' +
+        '<div class="xs mut" style="line-height:1.85">当前登录：' + esc(CS.email || '—') +
+        '<br>请用管理员的邮箱登录，才能看邀请码和各家庭数据。</div>' +
+        '<button class="btn gh wide mt12" onclick="doSignOut()">换一个账号登录</button>' +
+        '</div></div>';
+      return;
+    }
+    /* 第一次进来自动拉一次；之后靠「刷新」按钮 */
+    if(CS.adm === true && !CS.admLoading && !CS.admInvites && CS.state === 'on'){
+      CS.admLoading = true;
+      admLoad();
+    }
+    app.innerHTML = viewAdmin();
+    window.scrollTo(0, 0);
+    return;
+  }
+
   /* 家长端未解锁 → PIN 门 */
   if(UI.view === 'parent' && !UI.parentUnlocked){
     app.innerHTML = '<div class="wrap">' + viewPinGate() +
@@ -4412,12 +4550,372 @@ function render(){
 }
 
 /* ============================================================
+   系统管理员入口（APP_ROLE='admin' → /admin/）
+   · 权限在服务端：RLS 按 family_access.is_admin 判定。
+     不是管理员的账号进来只会看到「没有权限」，读不到任何邀请码和别人的数据。
+   · 邀请码管理（生成 / 复制 / 停用 / 删除）+ 各家庭数据总览
+   ============================================================ */
+var ADM_TABS = [
+  { k: 'invites',  i: '🎟️', t: '邀请码' },
+  { k: 'families', i: '🏠', t: '家庭账号' }
+];
+
+function admDash(code){
+  code = String(code || '');
+  return code.length === 8 ? code.slice(0, 4) + '-' + code.slice(4) : code;
+}
+function admTime(s){
+  if(!s) return '—';
+  var d = new Date(s);
+  if(isNaN(d.getTime())) return esc(String(s)).slice(0, 16);
+  return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()) +
+         ' ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+}
+/* 8 位随机码：字母表剔掉 0/O/1/I/L 这些容易看错的 */
+function admNewCode(){
+  var A = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ', s = '', i;
+  var buf = new Uint32Array(8);
+  if(window.crypto && window.crypto.getRandomValues){
+    window.crypto.getRandomValues(buf);
+  } else {
+    for(i = 0; i < 8; i++) buf[i] = Math.floor(Math.random() * 4294967296);
+  }
+  for(i = 0; i < 8; i++) s += A[buf[i] % A.length];
+  return s;
+}
+function admStateRow(ownerId){
+  var list = CS.admState || [];
+  for(var i = 0; i < list.length; i++){ if(list[i].owner_id === ownerId) return list[i]; }
+  return null;
+}
+function admStat(ownerId){
+  var row = admStateRow(ownerId);
+  if(!row) return null;
+  var p = row.payload || {}, acc = p.account || {}, cards = p.cards || {}, own = cards.own || {};
+  var nCards = 0;
+  for(var k in own){ if(own[k] > 0) nCards++; }
+  return {
+    rev: row.rev || 0, at: row.updated_at || '',
+    main: acc.mainBalance || 0, wallet: acc.freeWallet || 0,
+    earned: acc.totalEarned || 0, streak: acc.streakDays || 0,
+    ck: (p.checkins || []).length,
+    ord: (p.orders || []).length,
+    wish: (p.wishes || []).length,
+    taskN: (p.tasks || []).length,
+    cards: nCards, draws: cards.draws || 0, dust: cards.dust || 0
+  };
+}
+
+function admLoad(opts){
+  opts = opts || {};
+  if(!CS.db || !CS.user) return Promise.resolve();
+  CS.admMsg = opts.keep ? CS.admMsg : '正在读取…';
+  if(!opts.quiet) render();
+  var q = function(t, cols){
+    return CS.db.from(t).select(cols).limit(500);
+  };
+  return Promise.all([
+    q('family_invites', 'code, note, max_uses, uses, disabled, created_at, last_used_at'),
+    q('family_access',  'owner_id, code, email, family_name, is_admin, activated_at'),
+    q('family_state',   'owner_id, rev, payload, updated_at')
+  ]).then(function(rs){
+    var bad = rs.filter(function(r){ return r && r.error; })[0];
+    if(bad) throw bad.error;
+    CS.admInvites  = (rs[0].data || []).slice();
+    CS.admFamilies = (rs[1].data || []).slice();
+    CS.admState    = (rs[2].data || []).slice();
+    CS.admMsg = '';
+  }).catch(function(e){
+    CS.admMsg = '读取失败：' + ((e && (e.message || e.kind)) || '未知原因');
+    CS.admInvites = CS.admInvites || [];
+    CS.admFamilies = CS.admFamilies || [];
+    CS.admState = CS.admState || [];
+  }).then(function(){ render(); });
+}
+
+function viewAdmin(){
+  var head =
+    '<div class="row between mb12">' +
+      '<div>' +
+        '<div class="xl xb">系统管理</div>' +
+        '<div class="xs mut mt2">' + esc(CS.email || '—') + ' · 管理员</div>' +
+      '</div>' +
+      '<div class="row g8">' +
+        '<button class="btn gh tiny" onclick="admLoad()">🔄 刷新</button>' +
+        '<button class="btn gh tiny" onclick="doSignOut()">退出</button>' +
+      '</div>' +
+    '</div>';
+  var msg = CS.admMsg
+    ? '<div class="card pad mb12" style="background:#FFF6E6;border:1px solid #F6E2B8">' +
+        '<div class="xs">' + esc(CS.admMsg) + '</div></div>'
+    : '';
+  var body = (UI.adminTab === 'families') ? admFamiliesHtml() : admInvitesHtml();
+  return '<div class="wrap">' + head + msg + body + '</div>' + navBar(ADM_TABS, UI.adminTab, 'adminTab');
+}
+
+function admInvitesHtml(){
+  var list = (CS.admInvites || []).slice().sort(function(a, b){
+    return String(b.created_at || '').localeCompare(String(a.created_at || ''));
+  });
+  var usable = list.filter(function(x){ return !x.disabled && (x.uses || 0) < (x.max_uses || 1); }).length;
+  var h = '<div class="card pad mb12">' +
+    '<div class="row between">' +
+      '<div>' +
+        '<div class="bd">一共 ' + list.length + ' 个邀请码</div>' +
+        '<div class="xs mut mt2">还能用 ' + usable + ' 个 · 一个码开通一个家庭账号</div>' +
+      '</div>' +
+      '<button class="btn pri" onclick="admGenCode()">+ 生成</button>' +
+    '</div></div>';
+  if(!list.length){
+    h += '<div class="card pad tc mut sm">还没有邀请码，点上面的「生成」建一个</div>';
+  }
+  list.forEach(function(it){
+    var used = it.uses || 0, max = it.max_uses || 1;
+    var dead = it.disabled || used >= max;
+    h += '<div class="card pad mb8"' + (dead ? ' style="opacity:.6"' : '') + '>' +
+      '<div class="row between">' +
+        '<div style="font-size:20px;letter-spacing:2px;font-weight:700">' + esc(admDash(it.code)) + '</div>' +
+        '<button class="btn gh tiny" onclick="admCopy(\'' + esc(it.code) + '\')">复制</button>' +
+      '</div>' +
+      '<div class="xs mut mt4">' + esc(it.note || '（没写备注）') + ' · ' +
+        (it.disabled ? '已停用' : (used >= max ? '已用完' : '还没用')) +
+        ' · ' + used + '/' + max + ' 次' +
+        (it.last_used_at ? ' · 最近使用 ' + admTime(it.last_used_at) : '') + '</div>' +
+      '<div class="row g8 mt8">' +
+        '<button class="btn gh tiny" onclick="admToggleCode(\'' + esc(it.code) + '\',' +
+          (it.disabled ? 'false' : 'true') + ')">' + (it.disabled ? '重新启用' : '停用') + '</button>' +
+        '<button class="btn gh tiny" onclick="admDelCode(\'' + esc(it.code) + '\')">删除</button>' +
+      '</div>' +
+    '</div>';
+  });
+  return h;
+}
+
+function admFamiliesHtml(){
+  var fams = (CS.admFamilies || []).slice().sort(function(a, b){
+    return String(a.activated_at || '').localeCompare(String(b.activated_at || ''));
+  });
+  var h = '<div class="card pad mb12">' +
+    '<div class="bd">一共 ' + fams.length + ' 个账号</div>' +
+    '<div class="xs mut mt2">点「看数据」能看到这家的积分、打卡和最近记录</div>' +
+  '</div>';
+  if(!fams.length){
+    h += '<div class="card pad tc mut sm">还没有家庭账号</div>';
+  }
+  fams.forEach(function(f){
+    var st = admStat(f.owner_id);
+    var tag = f.is_admin
+      ? '<span class="xs" style="color:#8C6B2F;background:#FFF3DC;border-radius:6px;padding:1px 6px">管理员</span>'
+      : (st ? '' : '<span class="xs" style="color:#C0453F;background:#FDEDEC;border-radius:6px;padding:1px 6px">还没建过数据</span>');
+    h += '<div class="card pad mb8">' +
+      '<div class="row between">' +
+        '<div class="bd">' + esc(f.family_name || '未命名家庭') + ' ' + tag + '</div>' +
+        (st ? '<button class="btn gh tiny" onclick="admDetail(\'' + esc(f.owner_id) + '\')">看数据</button>' : '') +
+      '</div>' +
+      '<div class="xs mut mt4">' + esc(f.email || '（没记录邮箱）') +
+        ' · 开通 ' + admTime(f.activated_at) + '</div>' +
+      '<div class="xs mut mt2">邀请码 ' + esc(admDash(f.code)) + '</div>' +
+      (st
+        ? '<div class="xs mt8" style="line-height:1.9">' +
+            '余额 <b>' + st.main + '</b> 分' + (st.wallet ? ' ＋ 零花钱 <b>' + st.wallet + '</b> 元' : '') +
+            ' · 累计挣 <b>' + st.earned + '</b> 分<br>' +
+            '打卡 <b>' + st.ck + '</b> · 兑换 <b>' + st.ord + '</b> · 卡牌 <b>' + st.cards + '</b> 种' +
+            ' · 抽了 <b>' + st.draws + '</b> 次<br>' +
+            '连续 <b>' + st.streak + '</b> 天 · 最后活动 ' + admTime(st.at) + '</div>'
+        : '<div class="xs mt8" style="color:#C0453F">开通后还没写入过任何数据</div>') +
+      '<div class="row g8 mt8">' +
+        '<button class="btn gh tiny" onclick="admRename(\'' + esc(f.owner_id) + '\')">改家庭名</button>' +
+        (f.is_admin ? '' : '<button class="btn gh tiny" onclick="admMakeAdmin(\'' + esc(f.owner_id) + '\')">设为管理员</button>') +
+      '</div>' +
+    '</div>';
+  });
+  return h;
+}
+
+function admCopy(code){
+  var txt = admDash(code);
+  var done = function(){ toast('已复制 ' + txt, 'ok'); };
+  var fail = function(){
+    openModal('邀请码', '<div class="card pad tc" style="font-size:22px;letter-spacing:2px">' + esc(txt) + '</div>' +
+      '<div class="xs mut tc mt8">长按上面这行也能复制</div>');
+  };
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(done).catch(fail);
+      return;
+    }
+  }catch(e){}
+  fail();
+}
+
+function admGenCode(){
+  openModal('生成邀请码',
+    '<label class="fl">给谁的（会变成这家的显示名）</label>' +
+    '<input id="g-note" placeholder="例如：王工家">' +
+    '<label class="fl mt8">可以用几次（1 = 只给一个家庭）</label>' +
+    '<input id="g-uses" type="tel" inputmode="numeric" value="1">' +
+    '<div class="xs mut mt8" style="line-height:1.75">备注只是个标签，方便你一眼看出哪行是谁家。</div>' +
+    '<button class="btn pri wide mt12" id="g-go">生成</button>'
+  );
+  var b = $('#g-go');
+  if(b) b.onclick = admGenCodeDo;
+}
+function admGenCodeDo(){
+  var noteEl = $('#g-note'), useEl = $('#g-uses');
+  var note = noteEl ? String(noteEl.value || '').trim() : '';
+  var n = parseInt(useEl ? useEl.value : '1', 10);
+  if(!(n >= 1)) n = 1;
+  if(n > 99) n = 99;
+  var code = admNewCode();
+  CS.admMsg = '正在生成…';
+  render();
+  CS.db.from('family_invites').insert({ code: code, note: note, max_uses: n })
+    .then(function(res){
+      if(res && res.error) throw res.error;
+      CS.admMsg = '';
+      toast('已生成 ' + admDash(code), 'ok');
+      return admLoad({ quiet: true });
+    })
+    .catch(function(e){
+      CS.admMsg = '生成失败：' + ((e && e.message) || '未知原因');
+      render();
+    });
+}
+function admToggleCode(code, disable){
+  CS.admMsg = '正在保存…';
+  render();
+  CS.db.from('family_invites').update({ disabled: !!disable }).eq('code', code)
+    .then(function(res){
+      if(res && res.error) throw res.error;
+      CS.admMsg = '';
+      toast(disable ? '已停用 ' + admDash(code) : '已重新启用 ' + admDash(code), 'ok');
+      return admLoad({ quiet: true });
+    })
+    .catch(function(e){ CS.admMsg = '改不动：' + ((e && e.message) || '未知原因'); render(); });
+}
+function admDelCode(code){
+  openModal('删除邀请码',
+    '<div class="card pad mb12" style="background:#FDEDEC;border:1px solid #F3D2CF">' +
+      '<div class="sm bd">确定删掉 ' + esc(admDash(code)) + ' 吗？</div>' +
+      '<div class="xs mut mt4">只是把这个码删了。已经用它开通的账号不受影响。</div></div>' +
+    '<button class="btn pri wide" id="d-go" style="background:#C0453F">删除</button>' +
+    '<button class="btn gh wide mt8" onclick="closeModal()">算了</button>'
+  );
+  var b = $('#d-go');
+  if(b) b.onclick = function(){
+    closeModal();
+    CS.admMsg = '正在删除…';
+    render();
+    CS.db.from('family_invites').delete().eq('code', code)
+      .then(function(res){
+        if(res && res.error) throw res.error;
+        CS.admMsg = '';
+        toast('已删除', 'ok');
+        return admLoad({ quiet: true });
+      })
+      .catch(function(e){ CS.admMsg = '删不掉：' + ((e && e.message) || '未知原因'); render(); });
+  };
+}
+function admRename(ownerId){
+  var cur = (CS.admFamilies || []).filter(function(f){ return f.owner_id === ownerId; })[0] || {};
+  openModal('改家庭名',
+    '<label class="fl">家庭名（只是给你看的标签）</label>' +
+    '<input id="r-nm" value="' + esc(cur.family_name || '') + '" placeholder="例如：王工家">' +
+    '<div class="xs mut mt8" style="line-height:1.75">改的是管理列表里的显示名，' +
+      '不影响这家人自己手机上的任何显示。</div>' +
+    '<button class="btn pri wide mt12" id="r-go">保存</button>'
+  );
+  var b = $('#r-go');
+  if(b) b.onclick = function(){
+    var el = $('#r-nm');
+    var v = el ? String(el.value || '').trim() : '';
+    closeModal();
+    CS.admMsg = '正在保存…';
+    render();
+    CS.db.from('family_access').update({ family_name: v }).eq('owner_id', ownerId)
+      .then(function(res){
+        if(res && res.error) throw res.error;
+        CS.admMsg = '';
+        toast('已改名', 'ok');
+        return admLoad({ quiet: true });
+      })
+      .catch(function(e){ CS.admMsg = '改不动：' + ((e && e.message) || '未知原因'); render(); });
+  };
+}
+function admMakeAdmin(ownerId){
+  var cur = (CS.admFamilies || []).filter(function(f){ return f.owner_id === ownerId; })[0] || {};
+  openModal('设为管理员',
+    '<div class="card pad mb12" style="background:#FFF6E6;border:1px solid #F6E2B8">' +
+      '<div class="sm bd">把「' + esc(cur.family_name || '这家') + '」也设成管理员？</div>' +
+      '<div class="xs mut mt4" style="line-height:1.8">设成管理员后，这个账号登录 /admin/ 就能看到' +
+        '所有邀请码和所有家庭的数据。<b>别随便给。</b></div></div>' +
+    '<button class="btn pri wide" id="m-go">确认设为管理员</button>' +
+    '<button class="btn gh wide mt8" onclick="closeModal()">算了</button>'
+  );
+  var b = $('#m-go');
+  if(b) b.onclick = function(){
+    closeModal();
+    CS.admMsg = '正在保存…';
+    render();
+    CS.db.from('family_access').update({ is_admin: true }).eq('owner_id', ownerId)
+      .then(function(res){
+        if(res && res.error) throw res.error;
+        CS.admMsg = '';
+        toast('已设为管理员', 'ok');
+        return admLoad({ quiet: true });
+      })
+      .catch(function(e){ CS.admMsg = '改不动：' + ((e && e.message) || '未知原因'); render(); });
+  };
+}
+
+/* 某家的明细（最近打卡 / 最近兑换 / 积分构成） */
+function admDetail(ownerId){
+  var f = (CS.admFamilies || []).filter(function(x){ return x.owner_id === ownerId; })[0] || {};
+  var row = admStateRow(ownerId);
+  if(!row){ toast('这家还没有数据', 'warn'); return; }
+  var p = row.payload || {}, acc = p.account || {};
+  var cks = (p.checkins || []).slice().sort(function(a, b){ return (b.ts || 0) - (a.ts || 0); }).slice(0, 10);
+  var ords = (p.orders || []).slice().sort(function(a, b){ return (b.ts || 0) - (a.ts || 0); }).slice(0, 5);
+  function ts(t){ return t ? admTime(new Date(t).toISOString()) : '—'; }
+  var html =
+    '<div class="card pad mb12">' +
+      '<div class="bd mb6">' + esc(f.family_name || '未命名家庭') + '</div>' +
+      '<div class="xs mut" style="line-height:1.9">' +
+        esc(f.email || '—') + '<br>' +
+        '余额 ' + (acc.mainBalance || 0) + ' 分 · 零花钱 ' + (acc.freeWallet || 0) + ' 元<br>' +
+        '累计挣 ' + (acc.totalEarned || 0) + ' 分 · 累计花 ' + (acc.totalSpent || 0) + ' 分<br>' +
+        '连续打卡 ' + (acc.streakDays || 0) + ' 天 · 数据版本 ' + (row.rev || 0) + '<br>' +
+        '最后活动 ' + admTime(row.updated_at) + '</div>' +
+    '</div>' +
+    '<div class="card pad mb12"><div class="sm bd mb6">最近打卡（' + (p.checkins || []).length + ' 条）</div>' +
+      (cks.length
+        ? cks.map(function(c){
+            return '<div class="row between xs mb4"><span>' + esc(c.taskName || c.task || '打卡') +
+              '</span><span class="mut">' + ts(c.ts) + (c.status === 'pending' ? ' · 待审' : '') + '</span></div>';
+          }).join('')
+        : '<div class="xs mut">还没有打卡记录</div>') +
+    '</div>' +
+    '<div class="card pad"><div class="sm bd mb6">最近兑换（' + (p.orders || []).length + ' 条）</div>' +
+      (ords.length
+        ? ords.map(function(o){
+            var money = (o.payPrice !== undefined && o.payPrice !== null) ? o.payPrice : o.price;
+            return '<div class="row between xs mb4"><span>' + esc(o.name || '兑换') +
+              '</span><span class="mut">' + (money || 0) + ' 分 · ' +
+              (o.status === 'pending' ? '待审' : o.status === 'rejected' ? '已驳回' : '已通过') + '</span></div>';
+          }).join('')
+        : '<div class="xs mut">还没有兑换记录</div>') +
+    '</div>';
+  openModal('家庭数据', html);
+}
+
+/* ============================================================
    启动
    ============================================================ */
 function boot(){
   loadDB();
-  /* 按入口角色决定起始视图：家长端入口直接进 PIN 门，孩子端入口直接进打卡页 */
-  if(APP_ROLE === 'parent'){ UI.view = 'parent'; UI.parentUnlocked = false; }
+  /* 按入口角色决定起始视图：家长端入口直接进 PIN 门，孩子端入口直接进打卡页，admin 入口进管理台 */
+  if(APP_ROLE === 'admin'){ UI.view = 'admin'; }
+  else if(APP_ROLE === 'parent'){ UI.view = 'parent'; UI.parentUnlocked = false; }
   else { UI.view = 'kid'; UI.kidTab = UI.kidTab || 'today'; }
   updateStreak();
   checkBadges();

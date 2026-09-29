@@ -499,7 +499,10 @@ function freshDB(){
       totalEarned:0, totalSpent:0, streakDays:0, integrityScore:0
     },
     flags: { moon:false, bead:false, interest:false },
-    meta: { createdAt: Date.now(), interestMonth: monthStr(0) }
+    /* removedRewards = 被家长主动删掉的默认商品 id 墓碑（id → 1）。
+       用途：migrateDB 每次加载会把缺失的 REWARDS_DEFAULT 补回来（为了新版本自动补默认商品），
+       若无墓碑，家长删掉的商品每次刷新都会「复活」。见 delReward()。 */
+    meta: { createdAt: Date.now(), interestMonth: monthStr(0), removedRewards: {} }
   };
 }
 
@@ -510,6 +513,8 @@ function freshDB(){
 function migrateDB(){
   if(!DB) return;
   if(!DB.meta) DB.meta = {};
+  /* 被删掉的默认商品墓碑（id → 1）：缺失/类型不对时补空对象，幂等 */
+  if(!DB.meta.removedRewards || typeof DB.meta.removedRewards !== 'object' || Array.isArray(DB.meta.removedRewards)) DB.meta.removedRewards = {};
   if(!Array.isArray(DB.ledger)) DB.ledger = [];
   if(!Array.isArray(DB.orders)) DB.orders = [];
   /* 备注错别字：把旧数据里的「单身周」改成「单周」（只修错字，不改规则） */
@@ -529,10 +534,11 @@ function migrateDB(){
   /* 补齐后加的默认商品（2026-09-26 加的「传说」层 4 个专属特权）。
      只补缺失的 id，不动家长改过的任何商品 */
   if(Array.isArray(DB.rewards)){
-    var haveR = {};
+    var haveR = {}, goneR = DB.meta.removedRewards;
     DB.rewards.forEach(function(r){ if(r && r.id) haveR[r.id] = true; });
     REWARDS_DEFAULT.forEach(function(r){
-      if(!haveR[r.id]) DB.rewards.push(JSON.parse(JSON.stringify(r)));
+      if(haveR[r.id] || goneR[r.id]) return;   /* 已存在、或被家长删过 → 不补 */
+      DB.rewards.push(JSON.parse(JSON.stringify(r)));
     });
   }
   /* 抽卡数据结构补齐（云端拉取会整体替换 DB，所以这里也必须兜一遍） */
@@ -2307,6 +2313,10 @@ function delReward(id){
   var r = rewardById(id);
   confirmBox('删除商品「' + (r ? r.name : '') + '」？', function(){
     DB.rewards = DB.rewards.filter(function(x){ return x.id !== id; });
+    /* 立墓碑：默认商品被删后不能被 migrateDB 的「补齐默认商品」复活（2026-09-29） */
+    DB.meta = DB.meta || {};
+    DB.meta.removedRewards = DB.meta.removedRewards || {};
+    DB.meta.removedRewards[id] = 1;
     saveDB(); render();
   });
 }
@@ -2668,7 +2678,10 @@ function cloudBoot(){
 /* ---- 拉取：云端 → 本地 ---- */
 function cloudPull(){
   if(CS.state === 'off' || !CS.db || !CS.user) return Promise.resolve();
-  return CS.db.from(CLOUD.table).select('id, rev, payload, updated_at').limit(1)
+  /* ⚠️ 必须显式按 owner_id 过滤：管理员账号有「可读全部家庭」策略（family_state_admin_read），
+     不加过滤时 .limit(1) 无排序会随机返回别的家庭的行（曾让管理员拉到"家庭6"的空数据：
+     卡/头像全无、PIN 变成别人的）。加 owner_id 后只取自己那行。 */
+  return CS.db.from(CLOUD.table).select('id, rev, payload, updated_at').eq('owner_id', CS.user.id).limit(1)
     .then(function(res){
       if(res.error) throw res.error;
       var rows = res.data || [];
@@ -2678,6 +2691,12 @@ function cloudPull(){
       }
       var row = rows[0];
       CS.rowId = row.id;
+      /* 兼容：云端 SDK（@dev 浮动版本）曾把 JSONB 列以「字符串」形式返回，
+         此时 remote.account 为 undefined，会导致下面的 adopt/merge 整段被跳过、
+         卡/头像静默不加载（但云端不会被改写）。这里统一解析成对象。 */
+      if(typeof row.payload === 'string'){
+        try { row.payload = JSON.parse(row.payload); } catch(e){ row.payload = {}; }
+      }
       if(row.rev === CS.rev) return;
       var first  = (CS.rev === 0);
       var remote = row.payload;
@@ -2699,11 +2718,13 @@ function cloudPull(){
     });
 }
 function cloudAdopt(remote){
+  if(typeof remote === 'string'){ try { remote = JSON.parse(remote); } catch(e){ remote = {}; } }
   DB = remote;
   if(!DB.meta) DB.meta = {};
   migrateDB();
 }
 function cloudMerge(remote, quiet){
+  if(typeof remote === 'string'){ try { remote = JSON.parse(remote); } catch(e){ remote = null; } }
   if(!remote || !remote.account || !remote.config) return;
   var REC = ['checkins', 'orders', 'ledger', 'wishes', 'pledges'];
   var merged = JSON.parse(JSON.stringify(remote));
@@ -2782,7 +2803,7 @@ function cloudPush(silent){
 var _resyncDepth = 0;
 function cloudResync(){
   CS.rev = 0;
-  return CS.db.from(CLOUD.table).select('id, rev, payload').limit(1).then(function(r){
+  return CS.db.from(CLOUD.table).select('id, rev, payload').eq('owner_id', CS.user.id).limit(1).then(function(r){
     var row = (r.data || [])[0];
     if(row){
       CS.rowId = row.id;
@@ -3157,12 +3178,18 @@ function doSignIn(){
   if(!em || !pw){ toast('请填写邮箱和密码', 'warn'); return; }
   if(CS.busy) return;
   CS.busy = true; toast('正在登录…', 'info');
-  CS.auth.signInWithPassword({ email: em, password: pw }).then(function(r){
-    if(r.error) throw r.error;
-    return afterLogin(pickSession(r));
-  }).catch(function(e){
-    toast(authErr(e), 'err');
-  }).then(function(){ CS.busy = false; });
+  var login = function(){
+    CS.auth.signInWithPassword({ email: em, password: pw }).then(function(r){
+      if(r.error) throw r.error;
+      return afterLogin(pickSession(r));
+    }).catch(function(e){
+      toast(authErr(e), 'err');
+    }).then(function(){ CS.busy = false; });
+  };
+  /* 已登录状态下用另一账号登录时，必须先退出旧会话，否则 SDK 不会切换账号，
+     页面会一直停在上一账号（如测试空壳「家庭 6」）的数据上。 */
+  if(CS.user){ CS.auth.signOut().then(login).catch(login); }
+  else login();
 }
 function doSendOtp(word){
   var em = _v('#ac-em');
@@ -3184,18 +3211,22 @@ function doVerifyOtp(){
   if(!cd){ toast('请填验证码', 'warn'); return; }
   if(CS.busy) return;
   CS.busy = true;
-  CS.auth.verifyOtp({
-    verificationId: CS.otpId,
-    token: cd,
-    email: em,
-    isExistingUser: CS.otpExist,
-    password: CS.otpExist ? undefined : (pw || undefined)
-  }).then(function(r){
-    if(r.error) throw r.error;
-    return afterLogin(pickSession(r));
-  }).catch(function(e){
-    toast(authErr(e), 'err');
-  }).then(function(){ CS.busy = false; });
+  var login = function(){
+    CS.auth.verifyOtp({
+      verificationId: CS.otpId,
+      token: cd,
+      email: em,
+      isExistingUser: CS.otpExist,
+      password: CS.otpExist ? undefined : (pw || undefined)
+    }).then(function(r){
+      if(r.error) throw r.error;
+      return afterLogin(pickSession(r));
+    }).catch(function(e){
+      toast(authErr(e), 'err');
+    }).then(function(){ CS.busy = false; });
+  };
+  if(CS.user){ CS.auth.signOut().then(login).catch(login); }
+  else login();
 }
 function doResetSend(){
   var em = _v('#ac-em');

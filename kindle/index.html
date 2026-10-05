@@ -90,7 +90,8 @@ code{background:#F3EEE2;border:1px solid var(--line);border-radius:6px;padding:1
   </div>
 
   <div class="ok">
-    <b>配套技能（skill）</b>：这次的全部操作已封装成一份 WorkBuddy 技能——包含完整命令、国内网络下的离线化改造、故障排查思路，以及踩过的七个坑。<a href="skill.html">点这里看全文</a>（B站分享用的就是这一份，同一页面可下载 <code>.md</code> 源文件）。
+    <b>配套技能（skill）</b>：这次的全部操作已封装成一份 WorkBuddy 技能——包含完整命令、国内网络下的离线化改造、故障排查思路，以及踩过的七个坑。<a href="skill.html">点这里看全文和安装方法</a>（页面右上角可直接下载技能包 <code>.zip</code> 或 <code>.md</code>）。<br>
+    <span style="display:inline-block;margin-top:6px">装进自己的 WorkBuddy 只要一句话：发「<code>帮我安装这个技能：https://qianjindelvdai.github.io/kindle-revive/kindle-jailbreak.zip</code>」，它会自己下载解压到位。</span>
   </div>
 
   <div class="card">
@@ -188,7 +189,9 @@ AI 帮我把吃灰 Kindle 救活了</pre></div>
 
 这次全程用 WorkBuddy（AI 协作工具）远程完成。正常情况 1 小时左右能搞定，我这次多花了好几个小时——KOReader 装好后在图书库里一直不显示，最后定位到系统图书数据库里一条记录被改坏了。这个坑我先替大家踩了。
 
-整份操作流程已经封装成一个 WorkBuddy 技能（skill）：完整命令、国内网络下的离线化改造、故障排查思路、以及七个坑的现象与解法都在里面。需要的话在简介链接自取，照着走基本能一键复现。
+整份操作流程已经封装成一个 WorkBuddy 技能（skill）：完整命令、国内网络下的离线化改造、故障排查思路、以及七个坑的现象与解法都在里面。
+
+技能包和全文都在简介链接里，装法就一句话：在 WorkBuddy 里发「帮我安装这个技能：https://qianjindelvdai.github.io/kindle-revive/kindle-jailbreak.zip」，它会自己下载解压到位；之后直接说需求（例如"帮我把这台 Kindle 越狱并装微信读书"），它就照着这份手册干活。
 
 本期完整记录 4 步安装流程，以及过程中踩的坑和排查思路：
 
@@ -397,6 +400,13 @@ KOReader 是运行在 Kindle 上的开源阅读软件，支持 PDF / EPUB / DJVU
 · 收尾清理清单，以及那个绝对不能删的 0 字节文件
 
 如果你也有一台吃灰的旧 Kindle：照着这份技能走，正常 1 小时左右就能搞定，不用像我一样多花一个晚上排坑。
+
+【怎么装进自己的 WorkBuddy】
+技能页（https://qianjindelvdai.github.io/kindle-revive/skill.html）右上角可以直接下载技能包，页面顶部也写了三种装法。最省事的一种：在 WorkBuddy 里新建对话，发一句话——
+
+帮我安装这个技能：https://qianjindelvdai.github.io/kindle-revive/kindle-jailbreak.zip
+
+它会自己下载、解压，把技能放进技能目录（Windows 在 C:\Users\你的用户名\.workbuddy\skills\，macOS 在 ~/.workbuddy/skills/），放好后新开一个对话即可生效。不想装也行：技能页右上角点「复制全文」，整段粘给 WorkBuddy，说"按这个帮我操作"，一样能干活。
 
 
 九、最后

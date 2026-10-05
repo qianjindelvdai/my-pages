@@ -93,6 +93,13 @@ code{background:#F3EEE2;border:1px solid var(--line);border-radius:6px;padding:1
     <b>配套技能（skill）</b>：这次的全部操作已封装成一份 WorkBuddy 技能——包含完整命令、国内网络下的离线化改造、故障排查思路，以及踩过的七个坑。<a href="skill.html">点这里看全文</a>（B站分享用的就是这一份，同一页面可下载 <code>.md</code> 源文件）。
   </div>
 
+  <div class="card">
+    <div class="lb" style="font-weight:900;font-size:15px;color:#8A6413;margin-bottom:12px">竖屏短视频成片<span class="small" style="font-weight:600;margin-left:8px">1080×1920 · 1 分 21 秒 · 19 个分镜</span></div>
+    <video controls playsinline preload="metadata" style="width:100%;border-radius:12px;background:#000;display:block"
+           src="video/kindle-revive-4steps.mp4"></video>
+    <p class="small" style="margin-top:10px">已把 10 张过程实拍排进分镜（01 开场、07 做第 2 步的关键画面）。<a href="video/kindle-revive-4steps.mp4" download>点此下载 MP4</a>；手机上也可长按视频另存。分镜源文件在 <code>video/slides/</code>，改文案后重跑 <code>build_slides.py</code> + <code>make_video.py</code> 即可。</p>
+  </div>
+
   <!-- ===================== 小红书 ===================== -->
   <h2>一、小红书版
     <span class="sub">图文笔记 · 标题 + 正文 + 标签</span>
@@ -186,11 +193,17 @@ AI 帮我把吃灰 Kindle 救活了</pre></div>
 本期完整记录 4 步安装流程，以及过程中踩的坑和排查思路：
 
 00:00 为什么 Kindle 装不了微信读书
-00:40 第一步：越狱
-02:00 第二步：安装 KOReader
-03:20 第三步：安装微信读书插件并登录
-04:40 第四步：收尾清理
-05:30 踩坑与调试实录
+00:12 唯一可行路线：越狱 → KOReader → 插件
+00:19 第 1 步：越狱
+00:31 第 2 步：装 KOReader（这一步卡了我几个小时）
+00:39 第 3 步：装插件并扫码登录
+00:51 第 4 步：收尾清理
+00:59 踩坑与调试实录
+01:05 为什么这次是用 WorkBuddy 完成的
+01:10 已封装成 WorkBuddy 技能包
+01:14 结尾
+
+本期时长 1 分 21 秒，全程实拍。
 
 ⚠️ 折腾有风险，操作前请备份。适用固件 ≤ 5.19.x。
 环境参考：KOReader 2026.7.2 + weread.koplugin v1.5.3</pre></div>

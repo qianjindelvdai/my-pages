@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>老 Kindle 救活教程 · 小红书 / B站 发帖文案</title>
+<style>
+:root{
+  --bg:#FBF8F1; --card:#FFFFFF; --ink:#1B2028; --ink2:#525C6B; --line:#E7E0D2;
+  --gold:#C8922A; --gold-bg:#FBF3E0; --green:#2E7D57; --green-bg:#EAF5EF;
+  --red:#B4453C; --red-bg:#FBEDEB; --blue:#2B5C8A; --blue-bg:#EAF1F8;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei UI","Microsoft YaHei",sans-serif;
+  line-height:1.75;-webkit-font-smoothing:antialiased;padding-bottom:70px}
+.wrap{max-width:860px;margin:0 auto;padding:0 20px}
+header{background:linear-gradient(160deg,#14181F 0%,#232A34 100%);color:#F5F1E8;padding:52px 0 44px;margin-bottom:32px}
+header .kicker{display:inline-block;font-size:12.5px;letter-spacing:.2em;color:#E8B84B;
+  border:1.5px solid rgba(232,184,75,.5);border-radius:999px;padding:5px 15px;margin-bottom:18px;font-weight:700}
+header h1{font-size:32px;line-height:1.32;font-weight:900;letter-spacing:-.01em}
+header h1 em{font-style:normal;color:#E8B84B}
+header p{color:#A9B3C0;font-size:14.5px;margin-top:14px}
+header .meta{margin-top:18px;font-size:12.5px;color:#6F7B8B}
+h2{font-size:22px;font-weight:900;margin:46px 0 8px;padding-left:14px;border-left:6px solid var(--gold);line-height:1.4}
+h2 .sub{display:block;font-size:13px;font-weight:600;color:var(--ink2);margin-top:6px;padding-left:0}
+.hint{background:var(--blue-bg);border-left:5px solid var(--blue);border-radius:0 12px 12px 0;
+  padding:14px 18px;margin:14px 0;font-size:14px;color:#244A6B}
+.hint b{color:var(--blue)}
+.copybar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:18px 0 8px;
+  padding:10px 14px;background:#fff;border:1px solid var(--line);border-radius:12px 12px 0 0;border-bottom:none}
+.copybar .lb{font-weight:900;font-size:15px;color:#8A6413}
+.copybar .lb span{font-weight:600;font-size:12.5px;color:var(--ink2);margin-left:8px}
+.btn{background:#14181F;color:#E8B84B;border:none;border-radius:8px;padding:7px 16px;font-size:13px;
+  font-weight:800;cursor:pointer;white-space:nowrap;font-family:inherit}
+.btn:active{opacity:.7}
+.copybox{background:#fff;border:1px solid var(--line);border-radius:0 0 12px 12px;padding:20px 22px;margin-bottom:6px}
+.copybox pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:14.5px;
+  line-height:1.85;color:#2C333D}
+.copybox.tight{border-radius:12px}
+.tag{display:inline-block;background:#F1ECE0;color:#6B5A33;border-radius:8px;padding:3px 10px;margin:4px 6px 0 0;font-size:13px;font-weight:700}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin:18px 0;
+  box-shadow:0 2px 14px rgba(120,100,60,.05)}
+table{width:100%;border-collapse:collapse;font-size:14px;margin:6px 0;border-radius:12px;background:#fff;overflow:hidden}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#F3EEE2;font-weight:800;color:#3A3020;font-size:13.5px}
+tr:last-child td{border-bottom:none}
+.warn{background:var(--red-bg);border-left:5px solid var(--red);border-radius:0 12px 12px 0;padding:14px 18px;margin:14px 0;font-size:14px}
+.warn b{color:var(--red)}
+.ok{background:var(--green-bg);border-left:5px solid var(--green);border-radius:0 12px 12px 0;padding:14px 18px;margin:14px 0;font-size:14px}
+.ok b{color:var(--green)}
+code{background:#F3EEE2;border:1px solid var(--line);border-radius:6px;padding:1.5px 7px;
+  font-family:Consolas,"Courier New",monospace;font-size:13px;color:#8A4A16;word-break:break-all}
+.small{font-size:13px;color:var(--ink2)}
+.foot{margin-top:54px;padding-top:22px;border-top:1px solid var(--line);font-size:12.5px;color:#8B8574;text-align:center}
+.toast{position:fixed;left:50%;bottom:36px;transform:translateX(-50%) translateY(20px);
+  background:#14181F;color:#E8B84B;padding:10px 22px;border-radius:999px;font-size:14px;font-weight:800;
+  opacity:0;pointer-events:none;transition:.25s;z-index:99}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:600px){header h1{font-size:25px}h2{font-size:19px}.copybox{padding:16px 15px}.copybox pre{font-size:14px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="kicker">KINDLE · 老设备续命</span>
+    <h1>吃灰的 Kindle<br><em>4 步改造成微信读书机</em></h1>
+    <p>可直接发布的小红书图文 + B站视频简介 / 专栏长文</p>
+    <div class="meta">基于 Kindle 7 代（固件 5.12.2.2）实测 · 整理于 2026-10-05</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="hint">
+    <b>怎么用</b>：每块内容右上角有「复制」按钮，点一下整段进剪贴板。小红书版正文已控制在 1000 字以内，可直接粘贴发布；B站版分「视频简介」和「专栏长文」两种用法，按需要取。
+  </div>
+
+  <!-- ===================== 小红书 ===================== -->
+  <h2>一、小红书版
+    <span class="sub">图文笔记 · 标题 + 正文 + 标签</span>
+  </h2>
+
+  <div class="copybar">
+    <div class="lb">标题候选<span>任选其一</span></div>
+    <button class="btn" onclick="cp(this,'t1')">复制</button>
+  </div>
+  <div class="copybox" id="t1"><pre>吃灰 Kindle 别扔！4 步救活成微信读书机 📚
+亚马逊退出中国后，我把老 Kindle 救活了
+0 元！老 Kindle 读上微信读书｜保姆级教程</pre></div>
+
+  <div class="copybar">
+    <div class="lb">正文<span>约 942 字，可直接发</span></div>
+    <button class="btn" onclick="cp(this,'b1')">复制</button>
+  </div>
+  <div class="copybox" id="b1"><pre>家里那台 Kindle 吃灰多久了？🙋
+亚马逊退出中国后，商店关了、传书也麻烦，好好的墨水屏只能压泡面。
+
+我花一个周末、0 元把它救活了，书架同步、整本离线、划线想法全都有。
+
+先说结论：微信读书官方「墨水屏版」是安卓 App，Kindle 是 Linux 系统，直接装不上。
+唯一的路：越狱 → KOReader → 微信读书插件。
+
+全程 4 步：
+
+1️⃣ 越狱
+利用商店缓存漏洞，把几个文件拷到根目录，打开商店点运行，几分钟自动装完。
+⚠️ 固件需 ≤ 5.19.x
+
+2️⃣ 装 KOReader
+开源阅读内核，PDF/EPUB/DJVU 通吃，排版字体随便调。
+程序拷到根目录、启动脚本放进 documents，重启后图书库就出现 KOReader。
+
+3️⃣ 装微信读书插件 + 登录
+① 下载开源插件 weread.koplugin
+② 整个文件夹放进 koreader/plugins/
+③ 重启，菜单多出「工具 → 微信读书」
+④ 手机微信读书：我 → 设置 → 微信读书 Skill → 获取 API Key
+⑤ Kindle 点「微信扫码登录」扫码
+
+4️⃣ 收尾清理
+删掉安装包、脚本、日志等临时文件，能腾出几十 MB。
+⚠️ 有个 0 字节的文件千万别删——它负责阻止系统自动更新，删了越狱可能被冲掉。
+
+—— 我踩过的坑 ——
+
+🕳 插件装好了，菜单里没有「微信读书」
+→ KOReader 太旧，或插件文件夹多套了一层。要 2026.03+，路径须为 plugins/weread.koplugin/main.lua
+
+🕳 越狱脚本卡在"请稍候"不动
+→ 脚本要联网下组件，国内网络不稳。改成离线安装即可。
+
+🕳 KOReader 开着插 USB，电脑提示写入失败
+→ 它会把存储卡挂成只读。先退出 KOReader 重启，再插。
+
+🕳 文件改了没生效 / 删了又回来
+→ Windows 锁住了 Kindle 盘上的文件，写入会"假装成功"。删掉重拷即可。
+
+完整教程整理好了，评论区自取～
+折腾完记得回来报平安 🙌
+
+#Kindle #微信读书 #墨水屏 #电纸书 #Kindle越狱 #KOReader #数码好物 #阅读 #亚马逊Kindle</pre></div>
+
+  <div class="copybar">
+    <div class="lb">标签<span>单独一版，也可直接用上面正文里的</span></div>
+    <button class="btn" onclick="cp(this,'g1')">复制</button>
+  </div>
+  <div class="copybox" id="g1"><pre>#Kindle #微信读书 #墨水屏 #电纸书 #Kindle越狱 #KOReader #数码好物 #阅读 #亚马逊Kindle #旧物改造</pre></div>
+
+  <!-- ===================== B站 ===================== -->
+  <h2>二、B站版 · 视频简介
+    <span class="sub">配合视频发布，含时间轴</span>
+  </h2>
+
+  <div class="copybar">
+    <div class="lb">视频简介</div>
+    <button class="btn" onclick="cp(this,'b2')">复制</button>
+  </div>
+  <div class="copybox" id="b2"><pre>吃灰的 Kindle 别扔，0 元把它改造成微信读书机。
+
+微信读书官方的墨水屏版是安卓 App，而 Kindle 是 Linux 系统，直接装不了。
+可行方案：越狱 → 装 KOReader → 装开源微信读书插件。
+
+本期完整记录 4 步安装流程，以及过程中踩的坑和排查思路：
+
+00:00 为什么 Kindle 装不了微信读书
+00:40 第一步：越狱
+02:00 第二步：安装 KOReader
+03:20 第三步：安装微信读书插件并登录
+04:40 第四步：收尾清理
+05:30 踩坑与调试实录
+
+⚠️ 折腾有风险，操作前请备份。适用固件 ≤ 5.19.x。
+环境参考：KOReader 2026.7.2 + weread.koplugin v1.5.3</pre></div>
+
+  <!-- ===================== B站长文 ===================== -->
+  <h2>三、B站版 · 专栏长文
+    <span class="sub">硬核完整版，含踩坑与调试全过程</span>
+  </h2>
+
+  <div class="copybar">
+    <div class="lb">专栏长文<span>约 2600 字</span></div>
+    <button class="btn" onclick="cp(this,'b3')">复制</button>
+  </div>
+  <div class="copybox" id="b3"><pre>《亚马逊退出中国后，我把一台吃灰的 Kindle 救活了》
+
+一、写在前面
+
+Kindle 退出中国市场已经几年了。商店关停、Send to Kindle 下线之后，很多人手里那台手感极佳的墨水屏设备，慢慢变成了抽屉里的"泡面盖"。
+
+但硬件没坏，它只是缺一条路。
+
+这篇文章完整记录：如何用 0 元成本，让一台 Kindle 7 代（固件 5.12.2.2）重新读上微信读书。
+
+
+二、先破题：为什么 Kindle 装不了微信读书
+
+微信读书确实有「墨水屏版」，但它是一个 Android 安装包（.apk）。
+而 Kindle 用的是 Linux 系统——这不是"版本不兼容"，是"物种不同"。
+
+所以"下个 App 装上"这条路，从一开始就是堵死的。
+
+那就换思路：不去装微信读书的客户端，而是找一个能在 Kindle 上跑、并且能连微信读书的阅读器。
+
+答案是 KOReader——一个开源阅读内核，再配上开源插件 weread.koplugin。
+
+整体 4 步：
+1. 越狱——拿到运行第三方程序的权限
+2. 装 KOReader——提供阅读内核
+3. 装微信读书插件并登录——打通微信读书
+4. 收尾清理——删掉过程文件，保住越狱成果
+
+
+三、第 1 步：越狱
+
+【原理】
+Kindle 系统本身只允许运行亚马逊签名的程序。越狱，就是利用系统漏洞拿到系统权限，从而允许运行第三方程序。
+
+目前主流方案叫 WinterBreak：它利用 Kindle 商店的一个缓存加载漏洞——把特制的商店缓存文件拷到设备上，打开商店时，缓存被当作"可信页面"加载，从而执行我们的脚本。
+
+【准备】
+· 一台固件 ≤ 5.19.x 的 Kindle（太新的固件漏洞已被修复）
+· 电脑 + USB 线
+· WinterBreak 相关文件（官方仓库下载）
+
+【步骤】
+1. 用 USB 把 Kindle 连到电脑，确认出现 U 盘
+2. 把 WinterBreak 的文件拷到 Kindle 根目录
+3. 弹出设备、拔线
+4. 在 Kindle 上打开「商店」——会弹出越狱安装界面，点运行
+5. 屏幕显示 "Jailbreaking, please wait..."，等它跑完（几分钟）
+6. 跑完后设备自动重启
+
+【验证】
+根目录出现越狱成功说明文件，界面也提示安装完成——越狱成功。
+
+⚠️ 注意：越狱完成后，脚本会自动阻断系统 OTA 更新（防止越狱被官方更新覆盖）。这个阻断文件在根目录，是个 0 字节文件，千万不要手动删除。
+
+
+四、第 2 步：安装 KOReader
+
+KOReader 是运行在 Kindle 上的开源阅读软件，支持 PDF / EPUB / DJVU / TXT 等格式，排版、字体、行距、边距全部可调，还带词典、翻译、进度同步。
+
+【安装】
+1. 下载对应机型的 KOReader 包
+2. 解压得到 koreader 文件夹
+3. 把整个文件夹拷到 Kindle 根目录
+4. 还需要一个"启动入口"。老办法是 KUAL（一个启动菜单），新版越狱后改用 Scriptlet：在 documents 目录放一个 .sh 脚本文件，它会被图书库识别成"一本书"，点开即运行。
+
+【验证】
+图书库里出现 KOReader，点开能正常进入阅读界面。
+
+
+五、第 3 步：安装微信读书插件并登录
+
+【安装插件】
+1. 从 GitHub 下载 weread.koplugin 插件包
+   （要求 KOReader ≥ 2026.03，旧版本会出现"菜单里找不到入口"）
+2. 解压得到 weread.koplugin 文件夹
+3. 拷到 Kindle 的 koreader/plugins/ 目录
+   ⚠️ 只能有一层目录，正确路径：plugins/weread.koplugin/main.lua
+4. 重启 KOReader
+
+【登录】
+插件只支持扫码登录，而且扫码前要先开通账号的接口权限：
+1. 手机打开微信读书 App
+2. 进入「我 → 设置 → 微信读书 Skill」
+3. 点「获取 API Key」，确认已生成
+4. Kindle 上：工具 → 微信读书 → 微信扫码登录
+5. 用微信扫码确认；如果手机显示四位验证码，在 Kindle 上输入
+
+【装完之后能干什么】
+· 书架实时同步
+· 整本书下载到本地，离线也能看
+· 划线和想法同步显示
+· 书评、公众号文章
+· 阅读时长上报，和手机端统计打通
+
+
+六、第 4 步：收尾清理
+
+安装过程中会在根目录留下一堆临时文件：越狱脚本（5 MB）、安装包（40 MB）、修复脚本、日志、数据库副本……
+
+它们已经完成使命，删掉能腾出几十 MB，也让系统更干净。
+
+【可以删】
+· 越狱脚本
+· 安装包（*.kpkg）
+· 各种临时脚本、日志
+
+【千万不要删】
+· 根目录那个 0 字节的更新阻断文件——它负责**阻止系统自动更新**。删掉它，Kindle 会恢复自动升级，一旦系统偷偷更新，越狱环境可能就没了。
+
+
+七、踩坑与调试实录
+
+这部分才是真正花时间的地方。以下都是我实际遇到的问题，以及定位过程。
+
+【坑 1】越狱脚本卡在 "Please Wait" 不动
+现象：点了运行之后，屏幕一直停在"正在越狱，请稍候"，十几分钟没动静。
+排查：脚本运行时需要联网下载组件，而它的服务器在国内访问很不稳定，下载卡死了。
+解决：把脚本先下载到本地，改成"离线执行"——本地已经有的文件就不再去网上拉，几秒钟跑完。
+
+【坑 2】商店里的越狱入口时有时无
+现象：第一次打开商店能看到越狱界面，第二次打开就变成正常的亚马逊商店了。
+原因：Kindle 每次联网打开商店，亚马逊都会把特制缓存覆盖回官方版本。
+解决：操作前先把特制缓存恢复回去；网络开着的话，就趁商店加载的瞬间抢点运行。
+
+【坑 3】KOReader 装上了，图书库里却没有 ← 卡了最久
+现象：把 KOReader 的启动脚本放进 documents 目录，重启后图书库里始终没有它。
+排查（USB + 系统日志逐层往下挖）：
+· 先查系统注册库，确认"脚本索引器"已正确注册——没问题
+· 再查图书数据库，发现 KOReader 的记录居然**已经存在**，但字段是坏的：条目类型非法、文件格式字段为空
+· 进一步发现，这条记录原本是亚马逊内置的"Kindle 反馈"条目，被之前某次操作改坏了
+解决：把这条记录按正常图书的字段改写（正确的条目类型、文件格式标识），重启后 KOReader 正常出现在图书库。
+
+【坑 4】改数据库时报错 "no such collation sequence: icu"
+现象：在设备上执行 SQL 修改图书数据库，第一行就报错。
+原因：数据库里的文本列用了 ICU 排序规则（多语言排序用），而设备上的命令行 SQLite 没有编译 ICU 支持，任何涉及文本比较的语句都会失败。
+解决：绕开文本比较——只用整数主键（rowid）定位记录就能避开 ICU。另外，插入新记录也不行（同样触发排序规则），只能在已有记录上原地修改。
+
+【坑 5】文件明明改了，设备上却没变化
+现象：往 Kindle 拷文件，命令显示成功，校验却是旧内容；删掉的东西有时又会冒出来。
+原因：Windows 对 Kindle 盘上的某些文件有缓存锁，写操作会"静默失败"（命令行返回成功，实际没写入）。
+解决：先删除再拷贝，或换一个新文件名。另外每一步都用 SHA256 哈希校验，别信"命令成功"。
+
+【坑 6】KOReader 开着插 USB，电脑提示无法写入
+原因：KOReader 运行时会接管存储卡，插 USB 后以只读方式挂载。
+解决：先退出 KOReader，重启设备，看到"USB 驱动器模式"画面后再插。
+
+【坑 7】调试用的后门，收尾时差点忘了关
+这是自己给自己挖的坑：为了能进系统内部看日志，我在越狱脚本里加了一段"自动开启远程调试后门"的代码。
+问题在于：只删掉触发标记文件不够——只要脚本被再执行一次，后门照样会开。必须把脚本本体还原成官方原版才算彻底关闭。
+教训：给系统级脚本打调试补丁，收尾时一定要把本体换回干净版本。
+
+
+八、最后
+
+这台 Kindle 7 代，现在读微信读书的体验：
+· 墨水屏护眼，比手机舒服
+· 书架同步，手机看到哪、Kindle 接着看
+· 整本离线下载，出门不用网
+
+总成本：0 元。
+
+Kindle 是好硬件，只是被生态锁住了。越狱不是"破解"，而是把这台设备的可能性还给它自己。
+
+⚠️ 声明：越狱有风险，操作前请完整备份设备数据；本文仅供个人学习研究，请遵守相关软件的用户协议。</pre></div>
+
+  <!-- ===================== 速查 ===================== -->
+  <h2>四、附：4 步速查表
+    <span class="sub">做图 / 拍视频时的分镜依据</span>
+  </h2>
+
+  <div class="card">
+    <table>
+      <tr><th style="width:52px">步骤</th><th style="width:130px">动作</th><th>要点</th></tr>
+      <tr><td><b>1</b></td><td>越狱</td><td>拷 WinterBreak 文件到根目录 → 商店里点运行 → 自动安装。<b>固件需 ≤ 5.19.x</b></td></tr>
+      <tr><td><b>2</b></td><td>装 KOReader</td><td>程序拷根目录 + 启动脚本放 documents；重启后图书库出现 KOReader</td></tr>
+      <tr><td><b>3</b></td><td>装插件 + 登录</td><td>插件放 <code>koreader/plugins/</code>（只一层）→ 重启 → 手机开通微信读书 Skill 拿 Key → 扫码登录</td></tr>
+      <tr><td><b>4</b></td><td>收尾清理</td><td>删安装包 / 脚本 / 日志；<b>保留 0 字节的更新阻断文件</b></td></tr>
+    </table>
+  </div>
+
+  <div class="warn">
+    <b>发布前提醒</b>：两条底线别踩——① 别手把手教"改系统数据库"这类高风险操作（普通读者照做容易搞坏设备），文案里点到"踩过坑"即可；② 保留免责声明（越狱有风险、仅供个人学习、遵守软件用户协议）。
+  </div>
+
+  <div class="foot">
+    老 Kindle 救活教程 · 小红书 / B站 发帖文案<br>
+    越狱风险自担；请遵守微信读书用户协议，仅供个人学习研究使用
+  </div>
+
+</div>
+
+<div class="toast" id="toast">已复制到剪贴板</div>
+
+<script>
+function toast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  clearTimeout(t._tm);
+  t._tm = setTimeout(function(){ t.classList.remove('on'); }, 1600);
+}
+function fallbackCopy(text, ok){
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.setAttribute('readonly','');
+  ta.style.position='fixed'; ta.style.top='-9999px';
+  document.body.appendChild(ta);
+  ta.select(); ta.setSelectionRange(0, ta.value.length);
+  var done=false;
+  try{ done = document.execCommand('copy'); }catch(e){}
+  document.body.removeChild(ta);
+  ok(done);
+}
+function cp(btn, id){
+  var el = document.getElementById(id);
+  var text = el.innerText;
+  var ok = function(succ){
+    if(succ){ toast('已复制 (' + text.length + ' 字)'); btn.textContent='已复制 ✓';
+      setTimeout(function(){ btn.textContent='复制'; }, 1800); }
+    else { toast('复制失败，请长按选择'); }
+  };
+  if(navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(text).then(function(){ ok(true); }, function(){ fallbackCopy(text, ok); });
+  } else {
+    fallbackCopy(text, ok);
+  }
+}
+</script>
+</body>
+</html>

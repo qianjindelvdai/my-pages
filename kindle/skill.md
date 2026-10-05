@@ -84,7 +84,7 @@ agent_created: true
 - 盘符探测：`for d in d e f g h i j k; do [ -d "/$d/documents" ] && [ -d "/$d/system" ] && echo "/$d"; done`。
 - 写 `.sh` 必须 **LF 换行**（先 `d.replace(b'\r\n', b'\n')` 再拷）。
 
-## 4.5 装微信读书（= KOReader 插件，不是安卓 App）
+## 5. 装微信读书（= KOReader 插件，不是安卓 App）
 
 **结论先行**：微信读书官方「墨水屏版」是 **Android APK**（`com.tencent.weread.eink`），Kindle 是 Linux 系统，**装不了**。Kindle 上读微信读书只有三条路：
 1. **网页版（0 元，体验差）**：Kindle 体验版浏览器开 `r.qq.com`，扫码登录。能读、能同步进度/时长，但翻页有"网页感"、需联网、无评论区。
@@ -102,7 +102,7 @@ agent_created: true
 - **实测记录（2026-10-05）**：PW2 / 5.12.2.2 + KOReader 2026.7.2 装 `weread.koplugin` **v1.5.3（91 个文件）成功**，拷完用递归 sha256 全量比对（PC vs 设备）确保无静默丢文件；目标目录不存在时 `cp -r` 不会触发 Windows 文件锁。
 - 后续升级：插件内「微信读书 → 设置 → 更新管理」可在线更新（默认优先走代理，代理失败自动回退 GitHub）。
 
-## 5. 使用注意（交付给用户时务必说明）
+## 6. 使用注意（交付给用户时务必说明）
 - **KOReader 运行中插 USB → Kindle 只读挂载**，写入全拒。必须先退出 KOReader、重启，看到 "USB 驱动器模式" 画面再插。
 - **OTA 已阻断**，但别手滑去点系统更新。
 - 开 WiFi 开商店会刷掉特制缓存（WinterBreak 弹窗消失）——属正常，不影响已装的 KOReader。

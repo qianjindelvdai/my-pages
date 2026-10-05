@@ -67,7 +67,7 @@ code{background:#F3EEE2;border:1px solid var(--line);border-radius:6px;padding:1
     <span class="kicker">KINDLE · 老设备续命</span>
     <h1>吃灰的 Kindle<br><em>4 步改造成微信读书机</em></h1>
     <p>可直接发布的小红书图文 + B站视频简介 / 专栏长文</p>
-    <div class="meta">基于 Kindle 7 代（固件 5.12.2.2）实测 · 整理于 2026-10-05</div>
+    <div class="meta">基于 Kindle 7 代（固件 5.12.2.2）实测 · 全程在 WorkBuddy 辅助下完成 · 整理于 2026-10-05</div>
   </div>
 </header>
 
@@ -88,16 +88,18 @@ code{background:#F3EEE2;border:1px solid var(--line);border-radius:6px;padding:1
   </div>
   <div class="copybox" id="t1"><pre>吃灰 Kindle 别扔！4 步救活成微信读书机 📚
 亚马逊退出中国后，我把老 Kindle 救活了
-0 元！老 Kindle 读上微信读书｜保姆级教程</pre></div>
+0 元！老 Kindle 读上微信读书｜保姆级教程
+AI 帮我把吃灰 Kindle 救活了</pre></div>
 
   <div class="copybar">
-    <div class="lb">正文<span>约 942 字，可直接发</span></div>
+    <div class="lb">正文<span>989 字，可直接发（小红书上限 1000）</span></div>
     <button class="btn" onclick="cp(this,'b1')">复制</button>
   </div>
   <div class="copybox" id="b1"><pre>家里那台 Kindle 吃灰多久了？🙋
 亚马逊退出中国后，商店关了、传书也麻烦，好好的墨水屏只能压泡面。
 
-我花一个周末、0 元把它救活了，书架同步、整本离线、划线想法全都有。
+这次是用 WorkBuddy 做的，0 元把它救活，书架同步、整本离线、划线想法全都有。
+正常 1 小时能搞定，这次多花了几小时——KOReader 装好后图书库不显示，查出是系统数据库里一条记录坏了。坑先替大家趟了。
 
 先说结论：微信读书官方「墨水屏版」是安卓 App，Kindle 是 Linux 系统，直接装不上。
 唯一的路：越狱 → KOReader → 微信读书插件。
@@ -138,9 +140,8 @@ code{background:#F3EEE2;border:1px solid var(--line);border-radius:6px;padding:1
 → Windows 锁住了 Kindle 盘上的文件，写入会"假装成功"。删掉重拷即可。
 
 完整教程整理好了，评论区自取～
-折腾完记得回来报平安 🙌
 
-#Kindle #微信读书 #墨水屏 #电纸书 #Kindle越狱 #KOReader #数码好物 #阅读 #亚马逊Kindle</pre></div>
+#Kindle #微信读书 #墨水屏 #电纸书 #Kindle越狱 #KOReader #数码好物</pre></div>
 
   <div class="copybar">
     <div class="lb">标签<span>单独一版，也可直接用上面正文里的</span></div>
@@ -162,6 +163,8 @@ code{background:#F3EEE2;border:1px solid var(--line);border-radius:6px;padding:1
 微信读书官方的墨水屏版是安卓 App，而 Kindle 是 Linux 系统，直接装不了。
 可行方案：越狱 → 装 KOReader → 装开源微信读书插件。
 
+这次全程用 WorkBuddy（AI 协作工具）远程完成。正常情况 1 小时左右能搞定，我这次多花了好几个小时——KOReader 装好后在图书库里一直不显示，最后定位到系统图书数据库里一条记录被改坏了。这个坑我先替大家踩了。
+
 本期完整记录 4 步安装流程，以及过程中踩的坑和排查思路：
 
 00:00 为什么 Kindle 装不了微信读书
@@ -180,7 +183,7 @@ code{background:#F3EEE2;border:1px solid var(--line);border-radius:6px;padding:1
   </h2>
 
   <div class="copybar">
-    <div class="lb">专栏长文<span>约 2600 字</span></div>
+    <div class="lb">专栏长文<span>约 3900 字</span></div>
     <button class="btn" onclick="cp(this,'b3')">复制</button>
   </div>
   <div class="copybox" id="b3"><pre>《亚马逊退出中国后，我把一台吃灰的 Kindle 救活了》
@@ -192,6 +195,14 @@ Kindle 退出中国市场已经几年了。商店关停、Send to Kindle 下线�
 但硬件没坏，它只是缺一条路。
 
 这篇文章完整记录：如何用 0 元成本，让一台 Kindle 7 代（固件 5.12.2.2）重新读上微信读书。
+
+先交代两件事。
+
+一是工具。这次操作全程在 WorkBuddy（一款 AI 协作工具）辅助下完成——从查资料、核对版本、准备文件，到改设备上的配置、读系统日志、定位故障，基本是它带着我一步步走的。我本人不是程序员出身，能独立把这件事做完，很大程度上靠它。
+
+二是时间。正常情况 1 小时左右就能搞定：越狱几分钟、装 KOReader 十几分钟、装插件加登录十几分钟、清理几分钟。但我这次多花了好几个小时，全部消耗在一个问题上——KOReader 装好了，图书库里却始终不显示它。这个问题网上没有现成答案，最后是把设备上的图书数据库拉下来逐条比对，才找到原因（详见第七节坑 3）。
+
+所以下面的步骤，是按"避坑之后"的顺序写的，照着走会顺很多。
 
 
 二、先破题：为什么 Kindle 装不了微信读书
@@ -352,6 +363,8 @@ Kindle 是好硬件，只是被生态锁住了。越狱不是"破解"，而是�
   <h2>四、附：4 步速查表
     <span class="sub">做图 / 拍视频时的分镜依据</span>
   </h2>
+
+  <div class="hint"><b>时间参考</b>：正常情况 1 小时左右可完成（越狱几分钟 + KOReader 十几分钟 + 插件与登录十几分钟 + 清理几分钟）。本次实测因「KOReader 装好后图书库不显示」多花了几个小时排查，详见第七节坑 3。</div>
 
   <div class="card">
     <table>

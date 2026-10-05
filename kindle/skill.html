@@ -29,8 +29,9 @@ code{background:#F3EEE2;border:1px solid var(--line);border-radius:6px;padding:1
 pre.code{background:#14181F;color:#E6E2D8;border-radius:12px;padding:14px 16px;overflow-x:auto;
   font-family:Consolas,"Courier New",monospace;font-size:12.8px;line-height:1.65;margin:12px 0;white-space:pre-wrap;word-break:break-all}
 table.tb{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0;background:#fff;
-  border-radius:12px;overflow:hidden;border:1px solid var(--line)}
-table.tb th,table.tb td{padding:9px 11px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  border-radius:12px;overflow:hidden;border:1px solid var(--line);table-layout:fixed}
+table.tb th,table.tb td{padding:9px 11px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top;
+  word-break:break-word;overflow-wrap:anywhere}
 table.tb th{background:#F3EEE2;font-weight:800;font-size:13px;color:#3A3020}
 table.tb tr:last-child td{border-bottom:none}
 .fm{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 18px;font-size:13px}
@@ -42,16 +43,80 @@ table.tb tr:last-child td{border-bottom:none}
   color:#E8B84B;padding:10px 20px;border-radius:999px;font-size:13.5px;font-weight:800;opacity:0;
   pointer-events:none;transition:.25s;z-index:99}
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
-@media(max-width:600px){h1{font-size:21px}h2{font-size:17.5px}p,li{font-size:14px}.wrap{padding:20px 15px 0}}
+/* ---- 安装说明块 ---- */
+.inst{background:#fff;border:1.5px solid var(--gold);border-radius:16px;padding:18px 18px 6px;margin:0 0 22px;
+  box-shadow:0 6px 26px rgba(200,146,42,.13)}
+.inst h2{margin:0 0 4px;padding-left:0;border:none;font-size:18px}
+.inst .lead{font-size:13.5px;color:var(--ink2);margin:2px 0 14px}
+.mth{border-top:1px dashed var(--line);padding:13px 0 9px}
+.mth:first-of-type{border-top:none}
+.mth .badge{display:inline-block;background:#14181F;color:#E8B84B;font-size:11.5px;font-weight:800;
+  border-radius:999px;padding:3px 11px;margin-bottom:7px}
+.mth .badge.g{background:#2F7D4F;color:#fff}
+.mth .badge.b{background:#3A5EA8;color:#fff}
+.mth p{font-size:14px;margin:5px 0}
+.mth .dim{color:var(--ink2);font-size:13px}
+.prow{position:relative;margin:8px 0 4px}
+.prow pre.code{margin:0;padding-right:78px}
+.cbtn{position:absolute;right:9px;top:9px;background:#E8B84B;color:#14181F;border:none;border-radius:8px;
+  padding:5px 11px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit}
+.cbtn:active{opacity:.75}
+.paths{margin:8px 0 4px}
+.paths div{margin:8px 0}
+.paths .os{display:block;font-weight:800;color:#8A6413;font-size:12.5px;margin-bottom:2px}
+.paths code{font-size:12.5px}
+.after{background:#F6F3EA;border-radius:11px;padding:11px 13px;margin:12px 0 6px;font-size:13.5px}
+.after b{color:#14181F}
+.alt{margin:12px 0 6px;font-size:13px;color:var(--ink2)}
+@media(max-width:600px){h1{font-size:21px}h2{font-size:17.5px}p,li{font-size:14px}.wrap{padding:20px 15px 0}
+  .inst{padding:15px 14px 4px}.inst h2{font-size:17px}.prow pre.code{padding-right:16px;padding-top:34px}
+  .cbtn{right:8px;top:8px}}
 </style>
 </head>
 <body>
 <div class="topbar">
   <span class="t">Kindle 越狱 · KOReader · 微信读书｜WorkBuddy 技能</span>
+  <a href="kindle-jailbreak.zip" download>下载技能包</a>
   <button onclick="cpall(this)">复制全文</button>
-  <a href="skill.md" download="kindle-jailbreak.SKILL.md">下载 .md</a>
+  <a href="skill.md" download="kindle-jailbreak.SKILL.md">.md</a>
 </div>
 <div class="wrap">
+
+<div class="inst">
+  <h2>怎么装进 WorkBuddy？</h2>
+  <div class="lead">这个页面是「给人看的说明书」。要让 WorkBuddy 真的会用，把下面的技能包装进技能目录就行——装上以后，你说一句「帮我把这台 Kindle 救活」，它就知道该怎么做。</div>
+
+  <div class="mth">
+    <span class="badge g">方法 A · 最省事（30 秒）</span>
+    <p>打开 WorkBuddy 新建一个对话，把下面这句直接发过去：</p>
+    <div class="prow">
+      <pre class="code" id="pA">帮我安装这个技能：https://qianjindelvdai.github.io/kindle-revive/kindle-jailbreak.zip 下载解压后放到技能目录里</pre>
+      <button class="cbtn" onclick="cpc(this,'pA')">复制</button>
+    </div>
+    <p class="dim">它会自己下载、解压、放好位置。装完<b>新开一个对话</b>即可生效（长按上面的框也能手动选中复制）。</p>
+  </div>
+
+  <div class="mth">
+    <span class="badge b">方法 B · 手动安装（最稳）</span>
+    <p>1. 点右上角「下载技能包 .zip」→ 2. 解压得到 <code>kindle-jailbreak</code> 文件夹（里面就一个 <code>SKILL.md</code>）→ 3. 整个文件夹丢进技能目录：</p>
+    <div class="paths">
+      <div><span class="os">Windows</span><code>C:\Users\你的用户名\.workbuddy\skills\</code></div>
+      <div><span class="os">macOS</span><code>~/.workbuddy/skills/</code></div>
+    </div>
+    <p class="dim">目录不存在就自己新建一个。放好后应是 <code>skills/kindle-jailbreak/SKILL.md</code>（注意中间不要多套一层）。然后<b>新开一个对话</b>让 WorkBuddy 重新读取技能，如果没生效就重启一次客户端。</p>
+  </div>
+
+  <div class="mth">
+    <span class="badge">方法 C · 不装也能用</span>
+    <p>右上角点「复制全文」，把这份说明书整段粘给 WorkBuddy，说「按这个帮我操作」也行——只是以后每次都要粘一遍，不如装成技能省事。</p>
+  </div>
+
+  <div class="after">
+    <b>装好之后怎么用？</b>直接说需求就行，比如：<br>
+    「我这台 Kindle 是第七代、固件 5.12.2.2，帮我越狱并装 KOReader 和微信读书插件」——它会按技能里的实测流程一步步带你做，包括国内网络该用哪个镜像、图书库不显示脚本该怎么查。
+  </div>
+</div>
+
 <div class="fm">
 <div><span class="k">name</span><span class="v">kindle-jailbreak</span></div>
 <div><span class="k">description</span><span class="v">在受限网络（国内）下给旧款 Kindle 越狱并安装 KOReader，全程离线化 + USB 侧载 + telnet 系统级调试。解决 WinterBreak 卡死、KPM 包被墙掐断、图书库 .sh Scriptlet 不显示等疑难。Trigger phrases: kindle 越狱, kindle 装 koreader, WinterBreak, KPM, sh_integration, 图书库看不到脚本, kindle jb.</span></div>
@@ -87,12 +152,12 @@ table.tb tr:last-child td{border-bottom:none}
 <ol><li><b>注入 dialoger</b>：把修复脚本前置到 <code>dialoger.html</code> 的 <code>source_command</code>：<code>sh -c 'sh /mnt/us/fix_cc.sh; JB_HEADER=... sh /mnt/us/jb.sh'</code>。</li><li><b>WebKit 缓存是隐形杀手</b>：改了 <code>dialoger.html</code> 但设备仍跑旧命令 → 因为 Mesquito 框架按 URL 缓存。<b>建一个全新 id 的应用</b>（如 <code>apps/tech.hackerdude.fixer/</code>，含 <code>manifest.json</code>/<code>index.html</code>/<code>dialoger.html</code>/<code>icon.png</code>）即可绕开；或改 <code>unique_id</code>。</li><li><b>把数据库搬出来解剖</b>：修复脚本里 <code>cp /var/local/cc.db /mnt/us/_cc.db</code>，PC 上细看真实表结构再写准 SQL。</li></ol>
 <h2>4. Windows 侧文件锁怪象（务必遵守）</h2>
 <ul><li>Kindle U 盘上某些文件（<code>jb.sh</code>/<code>dialoger.html</code>/<code>kpm.db</code>/<code>fix_cc.sh</code>）会被 Windows 诡异锁住：<b>写操作静默无效</b>（cp / Copy-Item / Python 原地覆写都"成功"但内容没变），但 <b><code>rm</code> 删除通常能成功</b>。</li><li><b>突破法：「删了再拷」</b>（<code>rm -f</code> 后 sleep 再 cp）。</li><li><b>铁律：每次拷贝后用 sha256 复核</b>（<code>python -c "hashlib.sha256(...)"</code> 比对 PC 与设备），否则会在"以为改好了"的假象里绕圈。</li><li>盘符探测：<code>for d in d e f g h i j k; do [ -d "/$d/documents" ] &amp;&amp; [ -d "/$d/system" ] &amp;&amp; echo "/$d"; done</code>。</li><li>写 <code>.sh</code> 必须 <b>LF 换行</b>（先 <code>d.replace(b'\r\n', b'\n')</code> 再拷）。</li></ul>
-<h2>4.5 装微信读书（= KOReader 插件，不是安卓 App）</h2>
+<h2>5. 装微信读书（= KOReader 插件，不是安卓 App）</h2>
 <p><b>结论先行</b>：微信读书官方「墨水屏版」是 <b>Android APK</b>（<code>com.tencent.weread.eink</code>），Kindle 是 Linux 系统，<b>装不了</b>。Kindle 上读微信读书只有三条路：</p>
 <ol><li><b>网页版（0 元，体验差）</b>：Kindle 体验版浏览器开 <code>r.qq.com</code>，扫码登录。能读、能同步进度/时长，但翻页有"网页感"、需联网、无评论区。</li><li><b>越狱 + KOReader + <code>weread.koplugin</code> 插件（0 元，推荐，完整体验）</b>：扫码登录、书架同步、整本离线下载、划线想法、书评、时长上报统计。</li><li>刷 CrackDroid（安卓）系统 / 买官方墨水屏设备——前者坑深（老版 WeRead 1.5.2、无背光调节、卡顿、可能要激活码），不推荐。</li></ol>
 <p><b>插件安装（已实测可行）</b>：</p>
 <ul><li>仓库 <code>finlater/weread.koplugin</code>（AGPL-3.0），GitHub Releases 下 <code>weread.koplugin-vX.Y.Z.zip</code>（镜像 <code>https://gh-proxy.com/https://github.com/...</code>）。</li><li><b>要求 KOReader ≥ 2026.03</b>（旧版"工具"菜单里不出现"微信读书"；2026.7.2 ✅）。</li><li>解压后得到 <code>weread.koplugin/</code> 文件夹，<b>注意只能有一层目录</b>：正确 <code>koreader/plugins/weread.koplugin/main.lua</code>；错误 <code>.../weread.koplugin/weread.koplugin/main.lua</code>（多套一层就不显示）。</li><li>拷到设备 <code>/mnt/us/koreader/plugins/weread.koplugin/</code>（= KOReader 安装目录下的 <code>plugins/</code>，同目录还有 archiveviewer.koplugin 等）。</li><li>重启 KOReader → 菜单 <b>工具 → 微信读书</b>。</li><li>登录：手机微信读书 App → 我 → 设置 → <b>微信读书 Skill</b> → 获取 API Key；再在 Kindle 上 <code>工具→微信读书→微信扫码登录</code>，微信扫码，手机显示四位验证码时在 Kindle 输入。</li><li>备选：<code>miumiupy98-art/weread.koplugin-fixed</code>（增强 fork，支持插件内扫码、OTA、带划线/想法的 EPUB）。</li><li><b>实测记录（2026-10-05）</b>：PW2 / 5.12.2.2 + KOReader 2026.7.2 装 <code>weread.koplugin</code> <b>v1.5.3（91 个文件）成功</b>，拷完用递归 sha256 全量比对（PC vs 设备）确保无静默丢文件；目标目录不存在时 <code>cp -r</code> 不会触发 Windows 文件锁。</li><li>后续升级：插件内「微信读书 → 设置 → 更新管理」可在线更新（默认优先走代理，代理失败自动回退 GitHub）。</li></ul>
-<h2>5. 使用注意（交付给用户时务必说明）</h2>
+<h2>6. 使用注意（交付给用户时务必说明）</h2>
 <ul><li><b>KOReader 运行中插 USB → Kindle 只读挂载</b>，写入全拒。必须先退出 KOReader、重启，看到 "USB 驱动器模式" 画面再插。</li><li><b>OTA 已阻断</b>，但别手滑去点系统更新。</li><li>开 WiFi 开商店会刷掉特制缓存（WinterBreak 弹窗消失）——属正常，不影响已装的 KOReader。</li><li>收尾清理：删 <code>jb.sh.debug</code>、删根目录 <code>.kpkg</code>（40+MB）和 <code>fix_cc*.sh</code>。</li><li>⚠️ <b>调试补丁必须显式还原（血泪教训）</b>：为远程调试给 <code>jb.sh</code> 注入过 telnetd 后门（<code>telnetd -l /bin/sh -p 23 &amp;</code> 无条件启动）。<b>只删 <code>jb.sh.debug</code> 关不掉它</b>——只要脚本被再次执行（点一下 WinterBreak 运行），后门照开。<b>必须用官方原版整体回写 <code>jb.sh</code></b>（打补丁前先 <code>cp jb.sh jb.sh.pwr</code> 备份，收尾时 <code>rm -f /mnt/us/jb.sh</code> 再 <code>cp jb.sh.pwr</code>，并 sha256 复核 + <code>grep -n telnetd</code> 确认只剩官方 debug 分支那一处）。给任何越狱脚本打补丁，都要在收尾时把本体换回净版。</li><li>保留 <code>update.bin.tmp.partial</code>（OTA 阻断文件，删了会恢复自动升级）；根目录可能存在用户自己的旧文件（如 <code>screenshot_*.png</code>），清理前先甄别、勿误删。</li></ul>
   <div class="foot">
     WorkBuddy 技能包 <code>kindle-jailbreak</code> · 基于 Kindle 7 代（PW2 / 固件 5.12.2.2）实测<br>
@@ -103,13 +168,17 @@ table.tb tr:last-child td{border-bottom:none}
 <script>
 function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('on');
   clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('on');},1600);}
-function cpall(b){var txt=document.body.innerText;
-  var done=function(s){if(s){toast('已复制全文 ('+txt.length+' 字)');b.textContent='已复制 ✓';
-    setTimeout(function(){b.textContent='复制全文';},1800);}else{toast('复制失败，请长按选择');}};
-  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(txt).then(function(){done(1);},function(){done(0);});}
+function copyText(txt,done){if(navigator.clipboard&&window.isSecureContext){
+    navigator.clipboard.writeText(txt).then(function(){done(1);},function(){done(0);});}
   else{var ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.top='-9999px';
     document.body.appendChild(ta);ta.select();var ok=false;try{ok=document.execCommand('copy');}catch(e){}
     document.body.removeChild(ta);done(ok);}}
+function cpc(b,id){var t=document.getElementById(id).innerText;
+  copyText(t,function(ok){if(ok){toast('已复制，粘给 WorkBuddy 即可');b.textContent='已复制 ✓';
+    setTimeout(function(){b.textContent='复制';},1800);}else{toast('复制失败，请长按选择');}});}
+function cpall(b){var txt=document.body.innerText;
+  copyText(txt,function(s){if(s){toast('已复制全文 ('+txt.length+' 字)');b.textContent='已复制 ✓';
+    setTimeout(function(){b.textContent='复制全文';},1800);}else{toast('复制失败，请长按选择');}});}
 </script>
 </body>
 </html>

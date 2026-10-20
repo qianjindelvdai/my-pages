@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>两段式采购清单｜“鲸跃星河”新西兰 12 天</title>
+<style>
+*{box-sizing:border-box}
+:root{
+--ink:#22303c;--muted:#5d6b78;--line:#e0e6ec;--bg:#f5f7f9;--card:#fff;
+--navy:#0d3049;--teal:#0f766e;--gold:#c08b2e;--red:#b4442f;--green:#2f6f4f;--orange:#c2691f;--blue:#2e6db4;
+}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+line-height:1.78;-webkit-font-smoothing:antialiased}
+.wrap{max-width:980px;margin:0 auto;padding:22px 18px 70px}
+
+.hero{background:linear-gradient(135deg,#0b2b42 0%,#0d3049 48%,#4a3a1f 100%);
+color:#fff;border-radius:16px;padding:32px 30px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;left:0;top:0;height:100%;width:6px;background:var(--gold)}
+.hero .kicker{font-size:12.5px;color:#8fb6c9;letter-spacing:2.5px;margin-bottom:8px}
+.hero h1{margin:0 0 8px;font-size:26px}
+.hero p{margin:0;color:#d3e3ec;font-size:14.5px}
+.hero .meta{margin-top:15px;font-size:13px;color:#a3c4d4;border-top:1px solid rgba(255,255,255,.15);padding-top:12px;line-height:1.9}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+padding:24px 26px;margin:16px 0;box-shadow:0 1px 3px rgba(13,48,73,.06)}
+h2{font-size:20px;margin:0 0 16px;color:var(--navy);display:flex;align-items:center;gap:10px;
+padding-bottom:10px;border-bottom:2px solid #eef2f6}
+h2 .n{display:inline-flex;width:28px;height:28px;border-radius:9px;background:var(--navy);
+color:#fff;font-size:14px;align-items:center;justify-content:center;font-weight:600;flex:none}
+h3{font-size:16px;margin:20px 0 8px;color:var(--navy)}
+h3:first-of-type{margin-top:10px}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:5px 0}
+b,strong{color:var(--navy)}
+.small{font-size:13.4px}
+.muted{color:var(--muted)}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.8px}
+th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+th{background:#eff4f7;color:var(--navy);font-weight:600}
+td.c,th.c{text-align:center}
+
+.box{border:1px solid var(--line);border-radius:11px;padding:14px 16px;background:#fbfcfd}
+.box .bt{font-weight:600;color:var(--navy);font-size:14.5px;margin-bottom:5px}
+.box ul{margin:6px 0;padding-left:19px;font-size:13.8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+
+.warn{background:#fdf6f2;border:1px solid #f0d5c6;border-left:4px solid var(--orange);
+border-radius:10px;padding:14px 17px;margin:14px 0}
+.warn b{color:#9c4f13}
+.tip{background:#f1f8f5;border:1px solid #cfe4d9;border-left:4px solid var(--green);
+border-radius:10px;padding:14px 17px;margin:14px 0}
+.tip b{color:#1f5638}
+.key{background:#f7f9fb;border:1px dashed #c6d3de;border-radius:10px;padding:14px 17px;margin:14px 0}
+.alert{background:#fdf2f0;border:1px solid #f0ccc4;border-left:4px solid var(--red);
+border-radius:10px;padding:14px 17px;margin:14px 0}
+.alert b{color:#8f3320}
+
+/* 阶段条 */
+.phase{border:1px solid var(--line);border-radius:12px;margin:15px 0;overflow:hidden;background:#fff}
+.phase>.ph{padding:14px 18px;color:#fff}
+.phase.p1>.ph{background:linear-gradient(90deg,#8a6410,#a87c22)}
+.phase.p2>.ph{background:linear-gradient(90deg,#1d4e89,#2a6bab)}
+.phase>.pb{padding:16px 18px}
+.phase .pn{font-size:12.5px;font-weight:700;background:rgba(255,255,255,.22);padding:2px 10px;border-radius:20px}
+.phase .pt{font-size:16.5px;font-weight:600}
+
+.badge{display:inline-block;font-size:11.5px;padding:1px 8px;border-radius:20px;
+margin-left:6px;vertical-align:middle;font-weight:600}
+.badge.here{background:#c0453f;color:#fff}
+.badge.later{background:#1d4e89;color:#fff}
+.badge.skip{background:#e8eef3;color:#7a8b98}
+
+/* 勾选表 */
+.chk{list-style:none;padding:0;margin:10px 0}
+.chk li{position:relative;padding:7px 0 7px 30px;border-bottom:1px dashed #e8eef3;font-size:14px}
+.chk li:last-child{border-bottom:none}
+.chk li:before{content:"";position:absolute;left:0;top:11px;width:16px;height:16px;
+border:2px solid #b8c6d2;border-radius:4px}
+.chk li b{font-weight:600}
+
+.blank{border:1px dashed #b8c6d2;border-radius:9px;padding:14px 16px;margin:12px 0;background:#fcfdfe}
+.blank .bl{font-size:12.5px;color:var(--muted);margin-bottom:8px;font-weight:600}
+.blank ul{margin:0;padding-left:20px;font-size:13.8px}
+
+footer{text-align:center;color:#93a1b5;font-size:12.5px;margin-top:30px;line-height:1.9}
+
+@media (max-width:640px){
+.wrap{padding:14px 12px 50px}
+.hero{padding:24px 18px}.hero h1{font-size:21px}
+.card{padding:18px 15px}
+.grid2,.grid3{grid-template-columns:1fr}
+th,td{padding:7px 8px;font-size:13px}
+}
+@media print{
+@page{size:A4;margin:11mm}
+body{background:#fff}
+.wrap{max-width:none;padding:0}
+.card,.phase,.box,.warn,.tip,.key,.alert,.blank{box-shadow:none;break-inside:avoid}
+.hero,th,.badge,.phase>.ph,h2 .n{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+h2{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hero">
+  <div class="kicker">SHOPPING LIST · TWO-STAGE PLAN</div>
+  <h1>两段式采购清单</h1>
+  <p>D6–D7 皇后镇"看货" → D11 奥克兰"买齐"｜皇后街 vs 皇后镇的区别一次讲清</p>
+  <div class="meta">
+    你的行程顺序是<b style="color:#fff">先皇后镇、后奥克兰</b>——但价格规律是<b style="color:#fff">奥克兰更便宜</b>，所以要分两段用<br>
+    币值参考 1 NZD ≈ 3.80 CNY　｜　⚠️<b style="color:#ffd479">新西兰没有游客退税制度</b>（详见下方第 3 节）
+  </div>
+</div>
+
+<!-- ⚠️ 首要更正 -->
+<div class="card">
+<h2><span class="n">⚠️</span>先纠正一个重要信息</h2>
+<div class="alert">
+<b>新西兰没有"购物退税"这回事——机场没有退税柜台，也没有表格可交。</b><br>
+新西兰海关（New Zealand Customs）明确说明：<b>你在新西兰境内购买的商品，不能申请退还 15% 的 GST</b>。这一条很多攻略写错了（包括我自己之前那份指南里"单店满 NZD100 可退税"的说法，<b>是错的，特此更正</b>）。
+</div>
+
+<h3>那什么情况下能免 GST？只有三种</h3>
+<table>
+<tr><th>方式</th><th>怎么操作</th><th>实操难度</th></tr>
+<tr><td><b>① 机场免税店（Airside）</b></td><td>过了安检和海关之后，在国际出发区买</td><td class="c"><span class="badge skip">最容易</span> 但只有国际航站楼有，且品类有限</td></tr>
+<tr><td><b>② 市区店"机场提货"</b></td><td>在市区认证免税店买，登记护照，按不含税价付款，商家密封后送到机场提货点，你离境时凭护照领取</td><td class="c"><span class="badge here">要提前问</span> 不是所有店都提供；<b>提货回执务必收好</b>，姓名航班号不符会被拒</td></tr>
+<tr><td><b>③ 由商家出口</b></td><td>商家直接帮你寄回国</td><td class="c"><span class="badge skip">不推荐</span> 时间不可控，且入境国可能另收税</td></tr>
+</table>
+
+<div class="key">
+<b>所以正确的策略是：别指望退税，直接比价＋选对店。</b>
+新西兰的商品标价<b>都已含 15% GST</b>，同款商品在<b>奥克兰超市／连锁店最便宜</b>，皇后镇的纪念品店最贵——差的就是这层渠道加价。
+</div>
+</div>
+
+<!-- 两段总览 -->
+<div class="card">
+<h2><span class="n">🧭</span>总原则：谁在哪买</h2>
+<table>
+<tr><th>品类</th><th class="c">在哪买</th><th>原因</th></tr>
+<tr><td><b>麦卢卡蜂蜜</b>、<b>绵羊油</b>、<b>羊毛制品</b>、<b>奶粉</b></td><td class="c"><b>留到 D11 奥克兰</b></td><td>南岛由北岛批发供货，皇后镇贵 20%–35%；且重，占行李空间</td></tr>
+<tr><td><b>奇异果 / 鲜果</b></td><td class="c"><b>D11 奥克兰</b>或机场</td><td>1 月是产季，但南岛果小价高；离境前买最新鲜</td></tr>
+<tr><td><b>户外装备</b>（冲锋衣、抓绒）</td><td class="c"><b>D7 皇后镇</b></td><td>Kathmandu 等店只有当地有，折扣确实比国内低</td></tr>
+<tr><td><b>手作／市集物件</b></td><td class="c"><b>D7 皇后镇</b></td><td>周六湖滨手作市集、Frankton 农产市集，只有当地有</td></tr>
+<tr><td><b>巧克力、酒类</b></td><td class="c"><b>奥克兰市区或机场</b></td><td>品类全；酒类要注意托运额度</td></tr>
+<tr><td>大牌／奢侈品</td><td class="c">D11 奥克兰皇后街</td><td>品牌最全（2026年 9 月新开 Faradays 百货）</td></tr>
+</table>
+
+<div class="tip">
+<b>为什么不能两次都买？</b>因为皇后镇（D6–D7）在南岛、离奥克兰要飞 1.5 小时，<b>不可能为了便宜再跑一趟</b>。所以只能"皇后镇看、奥克兰买"——这也意味着 <b>D7 看中的东西要拍照记价，D11 按图索骥</b>。
+</div>
+</div>
+
+<!-- 第一段 -->
+<div class="phase p1">
+<div class="ph"><span class="pn">第一段</span><span class="pt">D6–D7 皇后镇 · 看货＋买"当地独有"</span></div>
+<div class="pb">
+
+<h3>该在这里买（当地才有／这里更划算）</h3>
+<ul class="chk">
+<li><b>Kathmandu 等户外品牌</b> — 冲锋衣、抓绒、帽袜，1 月夏季促销尾声折扣不错。<span class="badge here">就在这买</span></li>
+<li><b>周六湖滨手作市集</b>（Queenstown Market）— 手工皮具、木器、首饰、果酱，<b>大商场买不到的独特物件</b>。<span class="badge here">仅周六上午</span></li>
+<li><b>Remarkables Market 非凡市集</b>（Frankton，机场方向）— 当地人自产水果、自制美食；车程约 15 分钟。<span class="badge here">夏季周六 9:00–14:00</span></li>
+<li><b>Cookie Time 铁盒曲奇</b>（18 Camp St）— 国民品牌，铁盒装最便携。<span class="badge here">顺手买</span></li>
+<li><b>Remarkable Sweet Shop 糖果</b>（23 Beach St）— 牛轧糖、软糖、礼盒装。<span class="badge here">顺手买</span></li>
+</ul>
+
+<h3>只看价格、<b>先别买</b>（留到 D11 奥克兰）</h3>
+<table>
+<tr><th>商品</th><th class="c">皇后镇参考价</th><th class="c">奥克兰参考价</th><th class="c">差价</th></tr>
+<tr><td>麦卢卡蜂蜜 UMF15+ 250g</td><td class="c">约 68</td><td class="c">约 55</td><td class="c" style="color:#b4442f;font-weight:600">+24%</td></tr>
+<tr><td>绵羊油护手霜 / 身体乳</td><td class="c">约 15</td><td class="c">约 12</td><td class="c" style="color:#b4442f;font-weight:600">+25%</td></tr>
+<tr><td>美利奴羊毛围巾</td><td class="c">约 60</td><td class="c">约 45</td><td class="c" style="color:#b4442f;font-weight:600">+33%</td></tr>
+<tr><td>奇异果 Golden 1kg</td><td class="c">约 9.5</td><td class="c">约 8</td><td class="c" style="color:#b4442f;font-weight:600">+19%</td></tr>
+</table>
+<p class="small muted">价格为游客零售价区间，仅供判断量级，实际以现场为准。</p>
+
+<h3>D7 建议动作</h3>
+<div class="blank">
+<div class="bl">在皇后镇做这件事就够了 ↓</div>
+<ul>
+<li><b>掏出手机建一个清单</b>：看中什么、拍下价格和店铺名</li>
+<li><b>问一句能不能"机场提货免 GST"</b>——少数店支持，若支持反而可以当场买（D11 机场提货）</li>
+<li><b>确认 D11 是不是周六</b>——如果不是，周六市集就赶不上了，要提前调整</li>
+</ul>
+</div>
+
+<div class="warn">
+<b>别在皇后镇买的两类东西</b>
+<ul>
+<li><b>麦卢卡蜂蜜</b>——贵 24%，而且<b>很重</b>，蜂蜜是这趟最占行李的特产之一</li>
+<li><b>绵羊油／羊毛大件</b>——贵且占位，这些在奥克兰超市和连锁店便宜得多</li>
+</ul>
+</div>
+</div>
+</div>
+
+<!-- 第二段 -->
+<div class="phase p2">
+<div class="ph"><span class="pn">第二段</span><span class="pt">D11 奥克兰 · 采购收尾（离境前最后一站）</span></div>
+<div class="pb">
+
+<div class="alert">
+<b>⚠️ 时间很紧：行程单只给"皇后大街自由活动约 1 小时"</b>，而且 D11 晚上 23:55 就要飞。<br>
+<b>建议别把这一小时全花在皇后大街上</b>——那里品牌多但价格一般，且一小时只够走马观花。<b>更好的做法是提前决定：这一小时留给"超市采购"</b>（价格最低），大牌逛不逛随缘。
+</div>
+
+<h3>奥克兰超市在哪（比皇后街便宜得多）</h3>
+<table>
+<tr><th>超市</th><th>位置</th><th>说明</th></tr>
+<tr><td><b>Woolworths Auckland City</b></td><td><b>76 Quay Street</b>（市中心，靠近汽车总站）</td><td class="c">约 07:00–22:00，<b>市中心最方便</b></td></tr>
+<tr><td><b>Countdown Auckland Metro</b></td><td><b>19-25 Victoria Street</b>（天空塔旁）</td><td class="c">约 07:00–22:00，<b>离皇后街最近</b></td></tr>
+<tr><td><b>PAK'nSAVE Sylvia Park</b></td><td>286 Mt Wellington Hwy, Mt Wellington</td><td class="c"><b>通常最便宜</b>，但要坐车去（旁边有火车站）</td></tr>
+<tr><td>PAK'nSAVE Royal Oak</td><td>691 Manukau Rd, Royal Oak</td><td class="c">价格低，需开车／公交</td></tr>
+</table>
+<div class="tip">
+<b>经验法则：</b>PAK'nSave 折扣力度最大、品类最全；Countdown／New World 市区店最方便；<b>Woolworths 和 Pak'nSave 是两家公司、两家都便宜</b>，不用纠结选哪家。
+</div>
+
+<h3>超市该买什么（对照 D7 的清单）</h3>
+<ul class="chk">
+<li><b>麦卢卡蜂蜜</b> — <b>认准 UMF/MGO 标识</b>（UMF10+／15+ 才算高端）；超市几纽币的那种是普通蜜，别当高端买</li>
+<li><b>奇异果</b> — 1 月是产季，<b>Golden（金果）甜、Green（绿果）酸</b>；挑硬的才耐放</li>
+<li><b>绵羊油系列</b>（Lanolin）— 护手霜、身体乳、护发素</li>
+<li><b>羊毛制品</b> — 围巾、袜子（<b>美利奴羊毛袜很保暖，实用</b>）</li>
+<li><b>巧克力</b> — Whittaker's、Patagonia 等本地品牌</li>
+<li><b>奶粉／果酱</b> — 手信好带</li>
+</ul>
+
+<h3>如果这一小时想逛皇后街</h3>
+<p class="small muted">行程单写的"皇后大街"在奥克兰市中心，<b>亮点是品牌集中</b>：</p>
+<table>
+<tr><th>地点</th><th>位置</th><th>买什么</th></tr>
+<tr><td><b>Faradays</b>（2026年 9 月新开高端百货）</td><td>131 Queen Street</td><td>220+ 国际品牌，含 Country Road、Witchery 等</td></tr>
+<tr><td><b>Commercial Bay</b>（海港景观商场）</td><td>7 Queen Street，街底</td><td>连通 Britomart 车站，Apple、Lululemon 等</td></tr>
+<tr><td><b>Queens Arcade</b>（1929 年老建筑）</td><td>34–40 Queen Street</td><td>两层精品廊，服饰／厨具／音乐／咖啡</td></tr>
+<tr><td>免税／纪念品店</td><td>皇后街沿线</td><td><b>可问"机场提货免 GST"</b>——支持的话当场买反而划算</td></tr>
+</table>
+
+<div class="key">
+<b>最后一件事：机场免税</b><br>
+D11 晚上 23:55 起飞（NZ289），<b>国际航站楼过安检后有免税店</b>，买酒类、香水、品牌可以免 15% GST。<b>但注意免税额度</b>：17 岁以上可带 50 支烟、4.5 升葡萄酒／啤酒、3 瓶烈酒，其他商品上限 NZ$700。<b>超了要申报并补税。</b>
+</div>
+</div>
+</div>
+
+<!-- 一页速查 -->
+<div class="card">
+<h2><span class="n">📋</span>一页速查：可打印清单</h2>
+
+<h3>✅ D7 皇后镇要做的三件事</h3>
+<ul class="chk">
+<li>看中的东西<b>拍照＋记价格＋记店名</b></li>
+<li>问店能不能"机场提货免 GST"</li>
+<li>确认 D11 是不是周六（市集只周六开）</li>
+</ul>
+
+<h3>🛒 D11 奥克兰采购优先级</h3>
+<table>
+<tr><th class="c">优先</th><th>品类</th><th>去哪买</th></tr>
+<tr><td class="c"><b>1</b></td><td>麦卢卡蜂蜜（认 UMF）</td><td>Countdown Metro（天空塔旁）或 Woolworths Quay St</td></tr>
+<tr><td class="c"><b>2</b></td><td>奇异果（Golden 更甜）</td><td>同上</td></tr>
+<tr><td class="c"><b>3</b></td><td>绵羊油 / 羊毛制品</td><td>同上</td></tr>
+<tr><td class="c"><b>4</b></td><td>巧克力、酒类手信</td><td>同上，或机场免税</td></tr>
+<tr><td class="c">5</td><td>大牌 / 奢侈品</td><td>Faradays 131 Queen St</td></tr>
+</table>
+
+<h3>❌ 别做的事</h3>
+<ul class="chk">
+<li>别在皇后镇买蜂蜜、绵羊油等重货（贵 20%–35%，还占行李）</li>
+<li>别指望机场退税——<b>新西兰没有这个制度</b></li>
+<li>别把 D11 那 1 小时全耗在皇后大街上（超市更划算、更实在）</li>
+<li>别买免税店商品超过额度（ NZ$700 其他商品上限），超了要补税</li>
+</ul>
+
+<div class="warn">
+<b>行李空间提醒</b>：蜂蜜、羊毛制品都很占地方。<b>建议在超市买真空／轻量包装</b>，或者用免税店的密封袋装。出发前把重物挪到随身包里托运，别卡在行李重量上限。
+</div>
+</div>
+
+<footer>
+本清单基于「鲸跃星河」新西兰南北岛 12 天行程（V727）行程单编制。<br>
+价格与营业时间为 2026-10 查得的公开信息，仅供判断量级；以现场实际为准。<br>
+<b>特别更正：新西兰无游客 GST 退税制度</b>（依据：New Zealand Customs 官方说明）。<br>
+道钉 🛤️ · 2026-10-20
+</footer>
+
+</div>
+</body>
+</html>

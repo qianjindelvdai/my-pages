@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D7 皇后镇自由日 · 三套方案｜“鲸跃星河”新西兰 12 天</title>
+<style>
+*{box-sizing:border-box}
+:root{
+--ink:#22303c;--muted:#5d6b78;--line:#e0e6ec;--bg:#f5f7f9;--card:#fff;
+--navy:#0d3049;--teal:#0f766e;--gold:#c08b2e;--red:#b4442f;--green:#2f6f4f;--orange:#c2691f;
+}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+line-height:1.78;-webkit-font-smoothing:antialiased}
+.wrap{max-width:980px;margin:0 auto;padding:22px 18px 70px}
+
+.hero{background:linear-gradient(135deg,#0b2b42 0%,#0d3049 48%,#1a5a4a 100%);
+color:#fff;border-radius:16px;padding:32px 30px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;left:0;top:0;height:100%;width:6px;background:var(--gold)}
+.hero .kicker{font-size:12.5px;color:#8fb6c9;letter-spacing:2.5px;margin-bottom:8px}
+.hero h1{margin:0 0 8px;font-size:26px}
+.hero p{margin:0;color:#d3e3ec;font-size:14.5px}
+.hero .meta{margin-top:15px;font-size:13px;color:#a3c4d4;border-top:1px solid rgba(255,255,255,.15);padding-top:12px;line-height:1.9}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+padding:24px 26px;margin:16px 0;box-shadow:0 1px 3px rgba(13,48,73,.06)}
+h2{font-size:20px;margin:0 0 16px;color:var(--navy);display:flex;align-items:center;gap:10px;
+padding-bottom:10px;border-bottom:2px solid #eef2f6}
+h2 .n{display:inline-flex;width:28px;height:28px;border-radius:9px;background:var(--navy);
+color:#fff;font-size:14px;align-items:center;justify-content:center;font-weight:600;flex:none}
+h3{font-size:16px;margin:20px 0 8px;color:var(--navy)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:5px 0}
+b,strong{color:var(--navy)}
+.small{font-size:13.4px}
+.muted{color:var(--muted)}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.8px}
+th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+th{background:#eff4f7;color:var(--navy);font-weight:600}
+td.c,th.c{text-align:center}
+
+.box{border:1px solid var(--line);border-radius:11px;padding:14px 16px;background:#fbfcfd}
+.box .bt{font-weight:600;color:var(--navy);font-size:14.5px;margin-bottom:5px}
+.box ul{margin:6px 0;padding-left:19px;font-size:13.8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+
+.warn{background:#fdf6f2;border:1px solid #f0d5c6;border-left:4px solid var(--orange);
+border-radius:10px;padding:14px 17px;margin:14px 0}
+.warn b{color:#9c4f13}
+.tip{background:#f1f8f5;border:1px solid #cfe4d9;border-left:4px solid var(--green);
+border-radius:10px;padding:14px 17px;margin:14px 0}
+.tip b{color:#1f5638}
+.key{background:#f7f9fb;border:1px dashed #c6d3de;border-radius:10px;padding:14px 17px;margin:14px 0}
+.alert{background:#fdf2f0;border:1px solid #f0ccc4;border-left:4px solid var(--red);
+border-radius:10px;padding:14px 17px;margin:14px 0}
+.alert b{color:#8f3320}
+
+/* 方案卡 */
+.plan{border:1px solid var(--line);border-radius:12px;margin:15px 0;overflow:hidden;background:#fff}
+.plan> .ph{padding:14px 18px;display:flex;flex-wrap:wrap;align-items:center;gap:10px;border-bottom:1px solid var(--line)}
+.plan.p1> .ph{background:linear-gradient(90deg,#0d3049,#1a4f6e);color:#fff}
+.plan.p2> .ph{background:linear-gradient(90deg,#1a5a4a,#2f7a63);color:#fff}
+.plan.p3> .ph{background:linear-gradient(90deg,#7a4a1f,#a06a2a);color:#fff}
+.plan.p4> .ph{background:linear-gradient(90deg,#4a5568,#5f6b7d);color:#fff}
+.plan .ph .pn{font-size:12.5px;font-weight:700;background:rgba(255,255,255,.22);padding:2px 10px;border-radius:20px}
+.plan .ph .pt{font-size:16.5px;font-weight:600}
+.plan .ph .pc{margin-left:auto;font-size:13px;background:rgba(255,255,255,.18);padding:3px 11px;border-radius:20px}
+.plan .pb{padding:16px 18px}
+.tag{display:inline-block;font-size:12px;padding:1px 9px;border-radius:20px;background:var(--teal);color:#fff;margin-right:5px}
+.tag.o{background:var(--orange)}.tag.r{background:var(--red)}.tag.n{background:var(--navy)}.tag.g{background:var(--green)}
+
+.tl{list-style:none;padding:0;margin:10px 0}
+.tl li{position:relative;padding:0 0 12px 22px;border-left:2px solid #dbe4ec;margin:0}
+.tl li:last-child{border-left-color:transparent;padding-bottom:0}
+.tl li:before{content:"";position:absolute;left:-6px;top:7px;width:10px;height:10px;border-radius:50%;
+background:var(--navy);border:2px solid #fff;box-shadow:0 0 0 1.5px #dbe4ec}
+.tl li .tt{font-weight:600;color:var(--navy);font-size:14px}
+.tl li .td{font-size:13.3px;color:var(--muted)}
+
+.pick{background:#fbfcfd;border:2px solid #c9d6e2;border-radius:12px;padding:18px 20px;margin:16px 0}
+.pick.reco{border-color:#2f7a63;background:#f4faf7}
+.pick h3{margin-top:0}
+.pick .why{font-size:14px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:12px 14px;margin-top:10px}
+
+.cost{font-size:13.5px}
+.cost td:first-child{font-weight:600;color:var(--navy);background:#fafcfd;white-space:nowrap}
+
+footer{text-align:center;color:#93a1b5;font-size:12.5px;margin-top:30px;line-height:1.9}
+
+@media (max-width:640px){
+.wrap{padding:14px 12px 50px}
+.hero{padding:24px 18px}.hero h1{font-size:21px}
+.card{padding:18px 15px}
+.grid2,.grid3{grid-template-columns:1fr}
+th,td{padding:7px 8px;font-size:13px}
+.plan .ph .pc{margin-left:0;width:100%}
+}
+@media print{
+@page{size:A4;margin:11mm}
+body{background:#fff}
+.wrap{max-width:none;padding:0}
+.card,.plan,.box,.warn,.tip,.key,.alert,.pick{box-shadow:none;break-inside:avoid}
+.hero,th,.tag,h2 .n,.plan .pn{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.plan> .ph{background:#0d3049!important;-webkit-print-color-adjust:exact}
+h2{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hero">
+  <div class="kicker">DAY 7 · QUEENSTOWN FREE DAY</div>
+  <h1>D7 皇后镇自由日：三套方案任你选</h1>
+  <p>全程唯一没有 Morning Call 的一天 · 时间怎么排、预算多少、怎么预约</p>
+  <div class="meta">
+    📍 皇后镇（第 5、6、7 天连住 3晚）　｜　🌡️ 镇上 9~22℃，1 月是当地最 windy 的月份<br>
+    ⏱️ 时差：新西兰比上海快 4–5 小时　｜　💱 参考汇率 1 NZD ≈ 3.80 CNY
+  </div>
+</div>
+
+<!-- 前提 -->
+<div class="card">
+<h2><span class="n">📌</span>先看三条前提</h2>
+<div class="grid3">
+<div class="box"><div class="bt">① 这天没有团队安排</div><ul>
+<li>行程单原文：<b>「自由活动，不安排司机导游服务」</b></li>
+<li>所以交通要<b>自己解决</b>（跟团巴士不跟）</li>
+<li>午晚餐自理</li></ul></div>
+<div class="box"><div class="bt">② 但跟团有硬约束</div><ul>
+<li><b>全程必须跟团、不得擅自离团</b></li>
+<li>实际可行的只有「<b>团内推荐的自费项目</b>」（含往返接送）或「<b>镇内活动</b>」</li>
+<li>自由行式的自行包车去峡湾，注意团规风险</li></ul></div>
+<div class="box"><div class="bt">③ 自费项目要早订</div><ul>
+<li>有<b>最低成团人数门槛</b>，人数不足会调价或不成行</li>
+<li><b>交付后恕不退款</b>（不可抗力除外）</li>
+<li>建议<b>出发前 2–4 周</b>跟旅行社锁定</li></ul></div>
+</div>
+
+<div class="alert">
+<b>⚠️ 一处行程单笔误要提醒你</b><br>
+行程单 D7 正文写米弗峡湾「<b>约 8 小时车程</b>」，但同文件的自费项目表写「<b>约 3.5 小时车程</b>」。<b>3.5 小时是对的</b>（皇后镇到米弗峡湾单程约 4 小时，往返＋游船＋午餐整趟约 12–13 小时）。如果导游按 8 小时跟你讲，那是把<b>往返</b>说成了单程——你心里要有数，这天是<b>一整天</b>。
+</div>
+</div>
+
+<!-- 方案总览 -->
+<div class="card">
+<h2><span class="n">🧭</span>四套方案，先看总览</h2>
+
+<table>
+<tr><th>方案</th><th>主打</th><th class="c">时长</th><th class="c">费用（NZD）</th><th>适合谁</th></tr>
+<tr><td><b>A｜峡湾经典</b></td><td>米弗峡湾一日游（世界第八大奇迹）</td><td class="c">约 12–13h</td><td class="c">370 / 人起<br><span class="small muted">飞机 770 起</span></td><td>只想来一次"值回票价"的经典地标，不怕累</td></tr>
+<tr><td><b>B｜悠闲＋购物</b></td><td>TSS 蒸汽船 ＋ 高山牧场 BBQ ＋ 镇内市集</td><td class="c">约 5h</td><td class="c">219 / 人</td><td>不想赶船，想留出购物和休息时间</td></tr>
+<tr><td><b>C｜肾上腺素</b></td><td>皇后镇跳伞（9000 英尺）</td><td class="c">约 3–4h</td><td class="c">445 / 人起</td><td>想一次性玩个大的，皇后镇的招牌项目</td></tr>
+<tr><td><b>D｜半日混合</b> <span class="tag g">推荐</span></td><td>跳伞 ＋ 下午市集＋ Fergburger</td><td class="c">约 6h</td><td class="c">445 + 餐饮</td><td>既想挑战，又想带手信、吃网红汉堡</td></tr>
+</table>
+
+<div class="tip">
+<b>我的建议：D7 走B 或 D。</b><br>
+理由：<b>A 方案（峡湾）虽然是最经典的地标，但你整个行程已经在南岛看了梯卡坡、普卡基、瓦纳卡、格林诺奇、但尼丁、摩拉基——米弗峡湾是"再加一个峡谷"，边际收益递减</b>，而且 12–13 小时在车上会非常疲。如果<b>米弗峡湾对你有特殊意义</b>（第一次来南岛、就想打卡世界遗产），那就选 A。<br>
+<b>B 方案最稳</b>：蒸汽船是南半球唯一的燃煤观光客船、湖景＋牧场 BBQ，节奏松，而且下午还能逛市集、买手信。<b>D 方案最"皇后镇"</b>：用半天跳伞把最有肾上腺素的项目一次拿下，剩下的时间留给镇中心。
+</div>
+</div>
+
+<!-- A 方案 -->
+<div class="plan p1">
+<div class="ph"><span class="pn">方案 A</span><span class="pt">米弗峡湾一日游</span><span class="pc">370 NZD 起 / 约 12–13 小时</span></div>
+<div class="pb">
+<ul class="tl">
+<li><span class="tt">06:30–07:00</span> <span class="td">酒店门口（或指定集合点）接人出发，路过皇后镇湖畔</span></li>
+<li><span class="tt">08:00–09:00</span> <span class="td">途中 <b>荷马隧道（Homer Tunnel）</b>——全长 1.28km 世界最长公路隧道之一，出口就是克莱德山谷风景</span></li>
+<li><span class="tt">11:30</span> <span class="td">抵达 <b>米弗峡湾</b>，换乘大型双体帆船进峡湾（<b>航行约 75 分钟</b>）</span></li>
+<li><span class="tt">船上</span> <span class="td">远眺米特雷峰（Mitre Peak）、看瀑布倾泻形成的水雾；<b>中午在船上用午餐</b>；运气好能看到南方长毛海豹</span></li>
+<li><span class="tt">15:00</span> <span class="td">返程（沿途多处停靠观景）</span></li>
+<li><span class="tt">19:00–20:00</span> <span class="td">回到皇后镇</span></li>
+</ul>
+
+<h3>费用三档</h3>
+<table class="cost">
+<tr><td>巴士往返 + 游轮 + 自助午餐</td><td class="c">370 NZD（约 ¥1,405）</td></tr>
+<tr><td>巴士往返 + 游轮 + 打包餐盒</td><td class="c">340 NZD（约 ¥1,291）</td></tr>
+<tr><td><b>飞机往返</b>（从皇后镇机场飞峡湾再飞回）</td><td class="c">770 NZD 起（约 ¥2,923）</td></tr>
+</table>
+
+<div class="warn">
+<b>三个提醒</b>
+<ul>
+<li><b>峡湾夏季仍常下雨</b>（年均降雨 200+ 天），雨天瀑布更壮观、也更容易看到水雾——<b>带防水外套和长裤</b>，别穿短袖。</li>
+<li>巴士团通常<b>不含小费</b>，新西兰无强制小费；司导如表现出色可自愿给。</li>
+<li><b>自选：神奇峡湾（Doubtful Sound）</b>——峡湾长度是米弗的 3 倍、宽度 10 倍，团费 519 NZD，<b>但每天仅限 450 人</b>，想去的必须早订。二者只能选一个。</li>
+</ul>
+</div>
+</div>
+</div>
+
+<!-- B 方案 -->
+<div class="plan p2">
+<div class="ph"><span class="pn">方案 B</span><span class="pt">TSS 百年蒸汽船 ＋ 高山牧场 BBQ</span><span class="pc">219 NZD / 约 5 小时</span></div>
+<div class="pb">
+<ul class="tl">
+<li><span class="tt">09:30</span> <span class="td">皇后镇码头登船（蒸汽船码头 Steamship Wharf）</span></li>
+<li><span class="tt">航行约 2 小时</span> <span class="td">乘 <b>TSS Earnslaw</b> 游瓦卡蒂普湖——1912 年打造，<b>南半球唯一仍在运营的燃煤观光客船</b>；可在一楼看船员操作锅炉</span></li>
+<li><span class="tt">12:00</span> <span class="td">抵达 <b>Walter Peak 华特高原农庄</b>：<b>BBQ 烧烤自助午餐</b>（这是项目含的餐，不用另花钱）</span></li>
+<li><span class="tt">13:30</span> <span class="td">返航，约 15:00 回到码头</span></li>
+<li><span class="tt">下午</span> <span class="td">自由安排——见下方「镇内玩法」</span></li>
+</ul>
+
+<div class="tip">
+<b>这条最省心</b>：船上有座位、有暖气、航行平缓，<b>下午完全空出来</b>。而且这是行程单里两个"参考自费项目"之一，导游熟悉、上下车点明确。
+</div>
+
+<h3>下午镇内怎么填（三个选择）</h3>
+<table>
+<tr><th>玩法</th><th>时间</th><th>花费</th></tr>
+<tr><td><b>湖滨市集</b>（Queenstown Market，手作／果酱／木器）</td><td class="c">周六上午</td><td class="c">免费</td></tr>
+<tr><td><b>非凡市集</b>（Remarkables Market，Frankton，自产水果＋现场音乐）</td><td class="c">周六 9:00–14:00</td><td class="c">免费<br><span class="small muted">车程约 15 分钟</span></td></tr>
+<tr><td><b>镇中心购物</b>：O'Connells、Aotea Gifts、Cookie Time 步行可达</td><td class="c">随时</td><td class="c">按需</td></tr>
+<tr><td><b>Fergburger 网红汉堡</b></td><td class="c">约 11:00 或 17:00</td><td class="c">约 20 NZD</td></tr>
+</table>
+<p class="small muted">⚠️ 1 月底的周六是哪一天要按你实际行程推算；两个市集都是<b>周六</b>才开，正好安排在这一天最划算。</p>
+</div>
+</div>
+
+<!-- C 方案 -->
+<div class="plan p3">
+<div class="ph"><span class="pn">方案 C</span><span class="pt">皇后镇跳伞</span><span class="pc">445 NZD 起 / 约 3–4 小时</span></div>
+<div class="pb">
+<ul class="tl">
+<li><span class="tt">提前 1.5–2 小时</span> <span class="td">到皇后镇机场（ZQN）集合，签安全须知、听讲解、称重分配 Tandem 搭档</span></li>
+<li><span class="tt">起飞</span> <span class="td">升至 <b>9000 英尺（约 2740 米）</b></span></li>
+<li><span class="tt">跳出机舱</span> <span class="td">约 <b>60 秒自由下落</b>，时速可达 200 km/h，随后开伞伞降</span></li>
+<li><span class="tt">落地后</span> <span class="td">看录像回放、拿纪念照</span></li>
+</ul>
+
+<div class="warn">
+<b>⚠️跳伞有硬性身体条件</b>
+<ul>
+<li><b>年龄需满 18 岁</b>（本团最高只能跳 60 米塔跳或双人塔跳）</li>
+<li><b>体重上限约 100 kg</b>（以现场确认为准，超重要另议）</li>
+<li><b>当天不能饮酒、不能感冒发烧</b>；有高血压／心脏／腰椎问题、处于孕期都不适合</li>
+<li><b>不怕高是硬门槛</b>——出发前 8 小时不能游泳、不能高强度运动</li>
+<li><b>务必提前订</b>：旺季名额紧张，且有最低成团人数门槛</li>
+</ul>
+</div>
+
+<p class="small muted">另有喷射快艇 169 NZD（约 ¥642，Shotover 河贴岩行驶，约半小时）和格林诺奇喷射快艇 329 NZD / 徒步 150 NZD 可叠加。</p>
+</div>
+</div>
+
+<!-- D 方案 -->
+<div class="plan p4">
+<div class="ph"><span class="pn">方案 D</span><span class="pt">半日混合：跳伞 + 市集 + Fergburger</span><span class="pc">445 NZD 起 / 约 6 小时</span></div>
+<div class="pb">
+<ul class="tl">
+<li><span class="tt">07:30–11:30</span> <span class="td">皇后镇机场跳伞（含讲解、飞行、伞降、回放）</span></li>
+<li><span class="tt">12:00</span> <span class="td">回镇午餐——<b>Fergburger</b>（湖滨招牌巨无霸汉堡，约 20 NZD，排队约 30 分钟）</span></li>
+<li><span class="tt">13:00–15:00</span> <span class="td">镇中心购物：O'Connells 买保健品羊毛制品、Aotea Gifts 买蜂蜜手信（支持支付宝）、Cookie Time 买铁盒曲奇</span></li>
+<li><span class="tt">15:00–16:00</span> <span class="td">湖滨散步，或去 Remarkables Market（Frankton，夏季周六 9:00–14:00）</span></li>
+<li><span class="tt">傍晚</span> <span class="td">收拾行李，为明天长途移动日（第 8 天皇后镇→但尼丁→奥马鲁）做准备</span></li>
+</ul>
+<div class="tip"><b>注意节奏</b>：跳伞当天体力消耗不小，下午安排<b>轻量活动</b>（购物＋散步）刚好；<b>不要和峡湾一日游排在同一天</b>，两天都是整天，体力吃不消。</div>
+</div>
+</div>
+
+<!-- 速查 -->
+<div class="card">
+<h2><span class="n">💰</span>预算速查（1 NZD ≈ 3.80 CNY）</h2>
+<table>
+<tr><th>组合</th><th class="c">NZD</th><th class="c">约人民币</th><th>说明</th></tr>
+<tr><td><b>省钱版</b>：B方案蒸汽船 + 自带干粮</td><td class="c">219</td><td class="c">¥832</td><td>午餐已含 BBQ，额外只花咖啡/汉堡</td></tr>
+<tr><td><b>均衡版</b>：B 蒸汽船 + Fergburger + 购物</td><td class="c">≈260</td><td class="c">¥988</td><td>最舒服，几乎不赶</td></tr>
+<tr><td><b>挑战版</b>：D 跳伞 + 午餐 + 购物</td><td class="c">≈490</td><td class="c">¥1,862</td><td>一天拿下皇后镇招牌项目</td></tr>
+<tr><td><b>经典版</b>：A 米弗峡湾（巴士往返）</td><td class="c">370</td><td class="c">¥1,406</td><td>午餐已含游船餐</td></tr>
+<tr><td><b>豪华版</b>：A 米弗峡湾（飞机往返）</td><td class="c">770</td><td class="c">¥2,926</td><td>从空中俯瞰峡湾，省下 6 小时车程</td></tr>
+</table>
+<p class="small muted">汇率按 2026-10-20 中间价 3.7963 估算，1 月实际以当日为准。以上均<b>未含单间差</b>（若旅行社未处理需另付）。</p>
+</div>
+
+<!-- 预约清单 -->
+<div class="card">
+<h2><span class="n">✅</span>D7 出发前必办清单</h2>
+<table>
+<tr><th class="c">时点</th><th>要做的事</th><th>找谁</th></tr>
+<tr><td class="c"><b>现在</b><br><span class="small muted">出发前 3 个月</span></td><td>确认<b>跳伞</b>名额（旺季最紧张、名额有限）</td><td>旅行社／领队</td></tr>
+<tr><td class="c"><b>出发前 4 周</b></td><td>锁定 D7 自费项目类型（报给领队，凑人数成团）</td><td>旅行社／领队</td></tr>
+<tr><td class="c"><b>出发前 4 周</b></td><td>若选<b>神奇峡湾</b>，趁"每天限 450 人"还有名额时订</td><td>旅行社</td></tr>
+<tr><td class="c"><b>出发前 2 周</b></td><td><b>米弗峡湾住宿山屋</b>虽已售罄，但要确认改走游船的可退改</td><td>旅行社</td></tr>
+<tr><td class="c"><b>出发前 3 天</b></td><td>查皇后镇与峡湾<b>逐日预报</b>，决定走 A 还是 B（峡湾雨多，宜备 B 方案）</td><td>自己</td></tr>
+<tr><td class="c"><b>出发前 1 天</b></td><td>确认跳伞当天的<b>身体状况</b>与天气；穿长袖（跳伞机上很冷）</td><td>自己</td></tr>
+</table>
+
+<div class="key">
+<b>一条实用建议</b>：D7 是自由日，而 D8 是全程最长的移动日（皇后镇→但尼丁→奥马鲁，单程 4 小时＋多个停留点）。<b>所以 D7 晚上别熬太晚</b>——把体力留给第 8 天，尤其第 8 天晚上要在奥马鲁看企鹅，那晚是全程最冷的。
+</div>
+</div>
+
+<!-- 天气对照 -->
+<div class="card">
+<h2><span class="n">🌡️</span>D7 天气对照（1 月下旬历史平均）</h2>
+<table>
+<tr><th>地点</th><th class="c">白天</th><th class="c">夜间</th><th>穿衣</th></tr>
+<tr><td><b>皇后镇镇内</b></td><td class="c">9~22℃</td><td class="c">约 10℃</td><td>短袖 + 薄外套；<b>湖风大，缆车站和湖边备挡风外套</b></td></tr>
+<tr><td><b>米弗峡湾</b></td><td class="c">15~18℃</td><td class="c">—</td><td><b>防水外套 + 长裤</b>（峡湾年均降雨 200+ 天），比镇上冷得多</td></tr>
+<tr><td><b>高空（跳伞）</b></td><td class="c">舱内约 0~5℃</td><td class="c">—</td><td>长袖长裤，<b>不要穿短袖短裤</b></td></tr>
+</table>
+<p class="small muted">新西兰天气多变，「一天四季」是常态；天气预报请以出发前 3 天的当地实况为准。</p>
+</div>
+
+<footer>
+本方案基于「鲸跃星河」新西兰南北岛 12 天行程单（V727）制作，价格与时间以旅行社实际安排为准。<br>
+费用不含单间差；自费项目有最低成团人数门槛，交付后恕不退款（不可抗力除外）。<br>
+道钉 🛤️ · 2026-10-20
+</footer>
+
+</div>
+</body>
+</html>

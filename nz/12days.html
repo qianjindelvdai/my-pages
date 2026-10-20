@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>“鲸跃星河”新西兰南北岛 12 天 · 行程手册</title>
+<style>
+*{box-sizing:border-box}
+:root{
+--ink:#22303c;--muted:#5d6b78;--line:#e0e6ec;--bg:#f5f7f9;--card:#fff;
+--navy:#0d3049;--navy2:#123a52;--teal:#0f766e;--gold:#c08b2e;
+--red:#b4442f;--green:#2f6f4f;--orange:#c2691f;--blue:#2e6db4;
+}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+line-height:1.78;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1000px;margin:0 auto;padding:22px 18px 70px}
+
+.hero{background:linear-gradient(135deg,#0b2b42 0%,#0d3049 45%,#164a63 100%);
+color:#fff;border-radius:16px;padding:34px 30px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;left:0;top:0;height:100%;width:6px;background:var(--gold)}
+.hero .tagline{font-size:12.5px;color:#8fb6c9;letter-spacing:3px;margin-bottom:9px}
+.hero h1{margin:0 0 8px;font-size:27px;letter-spacing:.5px}
+.hero .sub{font-size:14.5px;color:#d3e3ec}
+.hero .chips{margin-top:16px;display:flex;flex-wrap:wrap;gap:7px}
+.hero .chips span{font-size:12.5px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2);
+padding:4px 11px;border-radius:20px;color:#e6f0f5}
+.hero .meta{margin-top:15px;font-size:12.8px;color:#a3c4d4;border-top:1px solid rgba(255,255,255,.15);padding-top:12px;line-height:1.9}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+padding:24px 26px;margin:16px 0;box-shadow:0 1px 3px rgba(13,48,73,.06)}
+h2{font-size:20px;margin:0 0 16px;color:var(--navy);display:flex;align-items:center;gap:10px;
+padding-bottom:10px;border-bottom:2px solid #eef2f6}
+h2 .n{display:inline-flex;width:28px;height:28px;border-radius:9px;background:var(--navy);
+color:#fff;font-size:14px;align-items:center;justify-content:center;font-weight:600;flex:none}
+h3{font-size:16px;margin:20px 0 8px;color:var(--navy)}
+h3:first-of-type{margin-top:10px}
+h4{font-size:14.5px;margin:14px 0 6px;color:var(--teal)}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:5px 0}
+b,strong{color:var(--navy)}
+.small{font-size:13.5px}
+.muted{color:var(--muted)}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.8px}
+th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+th{background:#eff4f7;color:var(--navy);font-weight:600}
+tbody tr:nth-child(even){background:#fafcfd}
+td.c,th.c{text-align:center}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.box{border:1px solid var(--line);border-radius:11px;padding:14px 16px;background:#fbfcfd}
+.box .bt{font-weight:600;color:var(--navy);font-size:14.5px;margin-bottom:5px}
+.box ul{margin:6px 0;padding-left:19px;font-size:13.8px}
+
+.warn{background:#fdf6f2;border:1px solid #f0d5c6;border-left:4px solid var(--orange);
+border-radius:10px;padding:14px 17px;margin:14px 0}
+.warn b{color:#9c4f13}
+.tip{background:#f1f8f5;border:1px solid #cfe4d9;border-left:4px solid var(--green);
+border-radius:10px;padding:14px 17px;margin:14px 0}
+.tip b{color:#1f5638}
+.key{background:#f7f9fb;border:1px dashed #c6d3de;border-radius:10px;padding:14px 17px;margin:14px 0}
+.alert{background:#fdf2f0;border:1px solid #f0ccc4;border-left:4px solid var(--red);
+border-radius:10px;padding:14px 17px;margin:14px 0}
+.alert b{color:#8f3320}
+
+/* 行程日卡 */
+.day{border:1px solid var(--line);border-left:5px solid var(--navy);border-radius:11px;
+padding:16px 18px;margin:13px 0;background:#fff}
+.day.d1{border-left-color:#8aa4b8}.day.d2{border-left-color:#2e6db4}
+.day.d5,.day.d6,.day.d7{border-left-color:var(--gold)}
+.day.d8{border-left-color:#7a5c9e}
+.day.d10{border-left-color:var(--teal)}
+.day.d11,.day.d12{border-left-color:#6b7a88}
+.day .dh{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;margin-bottom:4px}
+.day .dn{font-size:12.5px;font-weight:700;color:#fff;background:var(--navy);
+padding:2px 10px;border-radius:20px;flex:none}
+.day .dt{font-size:16px;font-weight:600;color:var(--navy)}
+.day .df{font-size:12.5px;color:var(--muted);margin-left:auto}
+.wx{background:#f0f6f9;border-radius:9px;padding:10px 13px;margin:9px 0;font-size:13.5px}
+.wx b{color:#1d5570}
+.wx .c1{color:var(--navy);font-weight:600}
+
+.pill{display:inline-block;font-size:12px;padding:1px 9px;border-radius:20px;
+background:var(--teal);color:#fff;margin-right:5px}
+.pill.o{background:var(--orange)}.pill.r{background:var(--red)}.pill.n{background:var(--navy)}
+.pill.g{background:var(--green)}
+
+footer{text-align:center;color:#93a1b5;font-size:12.5px;margin-top:30px;line-height:1.9}
+
+@media (max-width:640px){
+.wrap{padding:14px 12px 50px}
+.hero{padding:24px 18px}.hero h1{font-size:21px}
+.card{padding:18px 15px}
+.grid2,.grid3{grid-template-columns:1fr}
+th,td{padding:7px 8px;font-size:13px}
+.day .df{margin-left:0;width:100%}
+}
+@media print{
+@page{size:A4;margin:11mm}
+body{background:#fff}
+.wrap{max-width:none;padding:0}
+.card,.day,.box,.warn,.tip,.key,.alert{box-shadow:none;break-inside:avoid}
+.hero,th,.pill,h2 .n,.day .dn{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+h2{break-after:avoid}
+.day{padding:11px 13px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hero">
+  <div class="tagline">AOTEAROA NEW ZEALAND · 12 DAYS</div>
+  <h1>“鲸跃星河”新西兰南北岛 12 天</h1>
+  <div class="sub">简化行程手册 · 逐日安排 · 天气 · 穿衣 · 购物 · 关键提醒</div>
+  <div class="chips">
+    <span>3 晚皇后镇连住</span>
+    <span>凯库拉观鲸</span>
+    <span>库克山直升机雪降</span>
+    <span>SKYLINE 天空缆车</span>
+    <span>霍比特村 + 萤火虫洞</span>
+    <span>蓝眼小企鹅归巢</span>
+  </div>
+  <div class="meta">
+    ✈️ 上海浦东— 奥克兰往返（新西兰航空直飞）｜ 出发：2027 年 1 月底（南半球盛夏）<br>
+    🕐 时差：新西兰比上海快 <b style="color:#fff">4–5 小时</b>　｜　天气为各目的地 1 月下旬历史平均，出发前 3 天请再查当地预报
+  </div>
+</div>
+
+<!-- 路线图 -->
+<div class="card" id="map">
+<h2><span class="n">🗺️</span>行程路线：一眼看懂去哪</h2>
+<svg viewBox="0 0 900 300" width="100%" style="display:block;max-width:900px;margin:6px auto" role="img" aria-label="新西兰南北岛12天行程路线图">
+  <defs>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#eaf3f8"/><stop offset="100%" stop-color="#dceaf2"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="300" fill="url(#sea)" rx="10"/>
+  <!-- 南岛轮廓 -->
+  <path d="M95 218 L150 192 L215 182 L280 172 L340 166 L400 162 L450 157 L492 152 L520 156 L536 170 L528 186 L500 194 L455 200 L400 204 L345 208 L290 214 L235 222 L180 232 L132 238 Z"
+        fill="#cfe0c9" stroke="#8fae8a" stroke-width="1.5"/>
+  <!-- 北岛轮廓 -->
+  <path d="M470 92 L520 74 L580 62 L640 58 L688 64 L712 80 L706 98 L676 110 L630 118 L580 122 L530 118 L492 108 Z"
+        fill="#cfe0c9" stroke="#8fae8a" stroke-width="1.5"/>
+  <!-- 标签 -->
+  <text x="250" y="272" font-size="14" fill="#5a7a52" font-weight="600">南 岛 South Island</text>
+  <text x="560" y="72" font-size="14" fill="#5a7a52" font-weight="600">北 岛 North Island</text>
+  <!-- 航线 -->
+  <path d="M620 88 Q760 70 800 92" stroke="#2e6db4" stroke-width="2.2" fill="none" stroke-dasharray="6,4"/>
+  <path d="M600 140 Q720 250 300 215" stroke="#c08b2e" stroke-width="2.2" fill="none" stroke-dasharray="6,4"/>
+  <text x="742" y="66" font-size="11" fill="#2e6db4" font-weight="600">D1 ✈</text>
+  <text x="648" y="256" font-size="11" fill="#a07615" font-weight="600">D2 / D9 内陆航班</text>
+  <!-- 站点：标签统一置于圆点上方，逐个错开避免重叠 -->
+  <g font-size="10.5" fill="#22404f">
+    <!-- 北岛 -->
+    <circle cx="690" cy="88" r="6" fill="#0d3049"/>
+    <text x="702" y="92" font-weight="700">奥克兰 AKL</text>
+
+    <circle cx="488" cy="88" r="6" fill="#8a5a9e"/>
+    <text x="488" y="76" text-anchor="middle">玛塔玛塔 · 霍比特村</text>
+
+    <circle cx="390" cy="100" r="6" fill="#4a8a5a"/>
+    <text x="376" y="88" text-anchor="middle">怀托摩 · 爱歌顿牧场</text>
+
+    <circle cx="300" cy="112" r="6" fill="#2f6f4f"/>
+    <text x="300" y="101" text-anchor="middle" font-weight="700">罗托鲁瓦</text>
+
+    <!-- 南岛 -->
+    <circle cx="440" cy="153" r="6" fill="#1d7a8c"/>
+    <text x="452" y="149">凯库拉</text>
+
+    <circle cx="360" cy="165" r="6" fill="#2e6db4"/>
+    <text x="372" y="177" font-weight="700">基督城 CHC</text>
+
+    <circle cx="288" cy="172" r="6" fill="#c08b2e"/>
+    <text x="288" y="161" text-anchor="middle">库克山 · 直升机</text>
+
+    <circle cx="240" cy="184" r="6" fill="#0f766e"/>
+    <text x="248" y="178">梯卡坡 · 奥玛拉玛</text>
+
+    <circle cx="205" cy="206" r="6" fill="#7b9a5a"/>
+    <text x="206" y="196" text-anchor="middle">瓦纳卡 · 箭镇</text>
+
+    <circle cx="176" cy="222" r="8.5" fill="#c08b2e" stroke="#fff" stroke-width="2.2"/>
+    <text x="176" y="242" text-anchor="middle" font-weight="700" fill="#8a6410">★ 皇后镇（连住3晚）</text>
+
+    <circle cx="132" cy="196" r="6" fill="#7a5c9e"/>
+    <text x="120" y="190" text-anchor="end">但尼丁</text>
+
+    <circle cx="88" cy="236" r="6" fill="#b4442f"/>
+    <text x="88" y="256" text-anchor="middle">奥马鲁 · 企鹅归巢</text>
+  </g>
+</svg>
+<p class="small muted" style="text-align:center;margin-top:6px">
+★ 皇后镇连住 3 晚（第 5、6、7 天）；D7 为自由活动日，是全程唯一可自主安排的时段。
+</p>
+</div>
+
+<!-- 每日行程 -->
+<div class="card" id="daily">
+<h2><span class="n">📅</span>每日行程 · 天气 · 穿衣</h2>
+
+<div class="day d1">
+  <div class="dh"><span class="dn">第 1 天</span><span class="dt">上海 ✈ 奥克兰</span><span class="df">NZ288　14:15 → 次日 06:45</span></div>
+  <ul>
+    <li>浦东机场集合登机，<b>夜宿飞机上</b>。机上含餐食娱乐，建议带颈枕、眼罩、耳塞。</li>
+  </ul>
+  <div class="wx"><b>🌡️ 上海：</b><span class="c1">3~9℃，冬季湿冷</span>　<b>👕 穿衣：</b>出发穿冬装，登机后可换宽松舒适衣物；<b>行李箱里把夏装放最上面</b>，落地好拿</div>
+</div>
+
+<div class="day d2">
+  <div class="dh"><span class="dn">第 2 天</span><span class="dt">奥克兰 ✈ 基督城 → 凯库拉</span><span class="df">NZ531　10:00 → 11:25</span></div>
+  <ul>
+    <li>落地即转机南岛，下午乘车北上凯库拉，看<b>毛皮海狮聚集区</b>（约 40 分钟）。</li>
+    <li>夜宿凯库拉。餐食：午晚<b>中式八菜一汤</b>。</li>
+  </ul>
+  <div class="wx"><b>🌡️ 基督城/凯库拉：</b><span class="c1">白天 20~22℃，夜里 11~12℃</span>，海边风大　<b>👕 穿衣：</b>T恤+防晒衬衫，<b>随身一件防风外套</b>（看海狮时用得上）</div>
+</div>
+
+<div class="day d2">
+  <div class="dh"><span class="dn">第 3 天</span><span class="dt">凯库拉观鲸 → 基督城</span><span class="df">出海约 120 分钟</span></div>
+  <ul>
+    <li>上午<b>出海观鲸</b>（约 2 小时）：主角是抹香鲸，运气好还能见到海豚群、信天翁。<b>务必带晕船药</b>，船上风浪大。</li>
+    <li>若因天气取消出海，<b>退船票（成人 90 纽币）</b>。午餐：<span class="pill o">半只龙虾餐</span>；晚上回基督城入住。</li>
+  </ul>
+  <div class="warn small" style="margin:9px 0 0">
+    <b>注意：</b>出海后如<b>未看到鲸鱼，费用不退</b>。这是行程单原条款，要有心理预期。
+  </div>
+  <div class="wx"><b>🌡️ 凯库拉：</b><span class="c1">18~21℃，海上体感更低 3~5℃</span>　<b>👕 穿衣：</b>长袖+防风防水外套，帽子注意系紧（海上风大）；<b>船上凉，别只穿短袖</b></div>
+</div>
+
+<div class="day d2">
+  <div class="dh"><span class="dn">第 4 天</span><span class="dt">基督城市区 → 梯卡坡湖区</span><span class="df">宿梯卡坡/奥玛拉玛/特威泽尔</span></div>
+  <ul>
+    <li>上午：<b>雅芳河</b>、<b>纸板教堂</b>（约 15 分钟）。</li>
+    <li>下午驱车进<b>梯卡坡湖</b> + <b>牧羊人教堂</b>（约 30 分钟），入夜可在<b>暗夜星空保护区</b>看银河（视天气）。</li>
+    <li>晚餐：<span class="pill o">三文鱼特色餐</span>。</li>
+  </ul>
+  <div class="wx"><b>🌡️梯卡坡：</b><span class="c1">白天 22~24℃，夜里骤降至 10℃ 左右</span>，山区干燥、紫外线极强　<b>👕 穿衣：</b>白天短袖+防晒，夜里看星星要抓绒外套+长裤；<b>防晒霜 SPF50+ 必备</b></div>
+</div>
+
+<div class="day d5">
+  <div class="dh"><span class="dn">第 5 天</span><span class="dt">库克山（直升机雪降）→ 皇后镇</span><span class="df">全程约 450 公里 · 行程最满的一天</span></div>
+  <ul>
+    <li>上午：<b>库克山国家公园</b>轻徒步（约 1 小时）+ <b>直升机雪山降落</b>（20–25 分钟）。天气无法飞行退 <b>190 纽币/人</b>。</li>
+    <li>下午：<b>普卡基湖</b> → <b>瓦纳卡湖</b> → 淘金小镇 <b>箭镇</b> → 傍晚抵达皇后镇（<b>连住 3 晚开始</b>）。</li>
+    <li>午餐：库克山景观餐厅。</li>
+  </ul>
+  <div class="warn small" style="margin:9px 0 0">
+    <b>直升机三条限制：</b>① 降落地点由驾驶员现场决定，<b>无法降落雪山无退费</b>；② <b>出发前 2 周内因自身原因放弃，费用不退</b>；③ 天气或其他原因无法飞行，退 190 纽币/人（12 岁以下退 140）。
+  </div>
+  <div class="wx"><b>🌡️ 库克山：</b><span class="c1">山下 18~22℃，雪山上 0~5℃</span>　<b>👕 穿衣：</b><b>洋葱穿法</b>——短袖+薄长袖+防风外套；上雪山穿长裤、防滑运动鞋，<b>墨镜必备</b>（雪地反光刺眼）</div>
+</div>
+
+<div class="day d6">
+  <div class="dh"><span class="dn">第 6 天</span><span class="dt">皇后镇：天空缆车 + 格林诺奇</span><span class="df">皇后镇连住</span></div>
+  <ul>
+    <li>上午：<b>SKYLINE 天空缆车</b>上山，山顶自助午餐，俯瞰皇后镇全景。</li>
+    <li>下午：“魔戒天堂小镇”<b>格林诺奇</b>往返（约 1 小时游览）+ 瓦卡蒂普湖畔散步。</li>
+  </ul>
+  <div class="wx"><b>🌡️ 皇后镇：</b><span class="c1">9~22℃，1 月是当地最 windy 的月份</span>，湖风大　<b>👕 穿衣：</b>短袖+薄外套，缆车站和湖边备一件挡风外套；早晚凉加抓绒</div>
+</div>
+
+<div class="day d7">
+  <div class="dh"><span class="dn">第 7 天</span><span class="dt">皇后镇自由活动</span><span class="df">无 Morning Call 的一天</span></div>
+  <ul>
+    <li>推荐自费：<b>米弗峡湾一日游</b>（巴士 340 纽币/人起，船上午餐）；或 <b>TSS 百年蒸汽船 + 高山牧场 BBQ</b>（219 纽币/人）。</li>
+    <li>其他热门：<b>喷射快艇</b>（169 纽币）、<b>跳伞</b>（445 纽币起）。午晚餐自理，可去 Fergburger 网红汉堡店。</li>
+    <li>🛍 不玩项目的半天正好购物：镇中心湖滨街区一网打尽（Aotea Gifts、Cookie Time、O'Connells），周六可去湖滨手作市集或非凡市集——详见下方<a href="#shop">皇后镇购物指南</a>。</li>
+  </ul>
+  <div class="wx"><b>🌡️ 皇后镇/峡湾：</b><span class="c1">镇上 9~22℃；峡湾多雨，只有 15~18℃</span>　<b>👕 穿衣：</b>去峡湾务必带<b>防水外套+长裤</b>（峡湾年均降雨 200+ 天）；镇上短袖即可</div>
+</div>
+
+<div class="day d8">
+  <div class="dh"><span class="dn">第 8 天</span><span class="dt">皇后镇 → 但尼丁 → 摩拉基 → 奥马鲁</span><span class="df">长途移动日</span></div>
+  <ul>
+    <li>但尼丁：世界最陡的<b>鲍德温大街</b>、百年火车站、八角广场、奥塔哥大学（各约 20 分钟）。</li>
+    <li>傍晚：<b>摩拉基大圆石</b> → 奥马鲁看<b>蓝眼小企鹅归巢</b>（天黑后，约 21:00 前后，<b>请保持安静、禁用闪光灯</b>）。</li>
+    <li>午餐：<span class="pill o">台式小火锅</span>；晚餐：<span class="pill o">岩石烧烤</span>。</li>
+  </ul>
+  <div class="warn small" style="margin:9px 0 0">
+    <b>企鹅归巢不保证：</b>自然现象、时间不可控，可能抵达时企鹅已归或晚归，<b>看不到费用不退</b>。
+  </div>
+  <div class="wx"><b>🌡️ 但尼丁/奥马鲁：</b><span class="c1">白天 17~20℃，夜里海边只有 10℃ 左右</span>　<b>👕 穿衣：</b>白天长袖薄衫；晚上看企鹅要穿<b>厚外套/轻薄羽绒</b>——海边风大又冷，<b>是全程最冷的一晚</b></div>
+</div>
+
+<div class="day d2">
+  <div class="dh"><span class="dn">第 9 天</span><span class="dt">奥马鲁 → 基督城 ✈ 奥克兰</span><span class="df">NZ558　16:05 → 17:30</span></div>
+  <ul>
+    <li>上午回基督城：皇家植物园（车览）+ <b>梦娜维尔花园</b>（约 20 分钟）。</li>
+    <li>下午飞回北岛奥克兰，升级 <span class="pill">5 钻酒店</span>；晚餐：<span class="pill o">黑金鲍养生餐</span>。</li>
+  </ul>
+  <div class="wx"><b>🌡️ 奥克兰：</b><span class="c1">16~24℃，温暖湿润，偶有阵雨</span>　<b>👕 穿衣：</b>短袖+薄长裤，随身带便携伞或皮肤衣防阵雨</div>
+</div>
+
+<div class="day d10">
+  <div class="dh"><span class="dn">第 10 天</span><span class="dt">怀托摩萤火虫洞 → 爱歌顿牧场 → 罗托鲁瓦</span><span class="df">车程约 3.5 小时</span></div>
+  <ul>
+    <li><b>怀托摩萤火虫洞</b>（约 45 分钟）：坐小船看"地下星空"，<b>洞内不能拍照、不能喧哗</b>。</li>
+    <li><b>爱歌顿牧场</b>（约 1 小时）：剪羊毛秀 + 拖拉机巡游，可喂羊驼。</li>
+    <li>罗托鲁瓦：红木森林 + 政府花园；晚上可自费泡<b>波利尼西亚温泉</b>（100 纽币，记得带泳衣）。</li>
+  </ul>
+  <div class="wx"><b>🌡️ 罗托鲁瓦：</b><span class="c1">15~25℃，闷热，地热区有硫磺味</span>　<b>👕 穿衣：</b>透气短袖+舒适鞋；<b>洞内恒温约 14℃ 较凉</b>，带件薄外套进洞</div>
+</div>
+
+<div class="day d11">
+  <div class="dh"><span class="dn">第 11 天</span><span class="dt">霍比特村 → 奥克兰 ✈ 上海</span><span class="df">NZ289　23:55 → 次日 07:00</span></div>
+  <ul>
+    <li>上午：<b>霍比特村</b>（约 2 小时），绿龙酒馆免费饮品一杯；午餐绿龙自助餐。</li>
+    <li>下午回奥克兰：海港大桥远眺、帆船俱乐部车览、<b>皇后大街自由活动购物 1 小时</b>；晚餐日式铁板烧。</li>
+    <li>晚上送机，夜宿飞机。</li>
+  </ul>
+  <div class="wx"><b>🌡️ 玛塔玛塔/奥克兰：</b><span class="c1">16~25℃，晒</span>　<b>👕 穿衣：</b>短袖+防晒帽墨镜（霍比特村几乎无遮挡）；<b>登机前把冬装放进随身包</b>，上海落地是冬天</div>
+</div>
+
+<div class="day d12">
+  <div class="dh"><span class="dn">第 12 天</span><span class="dt">抵达上海</span><span class="df">07:00 落地浦东</span></div>
+  <ul><li>旅程结束。时差约 5 小时，建议当天<b>多喝水、见见阳光帮助倒时差</b>。</li></ul>
+</div>
+</div>
+
+<!-- 购物 -->
+<div class="card" id="shop">
+<h2><span class="n">🛍</span>皇后镇购物指南（第 6–7 天怎么买）</h2>
+<p>皇后镇商店高度集中在<b>镇中心湖滨街区</b>（Beach St / Camp St / Rees St 一带），步行 30 分钟能逛完主线。1 月底是盛夏，周六还有周末市集可逛。</p>
+
+<table>
+<tr><th>地点</th><th>位置</th><th class="c">时间</th><th>买什么 · 为什么值得去</th></tr>
+<tr><td><b>O'Connells 购物中心</b></td><td>镇中心 Mall St</td><td class="c">约 9:00–21:00</td><td>镇上最大的购物中心。羊毛/美利奴制品、蜂王浆胶囊、花粉等保健品一站买齐，<b>挑纪念品首选</b>；楼下有餐厅，逛累了直接吃饭</td></tr>
+<tr><td><b>Aotea Gifts</b></td><td>87 Beach St</td><td class="c">镇中心</td><td>新西兰本土纪念品连锁，品类最全、价格适中，<b>支持支付宝</b>；蜂蜜、绵羊油、麦卢卡、钥匙圈全都有，<b>赶时间买手信一家店搞定</b></td></tr>
+<tr><td><b>Remarkable Sweet Shop</b></td><td>23 Beach St</td><td class="c">镇中心</td><td>新西兰很有名的糖果店：软糖、巧克力、礼盒装，<b>牛轧糖是招牌</b>，还有哈利波特联名糖果</td></tr>
+<tr><td><b>Cookie Time</b></td><td>18 Camp St</td><td class="c">镇中心</td><td>新西兰国民曲奇品牌，<b>铁盒装最适合当伴手礼</b>，店里还有可爱的文创周边</td></tr>
+<tr><td><b>Queenstown Market 手作市集</b></td><td>湖滨</td><td class="c">周六上午</td><td>本地手工艺人市集：手工皮具、木器、首饰、果酱，<b>能淘到大商场买不到的独特小物</b></td></tr>
+<tr><td><b>Remarkables Market 非凡市集</b></td><td>Frankton（机场方向）</td><td class="c">夏季周六 9:00–14:00</td><td>当地人自产水果、自制美食和工艺品的大市集，配咖啡和现场音乐，<b>适合第 7 天专程去半日</b>；车程约 15 分钟</td></tr>
+<tr><td><b>户外 &amp; 时尚品牌</b></td><td>镇中心各街</td><td class="c">—</td><td>户外品牌（Kathmandu 等）冲锋衣抓绒折扣常比国内便宜；时尚品牌 CK、Tommy 也在街区里，平价有 Cotton On、Glassons</td></tr>
+<tr><td><b>Queenstown Central</b></td><td>Frankton，距机场 2 分钟</td><td class="c">—</td><td>40+ 店铺大型综合体：超市（补给零食水果）+ 服饰 + 家居。<b>跟团去得少</b>，若自由活动租车或去峡湾路过可顺带采购</td></tr>
+</table>
+
+<h3>买什么最值</h3>
+<div class="box"><div class="bt">① 麦卢卡蜂蜜 / 蜂王浆</div><ul><li><b>认准 UMF/MGO 标识</b>，皇后镇价格优于机场</li></ul></div>
+<div class="box"><div class="bt">② 美利奴羊毛制品</div><ul><li>Icebreaker 等户外品牌兼卖羊毛服饰</li></ul></div>
+<div class="box"><div class="bt">③ 绵羊油 / 护肤品</div><ul><li>新西兰特产</li></ul></div>
+<div class="box"><div class="bt">④ 曲奇铁盒 + 糖果礼盒</div><ul><li>手信轻便不易碎</li></ul></div>
+<div class="box"><div class="bt">⑤ 顺路打卡 Fergburger</div><ul><li>网红汉堡，<b>排队约 30 分钟但值得</b></li></ul></div>
+
+<div class="tip">
+<b>购物小贴士</b><br>
+皇后大街（第 11 天）是主要购物点：蜂蜜、绵羊油、奶粉按需购买；新西兰商品含 <b>15% GST</b>，部分店铺满额可退税。1 月底正值新西兰夏季促销季尾声，<b>服饰折扣不错</b>。
+</div>
+</div>
+
+<!-- 行李 -->
+<div class="card" id="pack">
+<h2><span class="n">🧳</span>行李清单（1 月底盛夏版）</h2>
+
+<h3>✅ 衣物</h3>
+<div class="box"><ul>
+<li>短袖 T 恤 ×4–5</li>
+<li>薄长袖防晒衫 ×2</li>
+<li>长裤 ×2</li>
+<li><b>防风防水外套 ×1</b>（出海/峡湾/缆车必用）</li>
+<li><b>抓绒或轻薄羽绒 ×1</b>（星空、企鹅归巢用）</li>
+<li><b>泳衣</b>（温泉）</li>
+<li>舒适防滑运动鞋、帽子 + 墨镜</li>
+</ul></div>
+
+<div class="alert">
+<h3 style="margin-top:0;color:#8f3320">⚠️ 容易忘的</h3>
+<ul>
+<li><b>防晒霜 SPF50+</b>——新西兰臭氧层薄，晒伤速度是国内的 2 倍</li>
+<li><b>晕船药</b>（观鲸）</li>
+<li><b>转换插头</b>（新西兰是三角扁插头，同澳洲）</li>
+<li><b>充电宝</b>（飞机上用）</li>
+<li>少量现金纽币、保温杯</li>
+</ul>
+</div>
+</div>
+
+<!-- 关键提醒 -->
+<div class="card" id="tips">
+<h2><span class="n">📌</span>关键提醒</h2>
+
+<h3>三个"看天吃饭"的项目</h3>
+<table>
+<tr><th>项目</th><th>条款</th></tr>
+<tr><td><b>观鲸</b></td><td>天气取消<b>退 90 纽币/人</b>；<b>出海后没看到鲸鱼不退款</b></td></tr>
+<tr><td><b>直升机</b></td><td>天气取消<b>退 190 纽币/人</b>；<b>出发前 2 周内自己放弃不退</b>；无法降落雪山无退费</td></tr>
+<tr><td><b>企鹅归巢</b></td><td>自然现象<b>不保证看到，不退费</b></td></tr>
+</table>
+<div class="tip">1 月底是新西兰<b>旅游旺季 + 盛夏</b>，总体天气条件是一年中最友好的。</div>
+
+<h3>团规要点</h3>
+<div class="grid2">
+<div class="box"><div class="bt">📌 必须遵守</div><ul>
+<li><b>全程必须跟团，不得擅自离团</b>——如擅自离团，旅行社会向大使馆和当地移民局汇报，后果自负</li>
+<li><b>团队机票一经开出不得更改、不得签转、不得退票</b></li>
+<li>自费项目<b>有最低成团人数门槛</b>，人数不足可能调价或无法成行</li>
+<li>自费项目<b>交付后恕不退款</b>（天气等不可抗力除外）</li>
+</ul></div>
+<div class="box"><div class="bt">💰 费用不含（需自备）</div><ul>
+<li>护照费、行李超重费</li>
+<li><b>单间差</b>（请确认是否已处理）</li>
+<li>酒店内洗衣、电话、收费电视、饮料、烟酒等个人消费</li>
+<li>出入境个人物品海关征税</li>
+<li>不可抗力（交通延阻、罢工、天气、航班取消）导致的额外费用</li>
+</ul></div>
+</div>
+
+<h3>出发前必办</h3>
+<div class="key">
+<ul style="margin:0">
+<li><b>确认签证状态</b>——本行程为团队旅游签证（费用已含），请确认是否已办妥、是否需本人补交材料或到馆。</li>
+<li><b>新西兰旅客申报 NZTD</b>——起飞前 24 小时内网上填：<span class="small">travellerdeclaration.govt.nz</span>，<b>婴幼儿也要单独申报</b>。</li>
+<li><b>护照有效期</b>需覆盖全程行程。</li>
+<li><b>自费项目提前预订</b>：<b>神奇峡湾每天仅限 450 人</b>，皇后镇跳伞、峡湾一日游也建议提前锁定。</li>
+</ul>
+</div>
+
+<h3>汇率参考</h3>
+<p class="small muted">1 NZD ≈ 3.80 CNY（2026-10-20 中间价 3.7963）；自驾/加油/小费以 1 月实际汇率为准。</p>
+</div>
+
+<footer>
+本手册由云端资料库版本整理，行程细节以旅行社出团通知为准。<br>
+「鲸跃星河」新西兰南北岛 12 日 · 团体行程（V727）｜ 时差比上海快 4–5 小时<br>
+道钉 🛤️ · 2026-10-20
+</footer>
+
+</div>
+</body>
+</html>

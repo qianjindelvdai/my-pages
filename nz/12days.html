@@ -133,70 +133,120 @@ h2{break-after:avoid}
 <!-- 路线图 -->
 <div class="card" id="map">
 <h2><span class="n">🗺️</span>行程路线：一眼看懂去哪</h2>
-<svg viewBox="0 0 900 300" width="100%" style="display:block;max-width:900px;margin:6px auto" role="img" aria-label="新西兰南北岛12天行程路线图">
+<svg viewBox="0 -22 962 567" width="100%" style="display:block;max-width:900px;margin:6px auto" role="img" aria-label="新西兰南北岛12天行程路线图（按真实经纬度绘制）">
   <defs>
     <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#eaf3f8"/><stop offset="100%" stop-color="#dceaf2"/>
+      <stop offset="0%" stop-color="#e9f2f8"/><stop offset="100%" stop-color="#d8e8f1"/>
     </linearGradient>
+    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#2e6db4"/>
+    </marker>
+    <marker id="arw2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#c08b2e"/>
+    </marker>
   </defs>
-  <rect width="900" height="300" fill="url(#sea)" rx="10"/>
-  <!-- 南岛轮廓 -->
-  <path d="M95 218 L150 192 L215 182 L280 172 L340 166 L400 162 L450 157 L492 152 L520 156 L536 170 L528 186 L500 194 L455 200 L400 204 L345 208 L290 214 L235 222 L180 232 L132 238 Z"
-        fill="#cfe0c9" stroke="#8fae8a" stroke-width="1.5"/>
-  <!-- 北岛轮廓 -->
-  <path d="M470 92 L520 74 L580 62 L640 58 L688 64 L712 80 L706 98 L676 110 L630 118 L580 122 L530 118 L492 108 Z"
-        fill="#cfe0c9" stroke="#8fae8a" stroke-width="1.5"/>
-  <!-- 标签 -->
-  <text x="250" y="272" font-size="14" fill="#5a7a52" font-weight="600">南 岛 South Island</text>
-  <text x="560" y="72" font-size="14" fill="#5a7a52" font-weight="600">北 岛 North Island</text>
+  <rect y="-22" width="962" height="567" fill="url(#sea)" rx="10"/>
+
+  <!-- 海岸线（按真实经纬度近似勾勒） -->
+  <path d="M592 10 L650 25 L697 52 L741 66 L795 79 L849 101 L876 120 L859 135 L826 150 L792 159 L761 174 L744 196 L717 216 L677 240 L640 245 L619 245 L606 226 L592 199 L572 172 L565 142 L579 113 L596 83 L585 56 Z"
+        fill="#cddfc6" stroke="#87a882" stroke-width="1.6"/>
+  <path d="M551 299 L572 287 L589 275 L541 245 L508 238 L460 226 L416 248 L386 287 L355 324 L318 358 L271 393 L223 424 L169 456 L108 478 L68 498 L115 510 L190 505 L271 498 L352 481 L406 469 L430 456 L453 427 L494 402 L535 373 L575 343 L589 316 Z"
+        fill="#cddfc6" stroke="#87a882" stroke-width="1.6"/>
+
+  <!-- 岛名 -->
+  <text x="800" y="200" font-size="13.5" fill="#5d7d54" font-weight="600">北岛</text>
+  <text x="800" y="214" font-size="10" fill="#7d9a76">North Island</text>
+  <text x="392" y="300" font-size="13.5" fill="#5d7d54" font-weight="600">南岛</text>
+  <text x="392" y="314" font-size="10" fill="#7d9a76">South Island</text>
+
   <!-- 航线 -->
-  <path d="M620 88 Q760 70 800 92" stroke="#2e6db4" stroke-width="2.2" fill="none" stroke-dasharray="6,4"/>
-  <path d="M600 140 Q720 250 300 215" stroke="#c08b2e" stroke-width="2.2" fill="none" stroke-dasharray="6,4"/>
-  <text x="742" y="66" font-size="11" fill="#2e6db4" font-weight="600">D1 ✈</text>
-  <text x="648" y="256" font-size="11" fill="#a07615" font-weight="600">D2 / D9 内陆航班</text>
-  <!-- 站点：标签统一置于圆点上方，逐个错开避免重叠 -->
-  <g font-size="10.5" fill="#22404f">
-    <!-- 北岛 -->
-    <circle cx="690" cy="88" r="6" fill="#0d3049"/>
-    <text x="702" y="92" font-weight="700">奥克兰 AKL</text>
+  <path d="M660 27 Q840 -18 906 18" stroke="#2e6db4" stroke-width="2" fill="none" stroke-dasharray="7,5" marker-end="url(#arw)"/>
+  <text x="470" y="8" font-size="10.5" fill="#2e6db4" font-weight="600">D1 上海 ✈ 奥克兰（D11 返程）</text>
+  <path d="M700 96 Q744 190 566 296" stroke="#c08b2e" stroke-width="2" fill="none" stroke-dasharray="7,5" marker-end="url(#arw2)"/>
+  <text x="700" y="262" font-size="10.5" fill="#a07615" font-weight="600">D2 / D9 内陆航班</text>
 
-    <circle cx="488" cy="88" r="6" fill="#8a5a9e"/>
-    <text x="488" y="76" text-anchor="middle">玛塔玛塔 · 霍比特村</text>
+  <!-- ================= 南岛 ================= -->
+  <g font-size="10.5" fill="#1f3d4d">
+    <circle cx="547" cy="299" r="5.5" fill="#1d7a8c"/>
+    <text x="556" y="296">凯库拉</text>
+    <text x="556" y="308" font-size="9" fill="#5d7b8a">D2 观鲸 · D3</text>
 
-    <circle cx="390" cy="100" r="6" fill="#4a8a5a"/>
-    <text x="376" y="88" text-anchor="middle">怀托摩 · 爱歌顿牧场</text>
+    <circle cx="476" cy="355" r="5.5" fill="#2e6db4"/>
+    <text x="485" y="352">基督城 CHC</text>
+    <text x="485" y="364" font-size="9" fill="#5d7b8a">D2 · D3 · D9</text>
 
-    <circle cx="300" cy="112" r="6" fill="#2f6f4f"/>
-    <text x="300" y="101" text-anchor="middle" font-weight="700">罗托鲁瓦</text>
+    <circle cx="330" cy="378" r="5.5" fill="#0f766e"/>
+    <text x="339" y="376">梯卡坡 · 奥玛拉玛</text>
+    <text x="339" y="388" font-size="9" fill="#5d7b8a">D4 星空保护区</text>
 
-    <!-- 南岛 -->
-    <circle cx="440" cy="153" r="6" fill="#1d7a8c"/>
-    <text x="452" y="149">凯库拉</text>
+    <circle cx="307" cy="358" r="5.5" fill="#c08b2e"/>
+    <path d="M307 358 L236 330" stroke="#b8c4cc" stroke-width="1" fill="none"/>
+    <text x="232" y="326" text-anchor="end" font-weight="700" fill="#8a6410">库克山 · 直升机</text>
+    <text x="232" y="338" text-anchor="end" font-size="9" fill="#7a8b95">D5 雪降</text>
 
-    <circle cx="360" cy="165" r="6" fill="#2e6db4"/>
-    <text x="372" y="177" font-weight="700">基督城 CHC</text>
+    <circle cx="246" cy="412" r="5" fill="#7b9a5a"/>
+    <path d="M246 412 L170 388" stroke="#b8c4cc" stroke-width="1" fill="none"/>
+    <text x="166" y="384" text-anchor="end">瓦纳卡</text>
+    <text x="166" y="396" text-anchor="end" font-size="9" fill="#5d7b8a">D5</text>
 
-    <circle cx="288" cy="172" r="6" fill="#c08b2e"/>
-    <text x="288" y="161" text-anchor="middle">库克山 · 直升机</text>
+    <circle cx="221" cy="424" r="5" fill="#7b9a5a"/>
+    <path d="M221 424 L150 416" stroke="#b8c4cc" stroke-width="1" fill="none"/>
+    <text x="146" y="412" text-anchor="end">箭镇</text>
+    <text x="146" y="424" text-anchor="end" font-size="9" fill="#5d7b8a">D5</text>
 
-    <circle cx="240" cy="184" r="6" fill="#0f766e"/>
-    <text x="248" y="178">梯卡坡 · 奥玛拉玛</text>
+    <circle cx="207" cy="428" r="8" fill="#c08b2e" stroke="#fff" stroke-width="2.2"/>
+    <path d="M207 428 L152 456" stroke="#c08b2e" stroke-width="1.2" fill="none"/>
+    <text x="148" y="460" text-anchor="end" font-weight="700" fill="#8a6410">★ 皇后镇</text>
+    <text x="148" y="472" text-anchor="end" font-size="9" fill="#7a8b95">D5–D7 连住 3 晚</text>
 
-    <circle cx="205" cy="206" r="6" fill="#7b9a5a"/>
-    <text x="206" y="196" text-anchor="middle">瓦纳卡 · 箭镇</text>
+    <circle cx="332" cy="470" r="5.5" fill="#7a5c9e"/>
+    <path d="M332 470 L268 504" stroke="#b8c4cc" stroke-width="1" fill="none"/>
+    <text x="264" y="508" text-anchor="end">但尼丁</text>
+    <text x="264" y="520" text-anchor="end" font-size="9" fill="#5d7b8a">D8 鲍德温街</text>
 
-    <circle cx="176" cy="222" r="8.5" fill="#c08b2e" stroke="#fff" stroke-width="2.2"/>
-    <text x="176" y="242" text-anchor="middle" font-weight="700" fill="#8a6410">★ 皇后镇（连住3晚）</text>
+    <circle cx="330" cy="432" r="5.5" fill="#b4442f"/>
+    <path d="M330 432 L400 474" stroke="#b8c4cc" stroke-width="1" fill="none"/>
+    <text x="404" y="478">奥马鲁</text>
+    <text x="404" y="490" font-size="9" fill="#5d7b8a">D8 蓝眼企鹅归巢</text>
 
-    <circle cx="132" cy="196" r="6" fill="#7a5c9e"/>
-    <text x="120" y="190" text-anchor="end">但尼丁</text>
+    <circle cx="363" cy="428" r="5" fill="#8a6a4a"/>
+    <path d="M363 428 L428 420" stroke="#b8c4cc" stroke-width="1" fill="none"/>
+    <text x="432" y="416">摩拉基大圆石</text>
+    <text x="432" y="428" font-size="9" fill="#5d7b8a">D8</text>
+  </g>
 
-    <circle cx="88" cy="236" r="6" fill="#b4442f"/>
-    <text x="88" y="256" text-anchor="middle">奥马鲁 · 企鹅归巢</text>
+  <!-- ================= 北岛 ================= -->
+  <g font-size="10.5" fill="#1f3d4d">
+    <circle cx="620" cy="27" r="5.5" fill="#0d3049"/>
+    <text x="629" y="24">奥克兰 AKL</text>
+    <text x="629" y="36" font-size="9" fill="#5d7b8a">D1 · D2 · D9 · D11</text>
+
+    <circle cx="721" cy="90" r="5.5" fill="#2f6f4f"/>
+    <path d="M721 90 L776 70" stroke="#b8c4cc" stroke-width="1" fill="none"/>
+    <text x="780" y="66">罗托鲁瓦</text>
+    <text x="780" y="78" font-size="9" fill="#5d7b8a">D10 萤火虫洞 · 牧场</text>
+
+    <circle cx="708" cy="77" r="5" fill="#8a5a9e"/>
+    <path d="M708 77 L704 132" stroke="#b8c4cc" stroke-width="1" fill="none"/>
+    <text x="704" y="142" text-anchor="middle">玛塔玛塔</text>
+    <text x="704" y="154" text-anchor="middle" font-size="9" fill="#5d7b8a">D11 霍比特村</text>
+
+    <circle cx="643" cy="96" r="5" fill="#4a8a5a"/>
+    <text x="643" y="112" text-anchor="middle">怀托摩 · 爱歌顿</text>
+  </g>
+
+  <!-- 图例 -->
+  <g font-size="9.5" fill="#54687a">
+    <rect x="646" y="466" width="196" height="62" rx="8" fill="#ffffff" opacity=".85" stroke="#c3d2da"/>
+    <text x="660" y="483" font-weight="700" fill="#1f3d4d">图例</text>
+    <circle cx="664" cy="496" r="4.5" fill="#0d3049"/><text x="675" y="500">国际航班（D1 / D11）</text>
+    <circle cx="664" cy="510" r="4.5" fill="#c08b2e"/><text x="675" y="514">内陆航班（D2 / D9）</text>
+    <circle cx="664" cy="523" r="6" fill="#c08b2e" stroke="#fff" stroke-width="1.6"/>
+    <text x="675" y="527" font-weight="700" fill="#8a6410">★ 皇后镇（连住 3 晚）</text>
   </g>
 </svg>
-<p class="small muted" style="text-align:center;margin-top:6px">
-★ 皇后镇连住 3 晚（第 5、6、7 天）；D7 为自由活动日，是全程唯一可自主安排的时段。
+<p class="small muted" style="text-align:center;margin-top:4px">
+按真实经纬度绘制，点位均落在陆地范围内；密集处以引线标注。★ 皇后镇连住 3 晚（D5–D7），D7 为自由活动日。
 </p>
 </div>
 
